@@ -68,9 +68,9 @@ class TerminalManager {
      * Set up the new terminal button
      */
     setupNewTerminalButton() {
-        const newTerminalBtn = document.getElementById('newTerminalBtn');
-        if (newTerminalBtn) {
-            newTerminalBtn.addEventListener('click', () => {
+        const addTabBtn = document.getElementById('addTabBtn');
+        if (addTabBtn) {
+            addTabBtn.addEventListener('click', () => {
                 this.createNewTerminal();
             });
         }
@@ -125,14 +125,23 @@ class TerminalManager {
         // Request new terminal from server
         fetch('/api/terminals/new', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: 'Terminal' })
         })
         .then(response => response.json())
         .then(data => {
             this.showTerminalLoading(false);
             if (data.success) {
-                console.log('New terminal created, reloading page');
-                window.location.reload(); // Will be improved in future to avoid full page reload
+                console.log('New terminal created with port:', data.port);
+                
+                // Add the new terminal to the UI without page reload
+                this.addTerminalToUI(data.port, data.name);
+                
+                // Update active ports list
+                this.activePorts.push(data.port.toString());
+                
+                // Switch to the new terminal
+                this.switchTerminal(data.port.toString());
             } else {
                 this.showError(data.error || 'Failed to create new terminal');
             }
@@ -144,20 +153,66 @@ class TerminalManager {
     }
     
     /**
+     * Add a new terminal tab and iframe to the UI
+     * @param {number|string} port - The port number for the terminal
+     * @param {string} name - Display name for the terminal tab
+     */
+    addTerminalToUI(port, name = 'Terminal') {
+        port = port.toString();
+        
+        // Create new tab button
+        const tabsContainer = document.querySelector('.terminal-tabs');
+        const addTabBtn = document.getElementById('addTabBtn');
+        
+        if (tabsContainer && addTabBtn) {
+            // Create new tab button element
+            const newTabBtn = document.createElement('button');
+            newTabBtn.className = 'tab-btn';
+            newTabBtn.setAttribute('data-port', port);
+            newTabBtn.textContent = name;
+            
+            // Insert before the add tab button
+            tabsContainer.insertBefore(newTabBtn, addTabBtn);
+            
+            // Add click event listener
+            newTabBtn.addEventListener('click', () => {
+                this.switchTerminal(port);
+            });
+        }
+        
+        // Create new terminal iframe
+        const terminalContainer = document.querySelector('.terminal-container');
+        if (terminalContainer) {
+            // Create new iframe element
+            const newIframe = document.createElement('iframe');
+            newIframe.className = 'terminal-iframe';
+            newIframe.id = `terminal-${port}`;
+            newIframe.setAttribute('data-port', port);
+            
+            // Set the iframe src to the new terminal URL
+            const hostname = this.hostname;
+            newIframe.src = `http://${hostname}:${port}`;
+            
+            // Append to the terminal container
+            terminalContainer.appendChild(newIframe);
+        }
+    }
+    
+    /**
      * Show/hide terminal loading indicator
      * @param {boolean} show - Whether to show or hide the loading indicator
      */
     showTerminalLoading(show) {
-        const newTerminalBtn = document.getElementById('newTerminalBtn');
-        if (newTerminalBtn) {
+        const addTabBtn = document.getElementById('addTabBtn');
+        if (addTabBtn) {
             if (show) {
-                newTerminalBtn.classList.add('loading');
-                newTerminalBtn.disabled = true;
-                newTerminalBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+                addTabBtn.classList.add('loading');
+                addTabBtn.disabled = true;
+                addTabBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
             } else {
-                newTerminalBtn.classList.remove('loading');
-                newTerminalBtn.disabled = false;
-                newTerminalBtn.innerHTML = '<i class="fas fa-plus"></i> New Terminal';
+                addTabBtn.classList.remove('loading');
+                addTabBtn.disabled = false;
+                addTabBtn.innerHTML = '<i class="fas fa-plus"></i> New Terminal';
             }
         }
     }
