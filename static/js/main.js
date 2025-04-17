@@ -1,89 +1,90 @@
-// main.js
-// Entry point for CommandWave frontend logic. Imports UI modules, API modules, and utilities.
+/**
+ * CommandWave - Main JavaScript Entry Point
+ * 
+ * This file serves as the entry point for the CommandWave application.
+ * It initializes all required modules and sets up the application.
+ */
 
-// Import UI modules
+// Import core modules
 import ThemeManager from './ui/theme_manager.js';
 import TerminalManager from './ui/terminal_manager.js';
 import ModalController from './ui/modal_controller.js';
 import VariableManager from './ui/variable_manager.js';
+import SettingsManager from './ui/settings_manager.js';
+import API from './api/index.js';
+import ErrorHandler from './utils/error_handler.js';
 
-// Initialize modules when DOM is loaded
+// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     console.log('CommandWave initializing...');
     
-    // Initialize the theme manager
-    const themeManager = new ThemeManager();
-    window.themeManager = themeManager; // Make available globally for legacy code
-    
-    // Initialize the terminal manager
-    const terminalManager = new TerminalManager();
-    window.terminalManager = terminalManager; // Make available globally for legacy code
-    
-    // Initialize the modal controller
-    const modalController = new ModalController();
-    window.modalController = modalController; // Make available globally for legacy code
-    
-    // Initialize the variable manager
-    const variableManager = new VariableManager();
-    window.variableManager = variableManager; // Make available globally for legacy code
-    
-    // Add temporary placeholder for old inline script functionality
-    // This will be gradually migrated to the appropriate modules
-    initializeTemporaryHandlers();
-    
-    console.log('CommandWave initialized.');
-});
-
-/**
- * Temporary function to handle legacy inline script functionality
- * This will be gradually migrated to the proper modules
- */
-function initializeTemporaryHandlers() {
-    // Terminal tabs functionality has been moved to TerminalManager
-    
-    // New terminal button has been moved to TerminalManager
-    
-    // Theme modal open/close has been moved to ThemeManager
-    
-    // About modal has been moved to ModalController
-    
-    // Modal close handlers have been moved to ModalController
-    
-    // Toggle variables section has been moved to VariableManager
-    
-    // Add variable input has been moved to ModalController and VariableManager
-    
-    // Settings dropdown toggle
-    const settingsBtn = document.getElementById('settingsBtn');
-    const settingsDropdown = document.getElementById('settingsDropdown');
-    if (settingsBtn && settingsDropdown) {
-        settingsBtn.addEventListener('click', function(e) {
-            e.stopPropagation(); // Prevent event from bubbling to document
-            settingsDropdown.classList.toggle('show');
+    try {
+        // Application config
+        const config = {
+            hostname: window.location.hostname,
+            defaultPort: document.querySelector('.tab-btn[data-port]')?.getAttribute('data-port')
+        };
+        
+        // First, check and prepare all modals
+        document.querySelectorAll('.modal, .modal-container').forEach(modal => {
+            console.log('Found modal:', modal.id);
         });
         
-        // Close dropdown when clicking elsewhere
-        document.addEventListener('click', function(e) {
-            if (!settingsBtn.contains(e.target) && !settingsDropdown.contains(e.target)) {
-                settingsDropdown.classList.remove('show');
-            }
-        });
-    }
-    
-    // Simple error display function - now delegated to ModalController
-    window.showError = function(message) {
-        if (window.modalController) {
-            window.modalController.showError(message);
-        } else {
-            const errorModal = document.getElementById('errorModal');
-            const errorMessage = document.getElementById('errorMessage');
-            
-            if (errorModal && errorMessage) {
-                errorMessage.textContent = message;
-                errorModal.classList.add('active');
-            } else {
-                alert(message);
-            }
+        // Initialize Modal Controller (needed by other components for notifications)
+        const modalController = new ModalController();
+        
+        // Connect error handler with modal controller
+        ErrorHandler.setModalController(modalController);
+        
+        // Initialize UI Managers
+        const themeManager = new ThemeManager();
+        const terminalManager = new TerminalManager(config.hostname);
+        const variableManager = new VariableManager();
+        const settingsManager = new SettingsManager();
+        
+        // Make modules available globally for debugging
+        window.CommandWave = {
+            themeManager,
+            terminalManager,
+            modalController,
+            variableManager,
+            settingsManager,
+            api: API,
+            errorHandler: ErrorHandler,
+            version: '0.2.0' // Modular architecture version
+        };
+        
+        // Register additional modal events after making the components globally available
+        // This ensures proper event handling between components
+        const newTerminalBtn = document.getElementById('addTabBtn');
+        if (newTerminalBtn) {
+            newTerminalBtn.addEventListener('click', function() {
+                console.log('Add tab button clicked directly from main.js');
+                modalController.openModal('newTerminalModal');
+            });
         }
-    };
-}
+        
+        // Setup global error handling for uncaught exceptions
+        window.addEventListener('error', (event) => {
+            ErrorHandler.handleError(event.error || new Error(event.message), 
+                'Uncaught Exception', true, true);
+            
+            // Don't prevent default error handling
+            return false;
+        });
+        
+        // Setup global rejection handling for unhandled promises
+        window.addEventListener('unhandledrejection', (event) => {
+            ErrorHandler.handleError(event.reason || new Error('Unhandled Promise Rejection'),
+                'Unhandled Promise', true, false);
+            
+            // Don't prevent default error handling
+            return false;
+        });
+        
+        console.log('CommandWave initialized.');
+    } catch (error) {
+        console.error('Failed to initialize CommandWave:', error);
+        alert(`Failed to initialize CommandWave: ${error.message}`);
+    }
+});

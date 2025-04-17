@@ -22,14 +22,16 @@ class ModalController {
         // Set up global handlers
         this.setupGlobalHandlers();
         
-        console.log(`Modal controller initialized with ${Object.keys(this.modalRegistry).length} modals`);
+        // Debug registered modals
+        console.log(`Modal controller initialized with ${Object.keys(this.modalRegistry).length} modals:`, 
+                    Object.keys(this.modalRegistry));
     }
     
     /**
      * Find and register all modals in the document
      */
     registerModals() {
-        document.querySelectorAll('.modal-container').forEach(modal => {
+        document.querySelectorAll('.modal, .modal-container').forEach(modal => {
             const modalId = modal.id;
             if (modalId) {
                 this.modalRegistry[modalId] = {
@@ -85,9 +87,13 @@ class ModalController {
      */
     setupGlobalHandlers() {
         // Close buttons
-        document.querySelectorAll('.modal-close, .modal-footer .modal-btn').forEach(el => {
-            el.addEventListener('click', () => {
-                if (this.activeModal) {
+        document.querySelectorAll('.modal-close, .modal-btn.cancel').forEach(el => {
+            el.addEventListener('click', (e) => {
+                // Find the closest modal container
+                const modalContainer = el.closest('.modal-container');
+                if (modalContainer && modalContainer.id) {
+                    this.closeModal(modalContainer.id);
+                } else if (this.activeModal) {
                     this.closeModal(this.activeModal);
                 } else {
                     // Fallback - close all modals
@@ -96,6 +102,12 @@ class ModalController {
                     });
                 }
             });
+        });
+        
+        // Submit buttons (should NOT close modals automatically)
+        document.querySelectorAll('.modal-btn.submit').forEach(el => {
+            // These buttons should have their own specific handlers
+            // added by the relevant component manager
         });
         
         // Close on escape key

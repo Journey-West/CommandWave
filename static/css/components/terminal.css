@@ -1,0 +1,66 @@
+/* Terminal component styles */
+
+.terminal-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.terminal-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: none !important; /* Force hide all terminals by default */
+    background-color: #111;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.terminal-iframe.active {
+    display: block !important; /* Force show the active terminal */
+    z-index: 2;
+}
+
+/* Terminal tabs styling */
+.terminal-tabs {
+    display: flex;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 0;
+    position: relative;
+    z-index: 10;
+}
+
+.terminal-title {
+    margin-left: auto;
+    padding-right: 10px;
+    font-family: 'Orbitron', sans-serif;
+    color: var(--text-color);
+    opacity: 0.8;
+    font-size: 0.8rem;
+}
+
+/* Terminal loading indicator */
+.tab-btn.loading {
+    position: relative;
+    color: var(--neon-blue);
+    background-color: rgba(96, 239, 255, 0.05);
+}
+
+/* Terminal tab close button */
+.tab-close {
+    margin-left: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+.tab-close:hover {
+    opacity: 1;
+}

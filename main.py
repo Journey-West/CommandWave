@@ -267,9 +267,18 @@ def cleanup_all_terminals():
 # Register cleanup function
 atexit.register(cleanup_all_terminals)
 
-# Handle signals
+# Flag to prevent multiple signal handler executions
+_shutdown_in_progress = False
+
 def signal_handler(sig, frame):
     """Handle termination signals by cleaning up and exiting."""
+    global _shutdown_in_progress
+    
+    # Prevent multiple executions of the shutdown sequence
+    if _shutdown_in_progress:
+        return
+    
+    _shutdown_in_progress = True
     logger.info(f"Received signal {sig}, shutting down...")
     cleanup_all_terminals()
     sys.exit(0)

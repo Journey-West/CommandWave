@@ -1,67 +1,58 @@
 /**
- * terminal_manager.js - Modular terminal management for CommandWave
- * Handles terminal tab switching, creation, and interaction
+ * Terminal Manager Module
+ * Manages terminal tabs, creation, switching and interaction
  */
 
-class TerminalManager {
-    constructor() {
+import terminalAPI from '../api/terminal_api.js';
+
+export default class TerminalManager {
+    /**
+     * Create a new Terminal Manager
+     * @param {string} hostname - The hostname for terminal iframes
+     */
+    constructor(hostname = window.location.hostname) {
+        this.hostname = hostname;
         this.activePorts = [];
-        this.activeTerminalPort = null;
-        this.hostname = document.getElementById('hostname')?.value || 'localhost';
+        this.activeTerminal = null;
         
-        // Initialize manager
-        this.init();
+        // Initialize terminals
+        this.initTerminals();
     }
     
     /**
-     * Initialize terminal system
+     * Initialize terminal manager
+     * Register events and set up existing terminals
      */
-    init() {
-        // Get all terminal tabs
-        this.loadActivePorts();
-        
-        // Set up tab handlers
-        this.setupTabHandlers();
-        
-        // Set up new terminal button
-        this.setupNewTerminalButton();
-        
-        console.log(`Terminal manager initialized with ${this.activePorts.length} terminals`);
-    }
-    
-    /**
-     * Load all active terminal ports
-     */
-    loadActivePorts() {
-        const tabButtons = document.querySelectorAll('.tab-btn');
-        this.activePorts = Array.from(tabButtons).map(tab => {
-            return tab.getAttribute('data-port');
-        }).filter(port => port);
-        
-        // Set active terminal if available
-        if (this.activePorts.length > 0) {
-            const activeTab = document.querySelector('.tab-btn.active');
-            if (activeTab) {
-                this.activeTerminalPort = activeTab.getAttribute('data-port');
-            } else {
-                this.activeTerminalPort = this.activePorts[0];
-                this.activateTerminal(this.activeTerminalPort);
-            }
-        }
-    }
-    
-    /**
-     * Set up click handlers for terminal tabs
-     */
-    setupTabHandlers() {
-        document.querySelectorAll('.tab-btn').forEach(tab => {
-            tab.addEventListener('click', () => {
+    async initTerminals() {
+        try {
+            // Set up initial tabs
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabButtons.forEach(tab => {
+                if (tab.classList.contains('add-tab')) return; // Skip "add tab" button
+                
                 const port = tab.getAttribute('data-port');
                 if (port) {
-                    this.switchTerminal(port);
+                    this.activePorts.push(port);
+                    tab.addEventListener('click', () => this.switchTerminal(port));
                 }
             });
-        });
+            
+            // Set current active terminal
+            const activeTab = document.querySelector('.tab-btn.active');
+            if (activeTab) {
+                this.activeTerminal = activeTab.getAttribute('data-port');
+            }
+            
+            // Setup new terminal button
+            this.setupNewTerminalButton();
+            
+            // Setup new terminal modal buttons
+            this.setupTerminalModalButtons();
+            
+            console.log('Terminal manager initialized with', this.activePorts.length, 'terminals');
+        } catch (error) {
+            console.error('Error initializing terminals:', error);
+        }
     }
     
     /**
@@ -70,27 +61,125 @@ class TerminalManager {
     setupNewTerminalButton() {
         const addTabBtn = document.getElementById('addTabBtn');
         if (addTabBtn) {
-            addTabBtn.addEventListener('click', () => {
-                this.createNewTerminal();
+            // Use direct function rather than arrow function to help with debugging
+            addTabBtn.onclick = function() {
+                console.log('Add tab button clicked');
+                if (window.CommandWave && window.CommandWave.terminalManager) {
+                    window.CommandWave.terminalManager.openNewTerminalModal();
+                } else {
+                    console.error('Terminal manager not found in global CommandWave object');
+                    // Fallback - open the modal directly
+                    const modal = document.getElementById('newTerminalModal');
+                    if (modal) {
+                        modal.classList.add('active');
+                    }
+                }
+            };
+        }
+    }
+    
+    /**
+     * Set up the terminal modal buttons
+     */
+    setupTerminalModalButtons() {
+        // Cancel button
+        const cancelBtn = document.getElementById('cancelTerminalBtn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                if (window.CommandWave && window.CommandWave.modalController) {
+                    window.CommandWave.modalController.closeModal('newTerminalModal');
+                }
+            });
+        }
+        
+        // Create terminal button
+        const createBtn = document.getElementById('createTerminalSubmitBtn');
+        if (createBtn) {
+            createBtn.addEventListener('click', () => {
+                this.handleCreateTerminal();
+            });
+        }
+        
+        // Add enter key support for the terminal name input
+        const nameInput = document.getElementById('newTerminalName');
+        if (nameInput) {
+            nameInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    this.handleCreateTerminal();
+                }
             });
         }
     }
     
     /**
-     * Switch to a specific terminal
-     * @param {string} port - The port of the terminal to activate
+     * Open the new terminal modal
      */
-    switchTerminal(port) {
-        if (!port || !this.activePorts.includes(port)) {
-            console.error(`Terminal port ${port} not found`);
-            return;
+    openNewTerminalModal() {
+        try {
+            // Reset the form
+            const nameInput = document.getElementById('newTerminalName');
+            if (nameInput) {
+                nameInput.value = '';
+            }
+            
+            // Show the modal
+            if (window.CommandWave && window.CommandWave.modalController) {
+                const result = window.CommandWave.modalController.openModal('newTerminalModal');
+                console.log('Opening newTerminalModal, result:', result);
+                
+                // Focus the input field
+                if (nameInput) {
+                    setTimeout(() => nameInput.focus(), 100);
+                }
+            } else {
+                console.error('Modal controller not found');
+                // Fallback - try to show the modal directly
+                const modal = document.getElementById('newTerminalModal');
+                if (modal) {
+                    modal.classList.add('active');
+                    const nameInput = document.getElementById('newTerminalName');
+                    if (nameInput) {
+                        setTimeout(() => nameInput.focus(), 100);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error opening terminal modal:', error);
+            // Create terminal directly if modal fails
+            this.createNewTerminal('Terminal');
+        }
+    }
+    
+    /**
+     * Handle the create terminal form submission
+     */
+    handleCreateTerminal() {
+        const nameInput = document.getElementById('newTerminalName');
+        let terminalName = 'Terminal';
+        
+        if (nameInput && nameInput.value.trim()) {
+            terminalName = nameInput.value.trim();
         }
         
-        // Update active terminal
-        this.activeTerminalPort = port;
+        // Close the modal
+        if (window.CommandWave && window.CommandWave.modalController) {
+            window.CommandWave.modalController.closeModal('newTerminalModal');
+        }
         
-        // Update tab UI
-        document.querySelectorAll('.tab-btn').forEach(tab => {
+        // Create the terminal
+        this.createNewTerminal(terminalName);
+    }
+    
+    /**
+     * Switch to the specified terminal
+     * @param {string} port - The port of the terminal to switch to
+     */
+    switchTerminal(port) {
+        // Update tabs
+        const tabs = document.querySelectorAll('.tab-btn');
+        tabs.forEach(tab => {
+            if (tab.classList.contains('add-tab')) return; // Skip "add tab" button
+            
             const tabPort = tab.getAttribute('data-port');
             if (tabPort === port) {
                 tab.classList.add('active');
@@ -99,15 +188,18 @@ class TerminalManager {
             }
         });
         
-        // Update frame visibility
-        document.querySelectorAll('.terminal-frame').forEach(frame => {
-            frame.style.display = 'none';
+        // Update iframe visibility and active state
+        document.querySelectorAll('.terminal-iframe').forEach(iframe => {
+            const iframePort = iframe.getAttribute('data-port');
+            if (iframePort === port) {
+                iframe.classList.add('active');
+            } else {
+                iframe.classList.remove('active');
+            }
         });
         
-        const activeFrame = document.getElementById(`terminal-${port}`);
-        if (activeFrame) {
-            activeFrame.style.display = 'block';
-        }
+        // Update active terminal
+        this.activeTerminal = port;
         
         // Custom event for terminal change
         document.dispatchEvent(new CustomEvent('terminalChanged', {
@@ -117,39 +209,31 @@ class TerminalManager {
     
     /**
      * Create a new terminal
+     * @param {string} name - The name for the new terminal
      */
-    createNewTerminal() {
+    async createNewTerminal(name = 'Terminal') {
         // Show loading indicator
         this.showTerminalLoading(true);
         
-        // Request new terminal from server
-        fetch('/api/terminals/new', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: 'Terminal' })
-        })
-        .then(response => response.json())
-        .then(data => {
+        try {
+            // Request new terminal from server using the API module
+            const newTerminal = await terminalAPI.createTerminal(name);
+            
+            // Add the new terminal to the UI without page reload
+            this.addTerminalToUI(newTerminal.port, newTerminal.name);
+            
+            // Update active ports list
+            this.activePorts.push(newTerminal.port.toString());
+            
+            // Switch to the new terminal
+            this.switchTerminal(newTerminal.port.toString());
+            
+            // Hide loading indicator
             this.showTerminalLoading(false);
-            if (data.success) {
-                console.log('New terminal created with port:', data.port);
-                
-                // Add the new terminal to the UI without page reload
-                this.addTerminalToUI(data.port, data.name);
-                
-                // Update active ports list
-                this.activePorts.push(data.port.toString());
-                
-                // Switch to the new terminal
-                this.switchTerminal(data.port.toString());
-            } else {
-                this.showError(data.error || 'Failed to create new terminal');
-            }
-        })
-        .catch(error => {
+        } catch (error) {
             this.showTerminalLoading(false);
-            this.showError('Network error: ' + error.message);
-        });
+            this.showError('Error creating terminal: ' + error.message);
+        }
     }
     
     /**
@@ -208,11 +292,11 @@ class TerminalManager {
             if (show) {
                 addTabBtn.classList.add('loading');
                 addTabBtn.disabled = true;
-                addTabBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+                addTabBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             } else {
                 addTabBtn.classList.remove('loading');
                 addTabBtn.disabled = false;
-                addTabBtn.innerHTML = '<i class="fas fa-plus"></i> New Terminal';
+                addTabBtn.innerHTML = '+';
             }
         }
     }
@@ -229,28 +313,16 @@ class TerminalManager {
     }
     
     /**
-     * Close a terminal
-     * @param {string} port - The port of the terminal to close
-     */
-    closeTerminal(port) {
-        // This will be implemented in future updates
-        // It will require server-side API support to terminate the terminal
-        console.log(`Close terminal ${port} functionality will be implemented in a future update`);
-    }
-    
-    /**
      * Show an error message
-     * @param {string} message - The error message to display
+     * @param {string} message - Error message to display
      */
     showError(message) {
-        if (window.showError) {
-            window.showError(message);
+        console.error('Terminal error:', message);
+        // If we have a modal controller, use it to show the error
+        if (window.CommandWave && window.CommandWave.errorHandler) {
+            window.CommandWave.errorHandler.handleError(message, 'Terminal', true, false);
         } else {
-            console.error(message);
-            alert(message);
+            alert(`Terminal error: ${message}`);
         }
     }
 }
-
-// Export for use in other modules
-export default TerminalManager;
