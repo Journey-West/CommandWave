@@ -10,18 +10,8 @@ export default class SettingsManager {
         this.menuItems = {
             tutorials: document.getElementById('tutorialsMenuItem'),
             theme: document.getElementById('themeMenuItem'),
-            about: document.getElementById('aboutMenuItem'),
-            noteSize: document.getElementById('noteSizeMenuItem')
+            about: document.getElementById('aboutMenuItem')
         };
-        
-        // Note size modal elements
-        this.noteSizeModal = document.getElementById('noteSizeModal');
-        this.sizeOptions = this.noteSizeModal ? this.noteSizeModal.querySelectorAll('.size-option') : [];
-        this.saveSizeBtn = document.getElementById('saveSizeBtn');
-        this.cancelSizeBtn = document.getElementById('cancelSizeBtn');
-        
-        // Selected size (will be set when modal opens)
-        this.selectedSize = null;
     }
     
     /**
@@ -83,19 +73,6 @@ export default class SettingsManager {
             });
         }
         
-        // Note Size menu item
-        if (this.menuItems.noteSize) {
-            this.menuItems.noteSize.addEventListener('click', (e) => {
-                e.preventDefault();
-                
-                // Close dropdown
-                this.settingsDropdown.classList.remove('show');
-                
-                // Show note size modal
-                this.openNoteSizeModal();
-            });
-        }
-        
         // About menu item
         if (this.menuItems.about) {
             this.menuItems.about.addEventListener('click', (e) => {
@@ -129,104 +106,6 @@ export default class SettingsManager {
                 // Currently a placeholder for future implementation
                 console.log('Tutorials functionality not yet implemented');
             });
-        }
-        
-        // Set up note size modal handlers
-        this.setupNoteSizeModal();
-    }
-    
-    /**
-     * Set up handlers for the note size modal
-     */
-    setupNoteSizeModal() {
-        // Handle size option selection
-        this.sizeOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                // Remove selected class from all options
-                this.sizeOptions.forEach(opt => opt.classList.remove('selected'));
-                
-                // Add selected class to clicked option
-                option.classList.add('selected');
-                
-                // Store selected size
-                this.selectedSize = option.getAttribute('data-size');
-            });
-        });
-        
-        // Save button handler
-        if (this.saveSizeBtn) {
-            this.saveSizeBtn.addEventListener('click', () => {
-                this.saveNoteSize();
-            });
-        }
-        
-        // Cancel button handler
-        if (this.cancelSizeBtn) {
-            this.cancelSizeBtn.addEventListener('click', () => {
-                this.closeNoteSizeModal();
-            });
-        }
-    }
-    
-    /**
-     * Open the note size modal
-     */
-    openNoteSizeModal() {
-        if (window.CommandWave && window.CommandWave.modalController) {
-            window.CommandWave.modalController.openModal('noteSizeModal');
-            
-            // Get current size from NotesManager
-            let currentSize = 'medium';
-            if (window.CommandWave && window.CommandWave.notesManager) {
-                currentSize = window.CommandWave.notesManager.noteSize;
-            }
-            
-            // Update selected UI state
-            this.sizeOptions.forEach(option => {
-                const size = option.getAttribute('data-size');
-                if (size === currentSize) {
-                    option.classList.add('selected');
-                    this.selectedSize = size;
-                } else {
-                    option.classList.remove('selected');
-                }
-            });
-        } else {
-            // Fallback if modal controller not available
-            if (this.noteSizeModal) {
-                this.noteSizeModal.classList.add('active');
-            }
-        }
-    }
-    
-    /**
-     * Close the note size modal
-     */
-    closeNoteSizeModal() {
-        if (window.CommandWave && window.CommandWave.modalController) {
-            window.CommandWave.modalController.closeModal('noteSizeModal');
-        } else {
-            // Fallback if modal controller not available
-            if (this.noteSizeModal) {
-                this.noteSizeModal.classList.remove('active');
-            }
-        }
-    }
-    
-    /**
-     * Save the selected note size
-     */
-    saveNoteSize() {
-        if (this.selectedSize && window.CommandWave && window.CommandWave.notesManager) {
-            // Update size in NotesManager
-            window.CommandWave.notesManager.setNoteSize(this.selectedSize);
-            
-            // Close modal
-            this.closeNoteSizeModal();
-            
-            console.log(`Note panel size set to: ${this.selectedSize}`);
-        } else {
-            console.error('Could not save note size: NotesManager not available or no size selected');
         }
     }
     
