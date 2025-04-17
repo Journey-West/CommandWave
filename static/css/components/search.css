@@ -1,7 +1,7 @@
 /* Search UI Styles Modularized from style.css */
 
 .search-container {
-    flex-grow: 1;
+    flex: 1;
     position: relative;
     display: flex;
     align-items: center;
@@ -9,21 +9,21 @@
 
 #searchInput {
     width: 100%;
-    background: var(--input-bg);
-    border: 1px solid var(--input-border);
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--neon-pink);
+    border-radius: 4px;
     color: var(--input-text);
     font-family: 'Roboto Mono', monospace;
-    font-size: 1rem;
-    padding: 0.5rem 2.5rem 0.5rem 1rem;
-    border-radius: 4px;
+    font-size: 0.95rem;
+    padding: 0.4rem 2.5rem 0.4rem 0.8rem;
     outline: none;
-    box-shadow: 0 0 6px rgba(96,239,255,0.04);
+    box-shadow: 0 0 6px rgba(255,90,140,0.04);
     transition: border 0.2s, box-shadow 0.2s;
 }
 
 #searchInput:focus {
-    border: 1.5px solid var(--neon-blue);
-    box-shadow: 0 0 12px var(--neon-blue);
+    border: 1px solid #ff5a8c;
+    box-shadow: 0 0 8px var(--neon-pink);
 }
 
 .search-container::before {
@@ -212,106 +212,236 @@
     color: #fff;
 }
 
+.playbooks-container {
+    margin-top: 1em;
+    padding: 0.4em 0.2em;
+    min-height: 80px;
+    position: relative;
+}
+
+.playbook-item {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 90, 140, 0.4);
+    border-radius: 8px;
+    padding: 0.7em 1em;
+    margin-bottom: 0.8em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.playbook-item:hover {
+    background: rgba(255, 90, 140, 0.08);
+    border-color: var(--neon-pink);
+    box-shadow: 0 0 8px rgba(255, 90, 140, 0.3);
+}
+
+.playbook-item-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.playbook-item-actions {
+    display: flex;
+    gap: 1em;
+}
+
+.playbook-action-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    opacity: 0.7;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.playbook-action-btn:hover {
+    opacity: 1;
+    color: var(--neon-pink);
+    text-shadow: 0 0 5px var(--neon-pink);
+}
+
+[data-theme="light"] .playbook-item {
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(168, 23, 74, 0.3);
+}
+
+[data-theme="light"] .playbook-item:hover {
+    background: rgba(255, 219, 230, 0.3);
+    border-color: #a8174a;
+    box-shadow: 0 0 8px rgba(168, 23, 74, 0.2);
+}
+
+.playbook-section {
+    background: linear-gradient(90deg, rgba(255,90,140,0.14) 0%, rgba(32,32,48,0.98) 100%);
+    border: 1.5px solid var(--neon-pink);
+    border-top: 2.5px solid var(--neon-pink);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px 0 rgba(255,90,140,0.08);
+    padding: 0.6em 1em;
+    margin-bottom: 2.2em;
+    position: relative;
+    overflow: hidden;
+    min-width: 0;
+    max-width: 100%;
+}
+
 .playbook-header-row {
     display: flex;
-    align-items: flex-end;
-    padding-left: 0.3em;
-    margin-bottom: 0.2em;
+    align-items: center;
+    padding: 0.5rem 0.2rem;
+    min-height: 44px;
+    gap: 1em;
+    margin-bottom: 0.8em;
 }
 
 .playbook-header-row h2 {
+    font-family: 'Orbitron', sans-serif;
     color: var(--neon-pink);
-    font-family: 'Orbitron', 'Montserrat', 'Arial', sans-serif;
-    font-size: 1.45rem;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-    margin: 0;
-    text-shadow: 0 0 7px rgba(255, 90, 140, 0.45), 0 0 2px #fff;
+    text-shadow: 0 0 6px var(--neon-pink);
+    font-size: 1.1rem;
+    padding: 0.2rem 0.5rem 0.2rem 0.2rem;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+}
+
+.playbook-controls-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+}
+
+.create-playbook-btn,
+.upload-btn {
+    background-color: rgba(255, 90, 140, 0.15);
+    border: 1px solid var(--neon-pink);
+    color: var(--neon-pink);
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 5px rgba(255, 90, 140, 0.2);
+    letter-spacing: 0.5px;
+    height: 32px;
+    width: 32px;
+}
+
+.create-playbook-btn i,
+.upload-btn i {
+    pointer-events: none;
+    font-size: 1.2rem;
+    transition: transform 0.2s;
+    text-shadow: 0 0 5px rgba(255, 90, 140, 0.5);
+}
+
+.create-playbook-btn:hover, 
+.create-playbook-btn:focus,
+.upload-btn:hover,
+.upload-btn:focus {
+    background-color: rgba(255, 90, 140, 0.3);
+    border-color: #ff5a8c;
+    box-shadow: 0 0 10px rgba(255, 90, 140, 0.5), inset 0 0 5px rgba(255, 90, 140, 0.2);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.create-playbook-btn:hover i,
+.upload-btn:hover i {
+    transform: scale(1.1);
+}
+
+.create-playbook-btn:active,
+.upload-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 0 3px rgba(255, 90, 140, 0.3), inset 0 0 3px rgba(255, 90, 140, 0.3);
+}
+
+/* Keep the upload button in neon blue for contrast */
+.upload-btn {
+    background-color: rgba(96, 239, 255, 0.15);
+    border: 1px solid var(--neon-blue);
+    color: var(--neon-blue);
+    box-shadow: 0 0 5px rgba(96, 239, 255, 0.2);
+}
+
+.upload-btn i {
+    text-shadow: 0 0 5px rgba(96, 239, 255, 0.5);
+}
+
+.upload-btn:hover,
+.upload-btn:focus {
+    background-color: rgba(96, 239, 255, 0.3);
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 10px rgba(96, 239, 255, 0.5), inset 0 0 5px rgba(96, 239, 255, 0.2);
+    color: #fff;
+}
+
+/* Light theme variants */
+[data-theme="light"] .playbook-section {
+    background: linear-gradient(90deg, rgba(255,219,230,0.4) 0%, #fff 100%);
+    border-color: #a8174a;
+    border-top: 2.5px solid #a8174a;
+    box-shadow: 0 1px 3px 0 #ffdbe6;
+}
+
+[data-theme="light"] .playbook-header-row {
     background: none;
-    border: none;
-    padding: 0.1em 0.4em 0.1em 0;
-    box-shadow: none;
+    padding: 0.5rem 0.2rem;
+    min-height: 44px;
+    gap: 1em;
+    margin-bottom: 0.8em;
 }
 
 [data-theme="light"] .playbook-header-row h2 {
     color: #a8174a;
-    text-shadow: 0 0 6px #ffdbe6, 0 0 2px #fff;
-}
-
-.create-playbook-btn {
-    background: none;
-    border: none;
-    color: var(--neon-pink);
-    font-size: 1.6rem;
-    padding: 0.18em 0.32em;
-    margin-right: 0.18em;
-    border-radius: 50%;
-    box-shadow: none;
-    cursor: pointer;
-    transition: color 0.2s, box-shadow 0.2s, background 0.2s;
-    outline: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.create-playbook-btn:hover, .create-playbook-btn:focus {
-    color: #fff;
-    background: var(--neon-pink);
-    box-shadow: 0 0 12px var(--neon-pink), 0 0 2px #fff;
-}
-
-.create-playbook-btn i {
-    pointer-events: none;
-    font-size: 1.6rem;
-    filter: drop-shadow(0 0 3px var(--neon-pink));
+    text-shadow: 0 0 6px #ffdbe6;
 }
 
 [data-theme="light"] .create-playbook-btn {
+    background-color: rgba(168, 23, 74, 0.12);
+    border-color: #a8174a;
     color: #a8174a;
+    box-shadow: 0 0 5px rgba(168, 23, 74, 0.15);
 }
 
-[data-theme="light"] .create-playbook-btn:hover, [data-theme="light"] .create-playbook-btn:focus {
-    background: #a8174a;
+[data-theme="light"] .create-playbook-btn:hover,
+[data-theme="light"] .create-playbook-btn:focus {
+    background-color: #a8174a;
     color: #fff;
-    box-shadow: 0 0 11px #ffdbe6, 0 0 2px #fff;
-}
-
-.upload-btn {
-    background: none;
-    border: none;
-    color: var(--neon-blue);
-    font-size: 1.6rem;
-    padding: 0.18em 0.32em;
-    margin-right: 0.18em;
-    border-radius: 50%;
-    box-shadow: none;
-    cursor: pointer;
-    transition: color 0.2s, box-shadow 0.2s, background 0.2s;
-    outline: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.upload-btn:hover, .upload-btn:focus {
-    color: #fff;
-    background: var(--neon-blue);
-    box-shadow: 0 0 12px var(--neon-blue), 0 0 2px #fff;
-}
-
-.upload-btn i {
-    pointer-events: none;
-    font-size: 1.6rem;
-    filter: drop-shadow(0 0 3px var(--neon-blue));
+    box-shadow: 0 0 10px rgba(168, 23, 74, 0.3);
 }
 
 [data-theme="light"] .upload-btn {
-    color: #009be3;
+    background-color: rgba(0, 131, 176, 0.12);
+    border-color: #0083b0;
+    color: #0083b0;
+    box-shadow: 0 0 5px rgba(0, 131, 176, 0.15);
 }
 
-[data-theme="light"] .upload-btn:hover, [data-theme="light"] .upload-btn:focus {
-    background: #009be3;
+[data-theme="light"] .upload-btn:hover,
+[data-theme="light"] .upload-btn:focus {
+    background-color: #0083b0;
     color: #fff;
-    box-shadow: 0 0 11px #b9eaff, 0 0 2px #fff;
+    box-shadow: 0 0 10px rgba(0, 131, 176, 0.3);
 }

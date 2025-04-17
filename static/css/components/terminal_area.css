@@ -6,9 +6,11 @@
     flex: 1 1 0;
     display: flex;
     flex-direction: column;
-    background-color: var(--background-primary);
-    border: 1px solid var(--border-light);
-    border-radius: 6px;
+    background: linear-gradient(90deg, rgba(96,239,255,0.09) 0%, rgba(11,11,23,0.98) 100%);
+    border: 1.5px solid var(--neon-blue);
+    border-top: 2.5px solid var(--neon-blue);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px 0 rgba(96,239,255,0.07), 0 0 6px 1.5px rgba(96,239,255,0.06);
     padding: 0;
     margin-bottom: 0;
     min-width: 0;
@@ -22,11 +24,11 @@
     display: flex;
     background: linear-gradient(90deg, rgba(96,239,255,0.18) 0%, rgba(11,11,23,0.98) 100%);
     padding: 0.5rem 0.75rem 0 0.75rem;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
     position: relative;
-    border-bottom: 1.5px solid var(--border-light);
-    border-top: 2.5px solid var(--neon-blue);
+    border-bottom: 1.5px solid rgba(96,239,255,0.3);
+    border-top: none;
     box-shadow: 0 1px 3px 0 rgba(96,239,255,0.05);
     gap: 0.5rem;
     overflow-x: visible;
@@ -169,15 +171,19 @@
 
 /* Theme-specific: Light theme overrides for terminal area */
 [data-theme="light"] .terminal-area {
-    background-color: rgba(255,255,255,0.9);
-    border: 1px solid rgba(0, 131, 176, 0.3);
-    border-radius: 6px;
+    background: linear-gradient(90deg, rgba(0,131,176,0.08) 0%, #fff 100%);
+    border: 1.5px solid #0083b0;
+    border-top: 2.5px solid #0083b0;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px 0 rgba(0,131,176,0.07), 0 0 6px 1.5px rgba(0,131,176,0.06);
 }
 
 [data-theme="light"] .terminal-tabs {
     background: linear-gradient(90deg, rgba(0,131,176,0.11) 0%, #dbe4f0 100%);
-    border-top: 2.5px solid #0083b0;
+    border-top: none;
     border-bottom: 1.5px solid rgba(0,131,176,0.25);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
     box-shadow: 0 1px 3px 0 rgba(0,131,176,0.05);
 }
 
