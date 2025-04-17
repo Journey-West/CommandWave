@@ -28,6 +28,10 @@ export default class NotesManager {
         // Storage keys
         this.GLOBAL_NOTES_KEY = 'commandwave_global_notes';
         this.TAB_NOTES_PREFIX = 'commandwave_tab_notes_';
+        this.NOTES_SIZE_KEY = 'commandwave_notes_size';
+        
+        // Default note size (small, medium, large)
+        this.noteSize = localStorage.getItem(this.NOTES_SIZE_KEY) || 'medium';
         
         // Debounce timer for auto-save
         this.debounceTimer = null;
@@ -40,6 +44,7 @@ export default class NotesManager {
         try {
             this.setupEventListeners();
             this.loadGlobalNotes();
+            this.applyNoteSize();
             console.log('Notes manager initialized');
         } catch (error) {
             console.error('Error initializing notes manager:', error);
@@ -65,7 +70,7 @@ export default class NotesManager {
             btn.addEventListener('click', (e) => {
                 const panel = e.target.closest('.notes-panel');
                 if (panel) {
-                    panel.classList.remove('active');
+                    panel.classList.remove('visible');
                     
                     // Save notes on close
                     if (panel.id === 'globalNotesPanel') {
@@ -141,19 +146,19 @@ export default class NotesManager {
      */
     toggleGlobalNotes() {
         if (this.globalNotesPanel) {
-            const isActive = this.globalNotesPanel.classList.contains('active');
+            const isVisible = this.globalNotesPanel.classList.contains('visible');
             
             // Close tab notes if open
-            if (this.tabNotesPanel && this.tabNotesPanel.classList.contains('active')) {
-                this.tabNotesPanel.classList.remove('active');
+            if (this.tabNotesPanel && this.tabNotesPanel.classList.contains('visible')) {
+                this.tabNotesPanel.classList.remove('visible');
                 this.saveTabNotes();
             }
             
             // Toggle global notes
-            this.globalNotesPanel.classList.toggle('active');
+            this.globalNotesPanel.classList.toggle('visible');
             
             // Load notes if opening
-            if (!isActive) {
+            if (!isVisible) {
                 this.loadGlobalNotes();
                 
                 // Focus textarea
@@ -172,16 +177,16 @@ export default class NotesManager {
      */
     toggleTabNotes() {
         if (this.tabNotesPanel) {
-            const isActive = this.tabNotesPanel.classList.contains('active');
+            const isVisible = this.tabNotesPanel.classList.contains('visible');
             
             // Close global notes if open
-            if (this.globalNotesPanel && this.globalNotesPanel.classList.contains('active')) {
-                this.globalNotesPanel.classList.remove('active');
+            if (this.globalNotesPanel && this.globalNotesPanel.classList.contains('visible')) {
+                this.globalNotesPanel.classList.remove('visible');
                 this.saveGlobalNotes();
             }
             
             // Toggle tab notes
-            this.tabNotesPanel.classList.toggle('active');
+            this.tabNotesPanel.classList.toggle('visible');
             
             // Get current tab port
             const activeTab = document.querySelector('.tab-btn.active');
@@ -191,7 +196,7 @@ export default class NotesManager {
             }
             
             // Load notes if opening
-            if (!isActive) {
+            if (!isVisible) {
                 this.loadTabNotes();
                 
                 // Focus textarea
@@ -219,7 +224,7 @@ export default class NotesManager {
         }
         
         // If tab notes are open, load notes for the new tab
-        if (this.tabNotesPanel && this.tabNotesPanel.classList.contains('active')) {
+        if (this.tabNotesPanel && this.tabNotesPanel.classList.contains('visible')) {
             this.loadTabNotes();
         }
     }
@@ -263,6 +268,34 @@ export default class NotesManager {
             const key = this.TAB_NOTES_PREFIX + this.currentTabPort;
             localStorage.setItem(key, this.tabNotesTextarea.value);
             console.log(`Notes saved for tab ${this.currentTabPort}`);
+        }
+    }
+    
+    /**
+     * Apply the current note size to panels
+     */
+    applyNoteSize() {
+        if (this.globalNotesPanel && this.tabNotesPanel) {
+            // Remove existing size classes
+            this.globalNotesPanel.classList.remove('size-small', 'size-medium', 'size-large');
+            this.tabNotesPanel.classList.remove('size-small', 'size-medium', 'size-large');
+            
+            // Add current size class
+            this.globalNotesPanel.classList.add(`size-${this.noteSize}`);
+            this.tabNotesPanel.classList.add(`size-${this.noteSize}`);
+        }
+    }
+    
+    /**
+     * Set a new note size and save it
+     * @param {string} size - The note size (small, medium, large)
+     */
+    setNoteSize(size) {
+        if (['small', 'medium', 'large'].includes(size)) {
+            this.noteSize = size;
+            localStorage.setItem(this.NOTES_SIZE_KEY, size);
+            this.applyNoteSize();
+            console.log(`Note size set to ${size}`);
         }
     }
 }

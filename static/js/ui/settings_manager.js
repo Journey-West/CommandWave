@@ -12,19 +12,20 @@ export default class SettingsManager {
             theme: document.getElementById('themeMenuItem'),
             about: document.getElementById('aboutMenuItem')
         };
-        
-        // Initialize settings system
-        this.init();
     }
     
     /**
      * Initialize settings functionality
      */
     init() {
-        this.setupSettingsDropdown();
-        this.setupMenuItems();
-        
-        console.log('Settings manager initialized');
+        try {
+            this.setupSettingsDropdown();
+            this.setupMenuItems();
+            
+            console.log('Settings manager initialized');
+        } catch (error) {
+            console.error('Error initializing settings manager:', error);
+        }
     }
     
     /**

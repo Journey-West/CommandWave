@@ -14,9 +14,19 @@ export default class TerminalManager {
         this.hostname = hostname;
         this.activePorts = [];
         this.activeTerminal = null;
-        
-        // Initialize terminals
-        this.initTerminals();
+    }
+    
+    /**
+     * Initialize terminal manager
+     */
+    init() {
+        try {
+            // Initialize terminals
+            this.initTerminals();
+            console.log('Terminal manager initialization complete');
+        } catch (error) {
+            console.error('Error initializing terminal manager:', error);
+        }
     }
     
     /**
