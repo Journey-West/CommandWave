@@ -21,6 +21,48 @@ os.makedirs(PLAYBOOKS_DIR, exist_ok=True)
 # Store information about shared playbooks
 playbooks = {}
 
+# Load existing playbooks from the playbooks directory
+def load_playbooks_from_disk():
+    """Load existing playbooks from the playbooks directory."""
+    try:
+        # Clear the current playbooks dictionary
+        playbooks.clear()
+        
+        # Scan the playbooks directory
+        for filename in os.listdir(PLAYBOOKS_DIR):
+            if filename.lower().endswith('.md'):
+                file_path = os.path.join(PLAYBOOKS_DIR, filename)
+                try:
+                    # Read the file content
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                    
+                    # Process the playbook
+                    playbook_data = process_playbook(content, filename)
+                    
+                    # Add to in-memory playbooks
+                    playbook_id = str(uuid.uuid4())
+                    playbooks[playbook_id] = {
+                        'id': playbook_id,
+                        'filename': filename,
+                        'path': file_path,
+                        'title': playbook_data.get('title', filename),
+                        'description': playbook_data.get('description', ''),
+                        'content': content,
+                        'created_at': os.path.getctime(file_path),
+                        'updated_at': os.path.getmtime(file_path)
+                    }
+                    print(f"Loaded playbook: {filename}")
+                except Exception as e:
+                    print(f"Error loading playbook {filename}: {str(e)}")
+        
+        print(f"Loaded {len(playbooks)} playbooks from disk")
+    except Exception as e:
+        print(f"Error loading playbooks from disk: {str(e)}")
+
+# Load playbooks when the module is imported
+load_playbooks_from_disk()
+
 @playbook_routes.route('/import', methods=['POST'])
 def import_playbook():
     """Import a playbook from uploaded content."""
