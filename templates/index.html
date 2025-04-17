@@ -305,11 +305,17 @@
             </section>
 
             <section class="playbook-section">
-                <h2>Playbooks</h2>
+                <div class="playbook-header-row">
+                    <h2>Playbooks</h2>
+                </div>
                 <div class="playbook-controls">
                     <div class="action-buttons">
-                        <button id="createPlaybookBtn" class="create-playbook-btn">Create New Playbook</button>
-                        <label for="uploadPlaybook" class="upload-btn">Upload Playbook</label>
+                        <button id="createPlaybookBtn" class="create-playbook-btn" title="Create New Playbook">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
+                        <label for="uploadPlaybook" class="upload-btn" title="Upload Playbook">
+                            <i class="fas fa-upload"></i>
+                        </label>
                         <input type="file" id="uploadPlaybook" accept=".md" style="display: none;">
                     </div>
                     <div class="search-container">

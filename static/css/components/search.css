@@ -211,3 +211,107 @@
     background: #00bfff;
     color: #fff;
 }
+
+.playbook-header-row {
+    display: flex;
+    align-items: flex-end;
+    padding-left: 0.3em;
+    margin-bottom: 0.2em;
+}
+
+.playbook-header-row h2 {
+    color: var(--neon-pink);
+    font-family: 'Orbitron', 'Montserrat', 'Arial', sans-serif;
+    font-size: 1.45rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    margin: 0;
+    text-shadow: 0 0 7px rgba(255, 90, 140, 0.45), 0 0 2px #fff;
+    background: none;
+    border: none;
+    padding: 0.1em 0.4em 0.1em 0;
+    box-shadow: none;
+}
+
+[data-theme="light"] .playbook-header-row h2 {
+    color: #a8174a;
+    text-shadow: 0 0 6px #ffdbe6, 0 0 2px #fff;
+}
+
+.create-playbook-btn {
+    background: none;
+    border: none;
+    color: var(--neon-pink);
+    font-size: 1.6rem;
+    padding: 0.18em 0.32em;
+    margin-right: 0.18em;
+    border-radius: 50%;
+    box-shadow: none;
+    cursor: pointer;
+    transition: color 0.2s, box-shadow 0.2s, background 0.2s;
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.create-playbook-btn:hover, .create-playbook-btn:focus {
+    color: #fff;
+    background: var(--neon-pink);
+    box-shadow: 0 0 12px var(--neon-pink), 0 0 2px #fff;
+}
+
+.create-playbook-btn i {
+    pointer-events: none;
+    font-size: 1.6rem;
+    filter: drop-shadow(0 0 3px var(--neon-pink));
+}
+
+[data-theme="light"] .create-playbook-btn {
+    color: #a8174a;
+}
+
+[data-theme="light"] .create-playbook-btn:hover, [data-theme="light"] .create-playbook-btn:focus {
+    background: #a8174a;
+    color: #fff;
+    box-shadow: 0 0 11px #ffdbe6, 0 0 2px #fff;
+}
+
+.upload-btn {
+    background: none;
+    border: none;
+    color: var(--neon-blue);
+    font-size: 1.6rem;
+    padding: 0.18em 0.32em;
+    margin-right: 0.18em;
+    border-radius: 50%;
+    box-shadow: none;
+    cursor: pointer;
+    transition: color 0.2s, box-shadow 0.2s, background 0.2s;
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.upload-btn:hover, .upload-btn:focus {
+    color: #fff;
+    background: var(--neon-blue);
+    box-shadow: 0 0 12px var(--neon-blue), 0 0 2px #fff;
+}
+
+.upload-btn i {
+    pointer-events: none;
+    font-size: 1.6rem;
+    filter: drop-shadow(0 0 3px var(--neon-blue));
+}
+
+[data-theme="light"] .upload-btn {
+    color: #009be3;
+}
+
+[data-theme="light"] .upload-btn:hover, [data-theme="light"] .upload-btn:focus {
+    background: #009be3;
+    color: #fff;
+    box-shadow: 0 0 11px #b9eaff, 0 0 2px #fff;
+}
