@@ -182,72 +182,7 @@ body {
         radial-gradient(circle at 50% 50%, rgba(255, 121, 198, 0.05) 0%, transparent 40%);
 }
 
-header {
-    padding: 1rem 0;
-    text-align: center;
-    border-bottom: 1px solid var(--header-border);
-    background-color: var(--header-background);
-    backdrop-filter: blur(5px);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 2rem;
-}
-
-.main-title {
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 900;
-    font-size: 2.2rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: var(--text-primary);
-    text-shadow: 0 0 10px rgba(224, 224, 252, 0.3);
-}
-
-.header-controls {
-    display: flex;
-    gap: 1rem;
-}
-
-/* Header notes buttons - Styles moved to components/notes_panel.css */
-
-#globalNotesBtn {
-    color: var(--neon-blue);
-    border-color: var(--neon-blue);
-}
-
-#tabNotesBtn {
-    color: var(--neon-pink);
-    border-color: var(--neon-pink);
-    box-shadow: var(--shadow-pink);
-}
-
-#tabNotesBtn:hover {
-    background-color: rgba(255, 90, 140, 0.1);
-    box-shadow: var(--shadow-pink);
-}
-
-#settingsBtn {
-    color: var(--neon-purple);
-    border-color: var(--neon-purple);
-    box-shadow: var(--shadow-purple);
-}
-
-#settingsBtn:hover {
-    background-color: rgba(194, 100, 254, 0.1);
-    box-shadow: var(--shadow-purple);
-}
-
-.wave-text {
-    background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    text-shadow: var(--shadow-blue);
-}
+/* Header styles moved to components/header.css */
 
 .container {
     display: flex;
@@ -1366,15 +1301,7 @@ header {
         right: -100%;
     }
     
-    header {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .header-controls {
-        width: 100%;
-        justify-content: center;
-    }
+    /* Header styles moved to components/header.css */
 }
 
 /* Animations */
