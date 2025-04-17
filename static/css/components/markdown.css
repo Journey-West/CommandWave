@@ -1,0 +1,212 @@
+/* components/markdown.css
+   Styles for rendered markdown content in playbooks.
+*/
+
+/**
+ * Markdown Component Styles
+ * Cyberpunk-themed styling for rendered markdown content in CommandWave
+ */
+
+/* Headers */
+.playbook-content h1,
+.playbook-content h2,
+.playbook-content h3 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--neon-pink);
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    text-shadow: var(--shadow-pink);
+    border-bottom: 1px solid rgba(255, 90, 140, 0.3);
+    padding-bottom: 0.3rem;
+}
+
+.playbook-content h1 {
+    font-size: 1.8rem;
+}
+
+.playbook-content h2 {
+    font-size: 1.5rem;
+}
+
+.playbook-content h3 {
+    font-size: 1.2rem;
+}
+
+/* Paragraphs and basic text */
+.playbook-content p {
+    margin: 0.8rem 0;
+    line-height: 1.6;
+    color: var(--text-primary);
+}
+
+/* Bold and Italic */
+.playbook-content strong {
+    color: var(--neon-yellow);
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(252, 238, 9, 0.3);
+}
+
+.playbook-content em {
+    color: var(--neon-blue);
+    font-style: italic;
+}
+
+/* Lists */
+.playbook-content ul,
+.playbook-content ol {
+    margin: 1rem 0;
+    padding-left: 2rem;
+}
+
+.playbook-content li {
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.playbook-content ul li {
+    list-style-type: none;
+    position: relative;
+}
+
+.playbook-content ul li:before {
+    content: "•";
+    color: var(--neon-pink);
+    position: absolute;
+    left: -1.2rem;
+    text-shadow: var(--shadow-pink);
+}
+
+.playbook-content ol li {
+    list-style-type: decimal;
+    color: var(--text-primary);
+}
+
+/* Links */
+.playbook-content a {
+    color: var(--neon-blue);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--neon-blue);
+    transition: all 0.3s ease;
+    text-shadow: var(--shadow-blue);
+}
+
+.playbook-content a:hover {
+    color: var(--neon-cyan);
+    border-bottom: 1px solid var(--neon-cyan);
+    text-shadow: var(--shadow-cyan);
+}
+
+/* Code blocks */
+.playbook-content .code-block {
+    margin: 1.5rem 0;
+    background: rgba(20, 20, 35, 0.7);
+    border: 1px solid var(--code-border);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.playbook-content .code-header {
+    background: linear-gradient(90deg, rgba(255, 90, 140, 0.15) 0%, rgba(30, 30, 50, 0.95) 100%);
+    padding: 0.4rem 1rem;
+    color: var(--neon-pink);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    text-shadow: var(--shadow-pink);
+    border-bottom: 1px solid rgba(255, 90, 140, 0.3);
+    display: flex;
+    justify-content: space-between;
+}
+
+.playbook-content .code-block pre {
+    margin: 0;
+    padding: 1rem;
+    overflow-x: auto;
+}
+
+.playbook-content .code-block code {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--text-primary);
+}
+
+/* Inline code */
+.playbook-content p code {
+    background-color: rgba(30, 30, 50, 0.5);
+    font-family: 'Roboto Mono', monospace;
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    font-size: 0.9em;
+    color: var(--neon-cyan);
+    border: 1px solid rgba(96, 239, 255, 0.2);
+}
+
+/* Blockquotes */
+.playbook-content blockquote {
+    border-left: 3px solid var(--neon-cyan);
+    padding-left: 1rem;
+    margin-left: 0;
+    color: var(--text-secondary);
+    font-style: italic;
+    background-color: rgba(96, 239, 255, 0.05);
+    padding: 0.8rem 1rem;
+    border-radius: 0 4px 4px 0;
+}
+
+/* Light theme adjustments */
+[data-theme="light"] .playbook-content h1,
+[data-theme="light"] .playbook-content h2,
+[data-theme="light"] .playbook-content h3 {
+    color: #ea1889;
+    text-shadow: none;
+    border-bottom: 1px solid rgba(209, 39, 101, 0.2);
+}
+
+[data-theme="light"] .playbook-content strong {
+    color: #d81b60;
+    text-shadow: none;
+}
+
+[data-theme="light"] .playbook-content em {
+    color: #0083b0;
+}
+
+[data-theme="light"] .playbook-content ul li:before {
+    color: #ea1889;
+    text-shadow: none;
+}
+
+[data-theme="light"] .playbook-content a {
+    color: #0083b0;
+    border-bottom: 1px dotted #0083b0;
+    text-shadow: none;
+}
+
+[data-theme="light"] .playbook-content a:hover {
+    color: #00a8e8;
+    border-bottom: 1px solid #00a8e8;
+}
+
+[data-theme="light"] .playbook-content .code-block {
+    background: #f5f5f5;
+}
+
+[data-theme="light"] .playbook-content .code-header {
+    background: linear-gradient(90deg, rgba(209, 39, 101, 0.15) 0%, #e1e9f5 100%);
+    color: #ea1889;
+    text-shadow: none;
+    border-bottom: 1px solid rgba(209, 39, 101, 0.2);
+}
+
+[data-theme="light"] .playbook-content p code {
+    background-color: #f0f0f0;
+    color: #0083b0;
+    border: 1px solid rgba(0, 131, 176, 0.2);
+}
+
+[data-theme="light"] .playbook-content blockquote {
+    border-left: 3px solid #0083b0;
+    color: #555;
+    background-color: rgba(0, 131, 176, 0.05);
+}

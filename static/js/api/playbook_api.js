@@ -182,7 +182,7 @@ class PlaybookAPI {
      */
     async searchPlaybooks(query) {
         try {
-            const response = await fetch(`${this.baseUrl}/search?q=${encodeURIComponent(query)}`);
+            const response = await fetch(`${this.baseUrl}/search?query=${encodeURIComponent(query)}`);
             const data = await response.json();
             
             if (!data.success) {

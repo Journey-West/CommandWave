@@ -1,0 +1,37 @@
+/* Direct scrolling fix for playbook content */
+
+/* Make playbooks section able to scroll */
+.playbook-section {
+    display: flex;
+    flex-direction: column;
+    height: 600px !important; /* Force enough height */
+    overflow: hidden !important;
+}
+
+/* Container for all playbooks */
+.playbooks-container {
+    flex: 1;
+    overflow-y: auto !important;
+    padding-right: 0.5rem;
+}
+
+/* Individual playbook content area when expanded */
+.playbook.expanded .playbook-content {
+    max-height: none !important; /* Remove height limitation */
+    overflow: visible !important; /* Let content flow naturally */
+}
+
+/* Individual playbook item */
+.playbook {
+    margin-bottom: 1rem;
+    overflow: visible !important;
+}
+
+/* Override any conflicting styles */
+html, body {
+    height: 100%;
+}
+
+.content-area {
+    overflow: hidden !important;
+}

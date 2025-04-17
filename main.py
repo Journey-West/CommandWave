@@ -51,6 +51,12 @@ app = Flask(__name__,
             static_folder=STATIC_DIR, 
             template_folder=TEMPLATES_DIR)
 
+# Import route blueprints
+from routes.playbook_routes import playbook_routes
+
+# Register blueprints
+app.register_blueprint(playbook_routes)
+
 # Store information about running terminals
 terminals = {}
 process_lock = threading.Lock()
