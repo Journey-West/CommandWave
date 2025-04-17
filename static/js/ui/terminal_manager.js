@@ -488,35 +488,35 @@ export default class TerminalManager {
      * @param {string} port - The port of the terminal to switch to
      */
     switchTerminal(port) {
-        // Update tabs
-        const tabs = document.querySelectorAll('.tab-btn');
-        tabs.forEach(tab => {
-            if (tab.classList.contains('add-tab')) return; // Skip "add tab" button
-            
-            const tabPort = tab.getAttribute('data-port');
-            if (tabPort === port) {
-                tab.classList.add('active');
-            } else {
-                tab.classList.remove('active');
-            }
+        // Deactivate current terminal
+        document.querySelectorAll('.tab-btn.active').forEach(tab => {
+            tab.classList.remove('active');
         });
         
-        // Update iframe visibility and active state
-        document.querySelectorAll('.terminal-iframe').forEach(iframe => {
-            const iframePort = iframe.getAttribute('data-port');
-            if (iframePort === port) {
-                iframe.classList.add('active');
-            } else {
-                iframe.classList.remove('active');
-            }
+        document.querySelectorAll('.terminal-iframe.active').forEach(iframe => {
+            iframe.classList.remove('active');
         });
         
-        // Update active terminal
+        // Activate selected terminal
+        const selectedTab = document.querySelector(`.tab-btn[data-port="${port}"]`);
+        const selectedIframe = document.querySelector(`.terminal-iframe[data-port="${port}"]`);
+        
+        if (selectedTab) {
+            selectedTab.classList.add('active');
+        }
+        
+        if (selectedIframe) {
+            selectedIframe.classList.add('active');
+        }
+        
         this.activeTerminal = port;
         
-        // Custom event for terminal change
-        document.dispatchEvent(new CustomEvent('terminalChanged', {
-            detail: { port: port }
+        // Dispatch event for other components like NotesManager
+        document.dispatchEvent(new CustomEvent('terminal-tab-changed', {
+            detail: {
+                port: port,
+                name: selectedTab ? selectedTab.textContent : 'Terminal'
+            }
         }));
     }
     

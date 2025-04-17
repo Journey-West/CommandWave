@@ -11,6 +11,7 @@ import TerminalManager from './ui/terminal_manager.js';
 import ModalController from './ui/modal_controller.js';
 import VariableManager from './ui/variable_manager.js';
 import SettingsManager from './ui/settings_manager.js';
+import NotesManager from './ui/notes_manager.js';
 import API from './api/index.js';
 import ErrorHandler from './utils/error_handler.js';
 
@@ -41,18 +42,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const terminalManager = new TerminalManager(config.hostname);
         const variableManager = new VariableManager();
         const settingsManager = new SettingsManager();
+        const notesManager = new NotesManager();
         
         // Make modules available globally for debugging
         window.CommandWave = {
-            themeManager,
             terminalManager,
             modalController,
             variableManager,
             settingsManager,
+            notesManager,
+            themeManager,
             api: API,
             errorHandler: ErrorHandler,
             version: '0.2.0' // Modular architecture version
         };
+        
+        // Initialize modules
+        modalController.init();
+        terminalManager.init();
+        variableManager.init();
+        settingsManager.init();
+        notesManager.init();
         
         // Register additional modal events after making the components globally available
         // This ensures proper event handling between components
