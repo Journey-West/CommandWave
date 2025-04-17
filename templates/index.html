@@ -173,6 +173,56 @@
         margin: 1rem 0;
     }
     </style>
+    
+    <style>
+        /* Styles for delete button with hold-to-confirm functionality */
+        .modal-btn.delete {
+            background-color: rgba(180, 20, 20, 0.6);
+            border: 1px solid rgba(255, 50, 50, 0.8);
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            transition: background-color 0.3s;
+        }
+        
+        .modal-btn.delete:hover {
+            background-color: rgba(200, 30, 30, 0.7);
+        }
+        
+        .modal-btn.delete:active {
+            background-color: rgba(220, 40, 40, 0.8);
+        }
+        
+        .delete-progress {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 4px;
+            width: 0%;
+            background: linear-gradient(90deg, #ff3030, #ff5050);
+            box-shadow: 0 0 8px #ff3030;
+            transition: width 0.1s linear;
+        }
+        
+        .delete-countdown {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .delete-active .delete-countdown {
+            opacity: 1;
+        }
+    </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
 </head>
@@ -368,6 +418,32 @@ echo 'Hello, World!'
             <div class="modal-footer">
                 <button id="cancelVariableBtn" class="modal-btn cancel">Cancel</button>
                 <button id="createVariableSubmitBtn" class="modal-btn submit">Add Variable</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for renaming terminal tabs -->
+    <div id="renameTerminalModal" class="modal-container">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Modify Terminal</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="renameTerminalName">Terminal Name:</label>
+                    <input type="text" id="renameTerminalName" placeholder="Enter terminal name" class="modal-input">
+                    <input type="hidden" id="renameTerminalPort">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="deleteTerminalBtn" class="modal-btn delete">
+                    Delete Terminal
+                    <div class="delete-progress"></div>
+                    <div class="delete-countdown">Hold to delete...</div>
+                </button>
+                <button id="cancelRenameBtn" class="modal-btn cancel">Cancel</button>
+                <button id="renameTerminalSubmitBtn" class="modal-btn submit">Rename</button>
             </div>
         </div>
     </div>
