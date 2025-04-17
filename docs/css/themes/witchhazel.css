@@ -1,0 +1,126 @@
+/* ========== Witch Hazel Theme Styles ========== */
+[data-theme="witchhazel"] {
+    --background-dark: #282634;
+    --background-medium: #332e41;
+    --text-primary: #f8f8f2;
+    --text-secondary: #c5b5e0;
+    --neon-blue: #81ffff;
+    --neon-purple: #b45bcf;
+    --neon-pink: #ff79c6;
+    --neon-yellow: #f4d554;
+    --neon-green: #8bff80;
+    --accent: #ff79c6;
+    --border-light: rgba(129, 255, 255, 0.2);
+    --shadow-blue: 0 0 10px rgba(129, 255, 255, 0.5);
+    --shadow-pink: 0 0 10px rgba(255, 121, 198, 0.5);
+    --shadow-purple: 0 0 10px rgba(180, 91, 207, 0.5);
+    --shadow-yellow: 0 0 10px rgba(244, 213, 84, 0.5);
+    --shadow-green: 0 0 10px rgba(139, 255, 128, 0.5);
+}
+
+[data-theme="witchhazel"] body {
+    background-color: var(--background-dark);
+    color: var(--text-primary);
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(180, 91, 207, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(255, 121, 198, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 50% 50%, rgba(129, 255, 255, 0.05) 0%, transparent 40%);
+}
+
+[data-theme="witchhazel"] header {
+    background-color: rgba(40, 38, 52, 0.9);
+    border-bottom: 1px solid rgba(180, 91, 207, 0.2);
+}
+
+[data-theme="witchhazel"] .section {
+    background-color: rgba(51, 46, 65, 0.8);
+    border: 1px solid rgba(180, 91, 207, 0.2);
+}
+
+[data-theme="witchhazel"] .section-title {
+    color: #ff79c6;
+    text-shadow: 0 0 5px rgba(255, 121, 198, 0.5);
+}
+
+[data-theme="witchhazel"] .header-btn {
+    background-color: rgba(40, 38, 52, 0.8);
+    border: 1px solid #81ffff;
+    color: #81ffff;
+    box-shadow: 0 0 10px rgba(129, 255, 255, 0.3);
+}
+
+[data-theme="witchhazel"] .header-btn:hover {
+    background-color: rgba(129, 255, 255, 0.1);
+    box-shadow: 0 0 10px rgba(129, 255, 255, 0.5);
+}
+
+[data-theme="witchhazel"] .header-btn.pink {
+    border-color: #ff79c6;
+    color: #ff79c6;
+    box-shadow: 0 0 10px rgba(255, 121, 198, 0.3);
+}
+
+[data-theme="witchhazel"] .header-btn.pink:hover {
+    background-color: rgba(255, 121, 198, 0.1);
+    box-shadow: 0 0 10px rgba(255, 121, 198, 0.5);
+}
+
+[data-theme="witchhazel"] .feature-card {
+    background: rgba(51, 46, 65, 0.82);
+    border: 1.5px solid #a884ff77;
+    box-shadow: 0 0 14px 2px #a884ff33, 0 0 4px #fff1;
+    border-radius: 11px;
+    transition: box-shadow 0.25s, transform 0.25s;
+    position: relative;
+    z-index: 1;
+}
+
+[data-theme="witchhazel"] .feature-card:hover {
+    box-shadow: 0 0 24px 4px #a884ff66, 0 0 8px #fff2;
+    transform: scale(1.025) translateY(-2px);
+    z-index: 2;
+}
+
+[data-theme="witchhazel"] .feature-title {
+    color: #e9e4ff;
+    text-shadow: 0 0 6px #a884ff99, 0 0 2px #fff;
+}
+
+[data-theme="witchhazel"] .feature-icon {
+    color: #a884ff;
+    text-shadow: 0 0 8px #e9baff77, 0 0 2px #fff;
+}
+
+[data-theme="witchhazel"] .step-number {
+    color: #8bff80;
+    text-shadow: 0 0 5px rgba(139, 255, 128, 0.5);
+}
+
+[data-theme="witchhazel"] code {
+    background-color: #2a2440;
+    border: 1px solid rgba(180, 91, 207, 0.2);
+    color: #f8f8f2;
+}
+
+[data-theme="witchhazel"] .highlight {
+    color: #81ffff;
+    text-shadow: 0 0 5px rgba(129, 255, 255, 0.5);
+}
+
+[data-theme="witchhazel"] .usage-title {
+    color: #e9e4ff;
+    text-shadow: 0 0 6px #a884ff99, 0 0 2px #fff;
+}
+
+[data-theme="witchhazel"] footer {
+    background-color: rgba(40, 38, 52, 0.8);
+    border-top: 1px solid rgba(180, 91, 207, 0.2);
+}
+
+[data-theme="witchhazel"] .footer-link {
+    color: #81ffff;
+}
+
+[data-theme="witchhazel"] .social-icon {
+    color: #b45bcf;
+}
