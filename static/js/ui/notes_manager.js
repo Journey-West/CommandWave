@@ -42,6 +42,16 @@ export default class NotesManager {
      */
     init() {
         try {
+            // Log element availability for debugging
+            console.log('NotesManager initializing with elements:', {
+                globalNotesBtn: !!this.globalNotesBtn,
+                tabNotesBtn: !!this.tabNotesBtn,
+                globalNotesPanel: !!this.globalNotesPanel,
+                tabNotesPanel: !!this.tabNotesPanel,
+                globalNotesTextarea: !!this.globalNotesTextarea,
+                tabNotesTextarea: !!this.tabNotesTextarea,
+            });
+            
             this.setupEventListeners();
             this.loadGlobalNotes();
             this.applyNoteSize();
@@ -57,17 +67,28 @@ export default class NotesManager {
     setupEventListeners() {
         // Global notes button
         if (this.globalNotesBtn) {
-            this.globalNotesBtn.addEventListener('click', () => this.toggleGlobalNotes());
+            this.globalNotesBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.toggleGlobalNotes();
+            });
         }
         
         // Tab notes button
         if (this.tabNotesBtn) {
-            this.tabNotesBtn.addEventListener('click', () => this.toggleTabNotes());
+            this.tabNotesBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.toggleTabNotes();
+            });
         }
         
         // Close buttons
         this.closeButtons.forEach(btn => {
             btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
                 const panel = e.target.closest('.notes-panel');
                 if (panel) {
                     panel.classList.remove('visible');
@@ -146,19 +167,26 @@ export default class NotesManager {
      */
     toggleGlobalNotes() {
         if (this.globalNotesPanel) {
-            const isVisible = this.globalNotesPanel.classList.contains('visible');
+            console.log('Toggling global notes panel');
+            
+            // Get current state using computed style to be sure
+            const computedStyle = window.getComputedStyle(this.globalNotesPanel);
+            const isVisible = computedStyle.right === '0px';
+            console.log('Current visibility computed style:', computedStyle.right);
             
             // Close tab notes if open
-            if (this.tabNotesPanel && this.tabNotesPanel.classList.contains('visible')) {
+            if (this.tabNotesPanel) {
                 this.tabNotesPanel.classList.remove('visible');
                 this.saveTabNotes();
             }
             
-            // Toggle global notes
-            this.globalNotesPanel.classList.toggle('visible');
-            
-            // Load notes if opening
+            // Direct style manipulation as a fallback
             if (!isVisible) {
+                this.globalNotesPanel.style.right = '0px';
+                this.globalNotesPanel.classList.add('visible');
+                console.log('Added visible class and set style.right=0');
+                
+                // Load notes
                 this.loadGlobalNotes();
                 
                 // Focus textarea
@@ -166,9 +194,17 @@ export default class NotesManager {
                     setTimeout(() => this.globalNotesTextarea.focus(), 100);
                 }
             } else {
-                // Save notes if closing
+                // Get the correct hidden position based on size
+                const hiddenRight = `-${this.globalNotesPanel.offsetWidth}px`;
+                this.globalNotesPanel.style.right = hiddenRight;
+                this.globalNotesPanel.classList.remove('visible');
+                console.log('Removed visible class and set style.right=' + hiddenRight);
+                
+                // Save notes
                 this.saveGlobalNotes();
             }
+        } else {
+            console.error('Global notes panel element not found');
         }
     }
     
@@ -177,26 +213,33 @@ export default class NotesManager {
      */
     toggleTabNotes() {
         if (this.tabNotesPanel) {
-            const isVisible = this.tabNotesPanel.classList.contains('visible');
+            console.log('Toggling tab notes panel');
+            
+            // Get current state using computed style to be sure
+            const computedStyle = window.getComputedStyle(this.tabNotesPanel);
+            const isVisible = computedStyle.right === '0px';
+            console.log('Current visibility computed style:', computedStyle.right);
             
             // Close global notes if open
-            if (this.globalNotesPanel && this.globalNotesPanel.classList.contains('visible')) {
+            if (this.globalNotesPanel) {
                 this.globalNotesPanel.classList.remove('visible');
                 this.saveGlobalNotes();
             }
             
-            // Toggle tab notes
-            this.tabNotesPanel.classList.toggle('visible');
-            
-            // Get current tab port
-            const activeTab = document.querySelector('.tab-btn.active');
-            if (activeTab) {
-                this.currentTabPort = activeTab.getAttribute('data-port');
-                this.updateTabNameDisplay(activeTab.textContent || 'Terminal');
-            }
-            
-            // Load notes if opening
+            // Direct style manipulation as a fallback
             if (!isVisible) {
+                this.tabNotesPanel.style.right = '0px';
+                this.tabNotesPanel.classList.add('visible');
+                console.log('Added visible class and set style.right=0');
+                
+                // Get current tab port
+                const activeTab = document.querySelector('.tab-btn.active');
+                if (activeTab) {
+                    this.currentTabPort = activeTab.getAttribute('data-port');
+                    this.updateTabNameDisplay(activeTab.textContent || 'Terminal');
+                }
+                
+                // Load notes
                 this.loadTabNotes();
                 
                 // Focus textarea
@@ -204,9 +247,17 @@ export default class NotesManager {
                     setTimeout(() => this.tabNotesTextarea.focus(), 100);
                 }
             } else {
-                // Save notes if closing
+                // Get the correct hidden position based on size
+                const hiddenRight = `-${this.tabNotesPanel.offsetWidth}px`;
+                this.tabNotesPanel.style.right = hiddenRight;
+                this.tabNotesPanel.classList.remove('visible');
+                console.log('Removed visible class and set style.right=' + hiddenRight);
+                
+                // Save notes
                 this.saveTabNotes();
             }
+        } else {
+            console.error('Tab notes panel element not found');
         }
     }
     
@@ -283,6 +334,24 @@ export default class NotesManager {
             // Add current size class
             this.globalNotesPanel.classList.add(`size-${this.noteSize}`);
             this.tabNotesPanel.classList.add(`size-${this.noteSize}`);
+            
+            // Set proper right offsets when panel is hidden
+            const sizeWidths = {
+                small: 300,
+                medium: 400,
+                large: 550
+            };
+            
+            const width = sizeWidths[this.noteSize] || 400;
+            
+            // Override default CSS with inline styles as a fallback
+            if (!this.globalNotesPanel.classList.contains('visible')) {
+                this.globalNotesPanel.style.right = `-${width}px`;
+            }
+            
+            if (!this.tabNotesPanel.classList.contains('visible')) {
+                this.tabNotesPanel.style.right = `-${width}px`;
+            }
         }
     }
     
