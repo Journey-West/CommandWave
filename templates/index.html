@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components/notes_panel.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components/modal.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components/settings_dropdown.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/settings_modal.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components/header.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components/playbook_panel.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components/variables_panel.css') }}">
@@ -248,14 +249,9 @@
         <div class="header-controls">
             <button class="header-notes-btn" id="globalNotesBtn">Global Notes</button>
             <button class="header-notes-btn" id="tabNotesBtn">Tab Notes</button>
-            <div class="settings-dropdown">
-                <button class="header-notes-btn" id="settingsBtn">Settings</button>
-                <div class="settings-dropdown-content" id="settingsDropdown">
-                    <a href="#" id="tutorialsMenuItem">Tutorials</a>
-                    <a href="#" id="themeMenuItem">Theme</a>
-                    <a href="#" id="aboutMenuItem">About</a>
-                </div>
-            </div>
+            <button class="settings-btn" id="settingsBtn" title="Settings">
+                <i class="fas fa-cog"></i> Settings
+            </button>
         </div>
     </header>
 
@@ -558,6 +554,9 @@ echo 'Hello, World!'
             </div>
         </div>
     </div>
+
+    <!-- Settings Modal -->
+    {% include 'partials/_settings_modal.html' %}
 
     <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.2/marked.min.js"></script>

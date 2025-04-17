@@ -15,6 +15,7 @@ import NotesManager from './ui/notes_manager.js';
 import API from './api/index.js';
 import ErrorHandler from './utils/error_handler.js';
 import VariablesPanel from './ui/variables_panel.js';
+import './ui/settings_modal.js';
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {

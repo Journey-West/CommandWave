@@ -1,0 +1,79 @@
+<!-- Settings Modal Partial -->
+<div id="settingsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Settings</h2>
+            <button class="close-modal-btn" id="closeSettingsModalBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <!-- Settings form goes here -->
+            <form id="settingsForm">
+                <div class="settings-group">
+                    <h3 class="settings-section-title">[ THEMES ]</h3>
+                    <div class="theme-picker" id="themePicker">
+                        <div class="theme-card" data-theme="dark">
+                            <h4>Cyberpunk Dark</h4>
+                            <p>Classic dark mode with high-tech neon glow on deep backgrounds</p>
+                        </div>
+                        <div class="theme-card" data-theme="light">
+                            <h4>Neon Light</h4>
+                            <p>Bright, clean theme with saturated neon accents on light backgrounds</p>
+                        </div>
+                        <div class="theme-card" data-theme="witchhazel">
+                            <h4>Witch Hazel</h4>
+                            <p>Softer purple/pastel neon palette with mystical tech aesthetic</p>
+                        </div>
+                        <div class="theme-card" data-theme="outrun-sunset">
+                            <h4>Outrun Sunset</h4>
+                            <p>80s retrowave aesthetics with vibrant gradients and grid patterns</p>
+                        </div>
+                        <div class="theme-card" data-theme="digital-rain">
+                            <h4>Digital Rain</h4>
+                            <p>Matrix-inspired green code rain on deep black backgrounds</p>
+                        </div>
+                        <div class="theme-card" data-theme="holographic">
+                            <h4>Holographic</h4>
+                            <p>Translucent interfaces with shimmering rainbow highlights and glass effects</p>
+                        </div>
+                        <div class="theme-card" data-theme="corporate-dystopia">
+                            <h4>Corporate Dystopia</h4>
+                            <p>Clean slate grays with corporate tech styling and warning accents</p>
+                        </div>
+                        <div class="theme-card" data-theme="tokyo-night">
+                            <h4>Tokyo Night</h4>
+                            <p>Japanese cyberpunk aesthetics with indigo, pink and kanji elements</p>
+                        </div>
+                        <div class="theme-card" data-theme="amber-interface">
+                            <h4>Amber Interface</h4>
+                            <p>Retro amber monochrome terminal with scan lines and CRT effects</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Note Size Settings -->
+                <div class="settings-group">
+                    <h3 class="settings-section-title">[ NOTE SIZE ]</h3>
+                    <div class="note-size-selector">
+                        <div class="note-size-option" data-size="small">
+                            <div class="note-size-preview note-size-small"></div>
+                            <span>Small</span>
+                        </div>
+                        <div class="note-size-option" data-size="medium">
+                            <div class="note-size-preview note-size-medium"></div>
+                            <span>Medium</span>
+                        </div>
+                        <div class="note-size-option" data-size="large">
+                            <div class="note-size-preview note-size-large"></div>
+                            <span>Large</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- More settings can be added here -->
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button id="saveSettingsBtn" class="modal-btn submit">Save</button>
+            <button id="cancelSettingsBtn" class="modal-btn cancel">Cancel</button>
+        </div>
+    </div>
+</div>
