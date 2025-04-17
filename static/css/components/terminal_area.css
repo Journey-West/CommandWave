@@ -3,17 +3,18 @@
 */
 
 .terminal-area {
-    flex: 1;
+    flex: 1 1 0;
     display: flex;
     flex-direction: column;
     background-color: var(--background-primary);
     border: 1px solid var(--border-light);
     border-radius: 6px;
     padding: 0;
-    margin-bottom: 1rem;
+    margin-bottom: 0;
     min-width: 0;
     max-width: 100%;
     overflow: hidden;
+    min-height: 0;
 }
 
 /* Enhanced terminal-tabs for cyberpunk neon blue accent and gradient background */
