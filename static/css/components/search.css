@@ -217,6 +217,10 @@
     padding: 0.4em 0.2em;
     min-height: 80px;
     position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
 }
 
 .playbook-item {
@@ -283,11 +287,14 @@
     border-radius: 12px;
     box-shadow: 0 1px 3px 0 rgba(255,90,140,0.08);
     padding: 0.6em 1em;
-    margin-bottom: 2.2em;
+    margin-bottom: 0;
     position: relative;
     overflow: hidden;
     min-width: 0;
     max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .playbook-header-row {
