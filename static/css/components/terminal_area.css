@@ -42,10 +42,33 @@
     text-shadow: var(--shadow-green);
     font-size: 1.1rem;
     margin-left: auto;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 1.2rem 0.5rem 0.5rem;
     align-self: center;
     letter-spacing: 1px;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 1;
+    background: linear-gradient(90deg, rgba(96,239,255,0.06) 0%, rgba(11,11,23,0.98) 100%);
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    box-shadow: 0 0 8px 0 rgba(96,239,255,0.08);
+}
+
+.terminal-title i {
+    color: var(--neon-blue);
+    font-size: 1.05em;
+    filter: drop-shadow(0 0 4px var(--neon-blue));
+}
+
+.terminal-title-text {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 6px var(--neon-cyan);
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    font-size: 1.05em;
+    text-transform: uppercase;
 }
 
 .tab-btn {
