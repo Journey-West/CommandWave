@@ -2,4 +2,138 @@
    Styles for the notes panel component.
 */
 
-/* (Component styles will be migrated here) */
+/**
+ * Notes Panel Component Styles
+ * Styles for the notes functionality in CommandWave
+ */
+
+/* Notes Panel Container */
+.notes-panel {
+    position: fixed;
+    top: 80px;
+    right: -350px;
+    width: 350px;
+    height: calc(100vh - 80px);
+    background-color: var(--notes-panel-bg);
+    border-left: 1px solid var(--notes-panel-border);
+    transition: right 0.3s ease;
+    z-index: 50;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.notes-panel.visible {
+    right: 0;
+}
+
+/* Notes Header */
+.notes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.notes-header h3 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--neon-blue);
+    font-size: 1.1rem;
+}
+
+.notes-header h3.tab-name {
+    color: var(--neon-pink);
+    text-shadow: var(--shadow-pink);
+}
+
+/* Notes Buttons */
+.header-notes-btn {
+    background-color: rgba(11, 11, 23, 0.8);
+    border: 1px solid var(--border-light);
+    color: var(--neon-blue);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-blue);
+}
+
+.header-notes-btn:hover {
+    background-color: rgba(96, 239, 255, 0.1);
+    box-shadow: var(--shadow-blue);
+    transform: translateY(-2px);
+}
+
+.header-notes-btn:active {
+    transform: translateY(0);
+}
+
+.close-notes-btn {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    outline: none;
+    transition: color 0.3s;
+}
+
+.close-notes-btn:hover {
+    color: var(--accent-primary);
+}
+
+/* Notes Content Area */
+.notes-textarea, 
+#globalNotesText, 
+#tabNotesText {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    background-color: var(--notes-panel-bg);
+    border: none;
+    color: var(--text-primary);
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.9rem;
+    resize: none;
+    outline: none;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    min-height: calc(100% - 80px); /* Account for header */
+    overflow-y: auto;
+}
+
+.notes-panel textarea {
+    flex-grow: 1;
+    resize: none;
+    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    font-family: 'Roboto', sans-serif;
+    outline: none;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    transition: border-color 0.3s;
+}
+
+.notes-panel textarea:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 5px var(--neon-glow-medium), inset 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .notes-panel {
+        width: 100%;
+        right: -100%;
+    }
+    
+    .header-notes-btn {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+}
