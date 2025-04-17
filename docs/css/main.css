@@ -357,14 +357,41 @@ section {
   display: flex;
   gap: 1.5rem;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .theme-option {
   cursor: pointer;
   width: calc(33.33% - 1rem);
   min-width: 250px;
+  max-width: 300px;
   transition: transform 0.3s ease;
   opacity: 0.7;
+  margin-bottom: 1.5rem;
+  display: flex;
+}
+
+.theme-preview {
+  background: rgba(18, 18, 37, 0.7);
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid var(--border-light);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.theme-preview h3 {
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+  font-size: 1.2rem;
+}
+
+.theme-preview p {
+  margin-bottom: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
 }
 
 .theme-option.active {
@@ -385,236 +412,231 @@ section {
 }
 
 .theme-option.dark .theme-preview {
-  background: rgba(11, 11, 23, 0.9);
-  border: 1px solid #60efff;
-  color: #e0e0fc;
+  background: rgba(11, 11, 23, 0.9) !important;
+  border: 1px solid #60efff !important;
+  color: #e0e0fc !important;
 }
 
 .theme-option.dark .theme-preview h3 {
-  color: #60efff;
-  text-shadow: 0 0 8px rgba(96, 239, 255, 0.7);
+  color: #60efff !important;
+  text-shadow: 0 0 8px rgba(96, 239, 255, 0.7) !important;
 }
 
 .theme-option.dark .theme-preview p {
-  color: #8a8aa5;
+  color: #8a8aa5 !important;
 }
 
 .theme-option.light .theme-preview {
-  background: #f0f4f8;
-  border: 1px solid #0083b0;
-  color: #2a2a4a;
+  background: #f0f4f8 !important;
+  border: 1px solid #0083b0 !important;
+  color: #2a2a4a !important;
 }
 
 .theme-option.light .theme-preview h3 {
-  color: #d12765;
-  text-shadow: 0 0 8px rgba(209, 39, 101, 0.5);
+  color: #d12765 !important;
+  text-shadow: 0 0 8px rgba(209, 39, 101, 0.5) !important;
 }
 
 .theme-option.light .theme-preview p {
-  color: #4a4a6a;
+  color: #4a4a6a !important;
 }
 
 .theme-option.witchhazel .theme-preview {
-  background: #282634;
-  border: 1px solid #81ffff;
-  color: #f8f8f2;
+  background: #282634 !important;
+  border: 1px solid #81ffff !important;
+  color: #f8f8f2 !important;
 }
 
 .theme-option.witchhazel .theme-preview h3 {
-  color: #ff79c6;
-  text-shadow: 0 0 8px rgba(255, 121, 198, 0.7);
+  color: #ff79c6 !important;
+  text-shadow: 0 0 8px rgba(255, 121, 198, 0.7) !important;
 }
 
 .theme-option.witchhazel .theme-preview p {
-  color: #c5b5e0;
+  color: #c5b5e0 !important;
 }
 
 .theme-option.digital-rain .theme-preview {
-  background: #0c0c0c;
-  border: 1px solid #00ff41;
-  color: #cdcdcd;
-  position: relative;
-  overflow: hidden;
+  background: #0c0c0c !important;
+  border: 1px solid #00ff41 !important;
+  color: #cdcdcd !important;
+  position: relative !important;
+  overflow: hidden !important;
 }
 
 .theme-option.digital-rain .theme-preview::before {
-  content: "10101";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.05;
-  font-family: 'Roboto Mono', monospace;
-  font-size: 2rem;
-  color: #00ff41;
-  overflow: hidden;
+  content: "10101" !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  opacity: 0.05 !important;
+  font-family: 'Roboto Mono', monospace !important;
+  font-size: 2rem !important;
+  color: #00ff41 !important;
+  overflow: hidden !important;
 }
 
 .theme-option.digital-rain .theme-preview h3 {
-  color: #00ff41;
-  text-shadow: 0 0 8px rgba(0, 255, 65, 0.7);
-  position: relative;
+  color: #00ff41 !important;
+  text-shadow: 0 0 8px rgba(0, 255, 65, 0.7) !important;
+  position: relative !important;
 }
 
 .theme-option.digital-rain .theme-preview p {
-  color: #33ff57;
-  position: relative;
+  color: #33ff57 !important;
+  position: relative !important;
 }
 
 .theme-option.outrun-sunset .theme-preview {
-  background: #1f1147;
-  border: 1px solid #ff1b8d;
-  color: #f0eff1;
-  position: relative;
-  overflow: hidden;
-  background-image: linear-gradient(0deg, #1f1147 0%, #2b1055 100%);
+  background: #1f1147 !important;
+  border: 1px solid #ff1b8d !important;
+  color: #f0eff1 !important;
+  position: relative !important;
+  overflow: hidden !important;
+  background-image: linear-gradient(0deg, #1f1147 0%, #2b1055 100%) !important;
 }
 
 .theme-option.outrun-sunset .theme-preview::before {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: linear-gradient(90deg, #ff1b8d, #29cdff, #ff9e1f);
+  content: "" !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, #ff1b8d, #29cdff, #ff9e1f) !important;
 }
 
 .theme-option.outrun-sunset .theme-preview h3 {
-  color: #ff1b8d;
-  text-shadow: 0 0 8px rgba(255, 27, 141, 0.7);
+  color: #ff1b8d !important;
+  text-shadow: 0 0 8px rgba(255, 27, 141, 0.7) !important;
 }
 
 .theme-option.outrun-sunset .theme-preview p {
-  color: #29cdff;
+  color: #29cdff !important;
 }
 
 .theme-option.corporate-dystopia .theme-preview {
-  background: #1F2833;
-  border: 1px solid #45A29E;
-  color: #C5C6C7;
+  background: #1F2833 !important;
+  border: 1px solid #45A29E !important;
+  color: #C5C6C7 !important;
 }
 
 .theme-option.corporate-dystopia .theme-preview h3 {
-  color: #66FCF1;
-  text-transform: uppercase;
-  font-size: 1.1rem;
-  letter-spacing: 1px;
+  color: #66FCF1 !important;
+  text-transform: uppercase !important;
+  font-size: 1.1rem !important;
+  letter-spacing: 1px !important;
 }
 
 .theme-option.corporate-dystopia .theme-preview p {
-  color: #808e9b;
+  color: #808e9b !important;
 }
 
 .theme-option.holographic .theme-preview {
-  background: rgba(2, 13, 25, 0.8);
-  border: 1px solid #08F7FE;
-  color: #ffffff;
-  backdrop-filter: blur(5px);
-  position: relative;
-  overflow: hidden;
+  background: rgba(2, 13, 25, 0.8) !important;
+  border: 1px solid #08F7FE !important;
+  color: #ffffff !important;
+  backdrop-filter: blur(5px) !important;
+  position: relative !important;
+  overflow: hidden !important;
 }
 
 .theme-option.holographic .theme-preview::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -150%;
-  width: 300%;
-  height: 100%;
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: -150% !important;
+  width: 300% !important;
+  height: 100% !important;
   background: linear-gradient(90deg, 
       transparent, 
       rgba(8, 247, 254, 0.2), 
-      transparent);
-  animation: holographic-preview 2s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes holographic-preview {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(50%); }
+      transparent) !important;
+  animation: holographic-preview 2s ease-in-out infinite !important;
+  pointer-events: none !important;
 }
 
 .theme-option.holographic .theme-preview h3 {
-  background: linear-gradient(to right, #FF2079, #08F7FE, #04FEBF);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: none;
+  background: linear-gradient(to right, #FF2079, #08F7FE, #04FEBF) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
 }
 
 .theme-option.holographic .theme-preview p {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .theme-option.tokyo-night .theme-preview {
-  background: #1a1b26;
-  border: 1px solid #7aa2f7;
-  color: #a9b1d6;
-  position: relative;
+  background: #1a1b26 !important;
+  border: 1px solid #7aa2f7 !important;
+  color: #a9b1d6 !important;
+  position: relative !important;
 }
 
 .theme-option.tokyo-night .theme-preview::after {
-  content: "東京";
-  position: absolute;
-  bottom: 5px;
-  right: 8px;
-  font-size: 0.7rem;
-  color: rgba(247, 118, 142, 0.2);
-  pointer-events: none;
+  content: "東京" !important;
+  position: absolute !important;
+  bottom: 5px !important;
+  right: 8px !important;
+  font-size: 0.7rem !important;
+  color: rgba(247, 118, 142, 0.2) !important;
+  pointer-events: none !important;
 }
 
 .theme-option.tokyo-night .theme-preview h3 {
-  color: #7aa2f7;
-  text-shadow: 0 0 8px rgba(122, 162, 247, 0.4);
+  color: #7aa2f7 !important;
+  text-shadow: 0 0 8px rgba(122, 162, 247, 0.4) !important;
 }
 
 .theme-option.tokyo-night .theme-preview p {
-  color: #9aa5ce;
+  color: #9aa5ce !important;
 }
 
 .theme-option.amber-interface .theme-preview {
-  background: #0F0A00;
-  border: 1px solid #FFB000;
-  color: #FFB000;
-  position: relative;
-  overflow: hidden;
+  background: #0F0A00 !important;
+  border: 1px solid #FFB000 !important;
+  color: #FFB000 !important;
+  position: relative !important;
+  overflow: hidden !important;
 }
 
 .theme-option.amber-interface .theme-preview::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
   background: repeating-linear-gradient(0deg, 
       transparent, 
       transparent 5px, 
       rgba(255, 176, 0, 0.03) 5px, 
-      rgba(255, 176, 0, 0.03) 10px);
-  pointer-events: none;
+      rgba(255, 176, 0, 0.03) 10px) !important;
+  pointer-events: none !important;
 }
 
 .theme-option.amber-interface .theme-preview h3 {
-  color: #FFD700;
-  text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+  color: #FFD700 !important;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.5) !important;
 }
 
 .theme-option.amber-interface .theme-preview p {
-  color: #B38000;
+  color: #B38000 !important;
 }
 
 .theme-option.amber-interface .theme-preview::after {
-  content: "READY";
-  position: absolute;
-  top: 5px;
-  right: 8px;
-  font-size: 0.6rem;
-  color: #FFD700;
-  font-family: 'Roboto Mono', monospace;
-  letter-spacing: 1px;
+  content: "READY" !important;
+  position: absolute !important;
+  top: 5px !important;
+  right: 8px !important;
+  font-size: 0.6rem !important;
+  color: #FFD700 !important;
+  font-family: 'Roboto Mono', monospace !important;
+  letter-spacing: 1px !important;
 }
 
 /* Installation Section */
@@ -798,4 +820,9 @@ section {
   100% {
     box-shadow: 0 0 5px var(--accent-cyan), 0 0 10px var(--accent-cyan);
   }
+}
+
+@keyframes holographic-preview {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(50%); }
 }
