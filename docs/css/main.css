@@ -276,7 +276,7 @@ body {
 
 /* Section Styling */
 section {
-  margin-bottom: 5rem;
+  margin-bottom: 3rem;
   position: relative;
 }
 
@@ -284,7 +284,7 @@ section {
   font-family: 'Orbitron', sans-serif;
   color: var(--accent-cyan);
   font-size: 1.8rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   text-transform: uppercase;
   letter-spacing: 2px;
   display: flex;
