@@ -4,302 +4,180 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CommandWave - Terminal Management with Playbooks</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Roboto+Mono:wght@300;400;600&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/themes/cyberpunk-dark.css" id="theme-cyberpunk-dark">
-    <link rel="stylesheet" href="css/themes/witchhazel.css" id="theme-witchhazel">
+    <!-- Theme Styles: Modular -->
+    <link rel="stylesheet" href="css/themes/cyberpunk-dark.css">
+    <link rel="stylesheet" href="css/themes/light.css">
+    <link rel="stylesheet" href="css/themes/witchhazel.css">
     <link rel="stylesheet" href="css/components/terminal_demo.css">
 </head>
 <body>
-    <header>
-        <h1 class="main-title">Command<span class="wave-text">Wave</span></h1>
-        <p class="tagline">A cyberpunk-themed web interface for managing terminal sessions alongside executable Markdown playbooks.</p>
-        <div class="header-buttons">
-            <a href="https://github.com/Journey-West/CommandWave" class="header-btn">
-                <i class="fab fa-github"></i> GitHub Repository
+    <div class="circuit-overlay"></div>
+    
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="https://github.com/Journey-West/CommandWave" class="nav-button github">
+                <i class="fab fa-github"></i> GitHub
             </a>
-            <a href="https://github.com/Journey-West/CommandWave#installation" class="header-btn pink">
-                <i class="fas fa-download"></i> Installation Guide
+            <a href="https://github.com/Journey-West/CommandWave#installation" class="nav-button docs">
+                <i class="fas fa-book"></i> Documentation
             </a>
         </div>
-        <button class="theme-toggle"><i class="fas fa-moon"></i></button>
+        
+        <div class="theme-controls">
+            <button class="theme-toggle" aria-label="Toggle theme">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
     </header>
 
-    <div class="container">
-        <section class="section">
-            <h2 class="section-title">Overview</h2>
-            <p>CommandWave provides a streamlined, web-based environment for managing multiple terminal sessions powered by <span class="highlight">tmux</span> and <span class="highlight">ttyd</span>. It features a distinct cyberpunk/neon aesthetic and allows users to work with Markdown-based "playbooks" containing executable code blocks. Define variables, search through local playbooks, and execute commands directly into your active terminal session, enhancing command-line workflows.</p>
-            <img src="images/screenshot.png" alt="CommandWave Screenshot" class="screenshot">
-            <!-- Add a terminal demo to better match the application's look -->
-            <div class="demo-terminal">
-                <div class="terminal-header">
-                    <div class="terminal-tab active">Main</div>
-                    <div class="terminal-tab">Scanning</div>
-                    <div class="terminal-tab">+</div>
+    <main class="main-content">
+        <section class="hero">
+            <div class="hero-content">
+                <div class="logo-container" style="text-align: center;">
+                    <h1 class="logo">COMMAND<span>WAVE</span></h1>
                 </div>
-                <div class="terminal-content">
-                    <div class="command-line">
-                        <span class="prompt">root@kali:~$</span>
-                        <span class="command">sudo nmap -sS $TargetIP -p $Port</span>
+                <div class="terminal-window">
+                    <div class="terminal-header">
+                        <div class="terminal-buttons">
+                            <span class="terminal-button"></span>
+                            <span class="terminal-button"></span>
+                        </div>
+                        <div class="terminal-title">terminal_session.sh</div>
                     </div>
-                    <div class="output">
-                        Starting Nmap 7.93 ( https://nmap.org ) at 2025-04-12 13:15 EDT<br>
-                        Nmap scan report for target.local (192.168.1.100)<br>
-                        Host is up (0.063s latency).
-                    </div>
-                    <div class="command-line">
-                        <span class="prompt">root@kali:~$</span>
-                        <span class="command">_</span>
+                    <div class="terminal-body">
+                        <div class="line"><span class="prompt">$</span> <span class="cmd">initialize</span> <span class="arg">CommandWave</span></div>
+                        <div class="line output">Loading cyberpunk terminal management...</div>
+                        <div class="line output">Initializing playbook system...</div>
+                        <div class="line output">Ready.</div>
+                        <div class="line"><span class="prompt">$</span> <span class="cmd">describe</span> <span class="arg">CommandWave</span></div>
+                        <div class="line output">A cyberpunk-themed web interface for terminal sessions</div>
+                        <div class="line output">with executable Markdown playbooks.</div>
+                        <div class="line"><span class="prompt">$</span> <span class="cmd">show</span> <span class="arg">features</span></div>
+                        <div class="line output">- Terminal Management with <span class="highlight-cyan">tmux</span> and <span class="highlight-cyan">ttyd</span></div>
+                        <div class="line output">- Executable <span class="highlight-pink">Markdown Playbooks</span></div>
+                        <div class="line output">- Variable <span class="highlight-cyan">Substitution</span> and <span class="highlight-pink">Synchronization</span></div>
+                        <div class="line"><span class="prompt">$</span> <span class="blink">_</span></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="section">
-            <h2 class="section-title">Key Features</h2>
-            <div class="features">
+        <section class="features" id="features">
+            <h2 class="section-title"><span class="bracket">[</span> FEATURES <span class="bracket">]</span></h2>
+            <div class="feature-grid">
                 <div class="feature-card">
                     <div class="feature-icon"><i class="fas fa-terminal"></i></div>
                     <h3 class="feature-title">Terminal Management</h3>
-                    <p class="feature-desc">Create, switch between, rename, and close multiple terminal sessions backed by tmux and ttyd.</p>
+                    <p>Create and manage multiple terminal sessions with tmux and ttyd. Rename, switch, and synchronize your workflow.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon"><i class="fas fa-book-open"></i></div>
                     <h3 class="feature-title">Playbook Integration</h3>
-                    <p class="feature-desc">
-                        Upload Markdown files as playbooks, which are parsed to separate text blocks from code blocks.
-                        Create cross-references between playbooks to build an interconnected knowledge base.
-                    </p>
+                    <p>Upload Markdown files as playbooks with executable code blocks. Build interconnected knowledge bases.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon"><i class="fas fa-code"></i></div>
                     <h3 class="feature-title">Variable Substitution</h3>
-                    <p class="feature-desc">Create custom variables and reference them in code blocks. All variables are auto-substituted, synchronized, and updated in real time across sessions.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-play"></i></div>
-                    <h3 class="feature-title">Command Execution</h3>
-                    <p class="feature-desc">Execute commands directly from playbooks to the active terminal.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-sticky-note"></i></div>
-                    <h3 class="feature-title">Notes System</h3>
-                    <p class="feature-desc">Global and per-tab notes for keeping track of your work.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-search"></i></div>
-                    <h3 class="feature-title">Playbook Search</h3>
-                    <p class="feature-desc">Quickly search across all loaded and local playbooks for specific commands or text, with smart highlighting and filtering.</p>
+                    <p>Create custom variables for your code. All variables are synchronized in real-time across sessions.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon"><i class="fas fa-palette"></i></div>
-                    <h3 class="feature-title">Cyberpunk UI</h3>
-                    <p class="feature-desc">Beautiful neon-inspired interface with consistent theming.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-sliders-h"></i></div>
-                    <h3 class="feature-title">Custom tmux Theming</h3>
-                    <p class="feature-desc">Included configuration for matching terminal aesthetics.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-keyboard"></i></div>
-                    <h3 class="feature-title">Executable Code Blocks</h3>
-                    <p class="feature-desc">Execute shell command blocks from playbooks directly into the active terminal session with a single click.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-moon"></i></div>
-                    <h3 class="feature-title">Dark/Light Theme Toggle</h3>
-                    <p class="feature-desc">Switch between cyberpunk dark and neon light themes with persistent preferences and optimized terminal readability.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-exchange-alt"></i></div>
-                    <h3 class="feature-title">Full Synchronization</h3>
-                    <p class="feature-desc">All application data synchronized across clients.</p>
+                    <h3 class="feature-title">Cyberpunk Themes</h3>
+                    <p>Choose from Cyberpunk Dark, Neon Light, and Witch Hazel themes to personalize your experience.</p>
                 </div>
             </div>
         </section>
 
-        <section class="section">
-            <h2 class="section-title">Installation</h2>
-            <p>Getting started with CommandWave is quick and straightforward:</p>
-            <div class="install-steps">
-                <div class="step">
-                    <h3 class="step-number">Step 1: Install System Dependencies</h3>
-                    <p class="step-desc">Ensure <span class="highlight">ttyd</span> and <span class="highlight">tmux</span> are installed and accessible in your system's PATH.</p>
-                    <p class="step-desc">For <span class="highlight">ttyd</span>, download binaries or build from source via the <a href="https://github.com/tsl0922/ttyd" style="color: var(--neon-blue); text-decoration: none;">official ttyd GitHub repository</a>.</p>
-                    <p class="step-desc">For <span class="highlight">tmux</span>, install using your system's package manager:</p>
-                    <code>sudo apt install tmux   # For Debian/Ubuntu<br>brew install tmux       # For macOS</code>
+        <section class="themes" id="themes">
+            <h2 class="section-title"><span class="bracket">[</span> THEMES <span class="bracket">]</span></h2>
+            <div class="theme-switcher">
+                <div class="theme-option dark active" data-theme="dark">
+                    <div class="theme-preview">
+                        <h3>Cyberpunk Dark</h3>
+                        <p>Classic dark mode with high-tech neon glow on deep backgrounds</p>
+                    </div>
                 </div>
-                <div class="step">
-                    <h3 class="step-number">Step 2: Clone the Repository</h3>
-                    <code>git clone https://github.com/Journey-West/CommandWave<br>cd CommandWave</code>
+                <div class="theme-option light" data-theme="light">
+                    <div class="theme-preview">
+                        <h3>Neon Light</h3>
+                        <p>Bright, clean theme with saturated neon accents on light backgrounds</p>
+                    </div>
                 </div>
-                <div class="step">
-                    <h3 class="step-number">Step 3: Install Python Dependencies</h3>
-                    <code>pip install -r requirements.txt</code>
-                </div>
-                <div class="step">
-                    <h3 class="step-number">Step 4: Run CommandWave</h3>
-                    <code>python main.py --use-default-tmux-config</code>
-                    <p class="step-desc">Open your web browser and navigate to <code>http://localhost:5000</code></p>
-                    <p class="step-desc">Additional command line options:</p>
-                    <code>--hostname HOSTNAME  # Specify hostname for terminal connections (default: localhost)<br>--remote            # Enable remote access by binding to all interfaces<br>--port PORT        # Specify web server port (default: 5000)</code>
+                <div class="theme-option witchhazel" data-theme="witchhazel">
+                    <div class="theme-preview">
+                        <h3>Witch Hazel</h3>
+                        <p>Softer purple/pastel neon palette with mystical tech aesthetic</p>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section class="section">
-            <h2 class="section-title">Usage Guide</h2>
+        <section class="installation" id="installation">
+            <h2 class="section-title"><span class="bracket">[</span> INSTALLATION <span class="bracket">]</span></h2>
+            <div class="terminal-window installation-terminal">
+                <div class="terminal-header">
+                    <div class="terminal-buttons">
+                        <span class="terminal-button"></span>
+                        <span class="terminal-button"></span>
+                    </div>
+                    <div class="terminal-title">install_guide.sh</div>
+                </div>
+                <div class="terminal-body">
+                    <div class="line"><span class="prompt">$</span> <span class="cmd">git</span> <span class="arg">clone https://github.com/Journey-West/CommandWave</span></div>
+                    <div class="line"><span class="prompt">$</span> <span class="cmd">cd</span> <span class="arg">CommandWave</span></div>
+                    <div class="line"><span class="prompt">$</span> <span class="cmd">pip</span> <span class="arg">install -r requirements.txt</span></div>
+                    <div class="line"><span class="prompt">$</span> <span class="cmd">python</span> <span class="arg">main.py --use-default-tmux-config</span></div>
+                    <div class="line output">Server started at <span class="highlight-cyan">http://localhost:5000</span></div>
+                    <div class="line"><span class="prompt">$</span> <span class="cmd">echo</span> <span class="arg">"CommandWave is ready for use"</span></div>
+                    <div class="line output">CommandWave is ready for use</div>
+                    <div class="line"><span class="prompt">$</span> <span class="blink">_</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="usage" id="usage">
+            <h2 class="section-title"><span class="bracket">[</span> USAGE <span class="bracket">]</span></h2>
             <div class="usage-grid">
                 <div class="usage-item">
-                    <h3 class="usage-title">Terminals</h3>
-                    <ul class="usage-desc">
-                        <li>Click the + button to add a new terminal session</li>
-                        <li>Double-click a tab to rename it</li>
-                        <li>Click the x to close a terminal session</li>
-                    </ul>
+                    <h3><i class="fas fa-terminal"></i> Terminals</h3>
+                    <p>Add, rename, and manage terminal sessions with intuitive controls. All backed by tmux for persistence.</p>
                 </div>
                 <div class="usage-item">
-                    <h3 class="usage-title">Theme Settings</h3>
-                    <ul class="usage-desc">
-                        <li>Click the gear icon in the top right corner</li>
-                        <li>Select "Theme Settings" to toggle between themes</li>
-                        <li>Choose between Cyberpunk Dark (default) and Neon Light</li>
-                    </ul>
+                    <h3><i class="fas fa-file-code"></i> Playbooks</h3>
+                    <p>Upload .md files or create new ones. Execute code blocks directly in your active terminal.</p>
                 </div>
                 <div class="usage-item">
-                    <h3 class="usage-title">Variables</h3>
-                    <ul class="usage-desc">
-                        <li>Use the "Variables" section to define variables for your playbooks</li>
-                        <li>Click "+ Add Variable" to create custom variables</li>
-                        <li>Each variable has two parts:
-                            <ul style="margin-top: 0.5rem;">
-                                <li style="margin-bottom: 0.4rem;">Variable Title: User-friendly display name (can include spaces)</li>
-                                <li>Variable Reference: Actual reference used in code (no spaces allowed)</li>
-                            </ul>
-                        </li>
-                        <li>Variables will be substituted when you click "Execute" on a code block</li>
-                    </ul>
+                    <h3><i class="fas fa-exchange-alt"></i> Variables</h3>
+                    <p>Define variables once, use them everywhere. Full synchronization across all clients.</p>
                 </div>
                 <div class="usage-item">
-                    <h3 class="usage-title">Playbooks</h3>
-                    <ul class="usage-desc">
-                        <li>Upload .md files or create new playbooks within the app</li>
-                        <li>Code blocks can be executed directly in the active terminal</li>
-                        <li>External links open in new tabs with proper security attributes</li>
-                        <li>Click "Execute" to send code to the active terminal tab</li>
-                        <li>Create cross-references between playbooks using syntax</li>
-                    </ul>
-                </div>
-                <div class="usage-item">
-                    <h3 class="usage-title">Search</h3>
-                    <ul class="usage-desc">
-                        <li>Use the search bar to find content within playbooks</li>
-                        <li>Results show filename, line number, and content</li>
-                        <li>Click on a result to open that playbook</li>
-                    </ul>
-                </div>
-                <div class="usage-item">
-                    <h3 class="usage-title">Error Handling</h3>
-                    <ul class="usage-desc">
-                        <li>The application displays dedicated error modals with clear messages</li>
-                        <li>Error messages include guidance on how to resolve common issues</li>
-                        <li>Validation prevents common errors in variable names and playbook formatting</li>
-                    </ul>
+                    <h3><i class="fas fa-search"></i> Search</h3>
+                    <p>Find content quickly across all playbooks with smart highlighting and filtering.</p>
                 </div>
             </div>
         </section>
-    </div>
+    </main>
 
-    <footer>
-        <div class="footer-links">
-            <a href="https://github.com/Journey-West/CommandWave" class="footer-link">GitHub Repository</a>
-            <a href="https://github.com/Journey-West/CommandWave/issues" class="footer-link">Report Issues</a>
-            <a href="https://github.com/Journey-West/CommandWave#contributing" class="footer-link">Contribute</a>
-            <a href="https://github.com/Journey-West/CommandWave/blob/main/LICENSE" class="footer-link">License</a>
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="https://github.com/Journey-West/CommandWave" class="footer-link">Repository</a>
+                <a href="https://github.com/Journey-West/CommandWave/issues" class="footer-link">Issues</a>
+                <a href="https://github.com/Journey-West/CommandWave#contributing" class="footer-link">Contribute</a>
+            </div>
+            <div class="social-links">
+                <a href="https://github.com/Journey-West" class="social-link"><i class="fab fa-github"></i></a>
+            </div>
+            <div class="copyright">
+                <p> 2025 CommandWave. Built with the cyberpunk spirit.</p>
+            </div>
         </div>
-        <div>
-            <a href="https://github.com/Journey-West" class="social-icon"><i class="fab fa-github"></i></a>
-        </div>
-        <p class="copyright"> 2025 CommandWave. Built with the cyberpunk spirit.</p>
     </footer>
 
-    <script>
-        // Theme Toggle Functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            // Theme toggle button
-            const themeToggle = document.querySelector('.theme-toggle');
-            const themeIcon = themeToggle.querySelector('i');
-            
-            // Initialize theme
-            initializeTheme();
-            
-            // Toggle theme when button is clicked
-            themeToggle.addEventListener('click', function() {
-                cycleTheme();
-            });
-            
-            // Initialize theme based on saved preference or system preference
-            function initializeTheme() {
-                const savedTheme = localStorage.getItem('commandwave-docs-theme');
-                
-                if (savedTheme) {
-                    applyTheme(savedTheme);
-                } else {
-                    // Default to dark theme for consistency with main app
-                    applyTheme('dark');
-                }
-            }
-            
-            // Apply theme to document
-            function applyTheme(theme) {
-                // Remove existing theme attribute
-                document.documentElement.removeAttribute('data-theme');
-                
-                // Apply new theme if not dark (dark is default)
-                if (theme === 'light' || theme === 'witchhazel') {
-                    document.documentElement.setAttribute('data-theme', theme);
-                }
-                
-                // Update toggle icon based on theme
-                updateToggleIcon(theme);
-                
-                // Save preference
-                localStorage.setItem('commandwave-docs-theme', theme);
-            }
-            
-            // Update the toggle icon based on theme
-            function updateToggleIcon(theme) {
-                // Reset classes
-                themeIcon.className = '';
-                
-                // Set appropriate icon
-                if (theme === 'dark') {
-                    themeIcon.className = 'fas fa-sun';
-                } else if (theme === 'light') {
-                    themeIcon.className = 'fas fa-moon';
-                } else if (theme === 'witchhazel') {
-                    themeIcon.className = 'fas fa-hat-wizard';
-                }
-            }
-            
-            // Cycle between themes: dark -> light -> witchhazel -> dark
-            function cycleTheme() {
-                const currentTheme = localStorage.getItem('commandwave-docs-theme') || 'dark';
-                
-                let newTheme;
-                if (currentTheme === 'dark') {
-                    newTheme = 'light';
-                } else if (currentTheme === 'light') {
-                    newTheme = 'witchhazel';
-                } else {
-                    newTheme = 'dark';
-                }
-                
-                applyTheme(newTheme);
-            }
-        });
-    </script>
+    <!-- Modular JS -->
+    <script src="js/main.js"></script>
 </body>
 </html>

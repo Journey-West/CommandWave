@@ -10,21 +10,22 @@
     --neon-yellow: #f4d554;
     --neon-green: #8bff80;
     --accent: #ff79c6;
-    --border-light: rgba(129, 255, 255, 0.2);
-    --shadow-blue: 0 0 10px rgba(129, 255, 255, 0.5);
-    --shadow-pink: 0 0 10px rgba(255, 121, 198, 0.5);
-    --shadow-purple: 0 0 10px rgba(180, 91, 207, 0.5);
-    --shadow-yellow: 0 0 10px rgba(244, 213, 84, 0.5);
-    --shadow-green: 0 0 10px rgba(139, 255, 128, 0.5);
+    --border-light: #b45bcf;
+    --shadow-blue: 0 0 14px #81ffff99;
+    --shadow-pink: 0 0 14px #ff79c699;
+    --shadow-purple: 0 0 14px #b45bcf99;
+    --shadow-yellow: 0 0 14px #f4d55499;
+    --shadow-green: 0 0 14px #8bff8099;
 }
 
 [data-theme="witchhazel"] body {
     background-color: var(--background-dark);
     color: var(--text-primary);
-    background-image: 
-        radial-gradient(circle at 10% 20%, rgba(180, 91, 207, 0.05) 0%, transparent 20%),
-        radial-gradient(circle at 90% 80%, rgba(255, 121, 198, 0.05) 0%, transparent 20%),
-        radial-gradient(circle at 50% 50%, rgba(129, 255, 255, 0.05) 0%, transparent 40%);
+    background-image:
+        radial-gradient(circle at 10% 20%, #81ffff22 0%, transparent 25%),
+        radial-gradient(circle at 90% 80%, #b45bcf22 0%, transparent 25%),
+        radial-gradient(circle at 50% 50%, #ff79c622 0%, transparent 45%);
+    min-height: 100vh;
 }
 
 [data-theme="witchhazel"] header {

@@ -1,1 +1,283 @@
 /* cyberpunk-dark.css - cyberpunk dark theme for the GitHub Pages site */
+
+/* ========== Cyberpunk Dark Theme Styles ========== */
+[data-theme="dark"] {
+    --background-dark: #0b0b17;
+    --background-medium: #121225;
+    --text-primary: #e0e0fc;
+    --text-secondary: #8a8aa5;
+    --neon-blue: #60efff;
+    --neon-purple: #c264fe;
+    --neon-pink: #ff5a8c;
+    --neon-yellow: #fcee09;
+    --neon-green: #0fff50;
+    --accent: #ff5a8c;
+    --border-light: rgba(96,239,255,0.22);
+    --shadow-blue: 0 0 16px #60efff99;
+    --shadow-pink: 0 0 16px #ff5a8c99;
+    --shadow-purple: 0 0 16px #c264fe99;
+    --shadow-yellow: 0 0 16px #fcee0999;
+    --shadow-green: 0 0 16px #0fff5099;
+}
+
+[data-theme="dark"] body {
+    background-color: var(--background-dark);
+    color: var(--text-primary);
+    background-image:
+        radial-gradient(circle at 10% 20%, #60efff22 0%, transparent 25%),
+        radial-gradient(circle at 90% 80%, #c264fe22 0%, transparent 25%),
+        radial-gradient(circle at 50% 50%, #ff5a8c22 0%, transparent 45%);
+    min-height: 100vh;
+}
+
+[data-theme="dark"] .section {
+    background: rgba(18,34,37,0.93);
+    border: 1.5px solid var(--border-light);
+    box-shadow: 0 0 24px var(--neon-blue);
+    backdrop-filter: blur(6px);
+    border-radius: 12px;
+}
+
+[data-theme="dark"] .section-title {
+    color: var(--neon-blue);
+    text-shadow: 0 0 6px var(--neon-blue), 0 0 2px #fff;
+    border-bottom: 1.5px solid var(--border-light);
+    letter-spacing: 1.5px;
+}
+
+[data-theme="dark"] .feature-card {
+    background: rgba(11,11,23,0.92);
+    border: 1.5px solid var(--border-light);
+    box-shadow: 0 0 18px #60efff30;
+    backdrop-filter: blur(3px);
+    border-radius: 10px;
+    transition: box-shadow 0.3s, transform 0.3s;
+}
+[data-theme="dark"] .feature-card:hover {
+    box-shadow: 0 0 32px var(--neon-blue), 0 0 8px #fff;
+    transform: translateY(-5px) scale(1.03);
+}
+[data-theme="dark"] .feature-title {
+    color: #e0e0fc;
+    text-shadow: 0 0 8px var(--neon-yellow), 0 0 2px #fff;
+}
+[data-theme="dark"] .feature-desc {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+[data-theme="dark"] .feature-icon {
+    color: var(--neon-blue);
+    text-shadow: 0 0 8px var(--neon-blue), 0 0 2px #fff;
+}
+[data-theme="dark"] .feature-list li {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .header-btn {
+    background: rgba(18,34,37,0.97);
+    border: 1.5px solid var(--neon-blue);
+    color: var(--neon-blue);
+    box-shadow: 0 0 10px var(--neon-blue);
+    font-weight: 600;
+    text-shadow: 0 0 4px var(--neon-blue), 0 0 1px #fff;
+}
+[data-theme="dark"] .header-btn.pink {
+    border-color: var(--neon-pink);
+    color: var(--neon-pink);
+    box-shadow: 0 0 10px var(--neon-pink);
+    text-shadow: 0 0 4px var(--neon-pink), 0 0 1px #fff;
+}
+[data-theme="dark"] .header-btn:hover {
+    background: rgba(96,239,255,0.08);
+    box-shadow: 0 0 18px var(--neon-blue), 0 0 8px #fff;
+}
+[data-theme="dark"] .header-btn.pink:hover {
+    background: rgba(255,90,140,0.08);
+    box-shadow: 0 0 18px var(--neon-pink), 0 0 8px #fff;
+}
+
+[data-theme="dark"] .theme-toggle {
+    background: rgba(18,34,37,0.92);
+    border: 1.5px solid var(--neon-purple);
+    color: var(--neon-purple);
+    box-shadow: 0 0 10px var(--neon-purple);
+}
+[data-theme="dark"] .theme-toggle:hover {
+    background: rgba(194,100,254,0.09);
+    transform: translateY(-2px) scale(1.07);
+}
+
+[data-theme="dark"] .screenshot {
+    border: 2px solid var(--neon-pink);
+    border-radius: 8px;
+    max-width: 100%;
+    height: auto;
+    margin: 2rem 0;
+    box-shadow: var(--shadow-pink);
+    transition: box-shadow 0.3s, transform 0.35s;
+    cursor: pointer;
+    z-index: 1;
+}
+[data-theme="dark"] .screenshot:hover {
+    transform: scale(1.16) perspective(1000px) translateY(-12px) rotateX(2deg) rotateZ(-1deg);
+    box-shadow: 0 0 64px 8px var(--neon-pink), 0 0 28px 2px var(--neon-blue), 0 0 6px #fff;
+    z-index: 10;
+}
+[data-theme="dark"] code {
+    background: #121225;
+    border: 1.5px solid var(--border-light);
+    color: #e0e0fc;
+    font-weight: 600;
+    border-radius: 4px;
+    box-shadow: 0 0 8px var(--neon-yellow);
+}
+
+[data-theme="dark"] .step {
+    border-left: 2.5px solid var(--neon-green);
+    background: rgba(18,34,37,0.97);
+}
+[data-theme="dark"] .step-number {
+    color: #e0e0fc;
+    text-shadow: 0 0 8px var(--neon-green), 0 0 2px #fff;
+}
+[data-theme="dark"] .highlight {
+    color: var(--neon-blue);
+    text-shadow: 0 0 8px var(--neon-blue), 0 0 2px #fff;
+    font-weight: 600;
+}
+[data-theme="dark"] .usage-grid {
+    background: none;
+}
+[data-theme="dark"] .usage-item {
+    background: rgba(11,11,23,0.93);
+    border: 1.5px solid var(--border-light);
+    border-radius: 10px;
+    box-shadow: 0 0 10px var(--neon-blue);
+    color: var(--text-primary);
+}
+[data-theme="dark"] .usage-title {
+    color: var(--neon-pink);
+    text-shadow: 0 0 8px var(--neon-pink), 0 0 2px #fff;
+}
+[data-theme="dark"] .usage-desc {
+    color: var(--text-secondary);
+}
+[data-theme="dark"] .usage-desc ul li::before {
+    color: var(--neon-blue);
+}
+[data-theme="dark"] .footer-link {
+    color: var(--neon-blue);
+    text-shadow: 0 0 6px var(--neon-blue);
+}
+[data-theme="dark"] .social-icon {
+    color: var(--neon-purple);
+    text-shadow: 0 0 6px var(--neon-purple);
+}
+[data-theme="dark"] footer {
+    background: rgba(18,34,37,0.97);
+    border-top: 2px solid var(--border-light);
+    box-shadow: 0 0 16px var(--neon-blue);
+    color: var(--text-secondary);
+}
+
+/* --- Neon Dark Theme Enhancements --- */
+[data-theme="dark"] .feature-card,
+[data-theme="dark"] .usage-item,
+[data-theme="dark"] .section {
+    box-shadow: 0 0 32px 4px #60efff44, 0 0 8px #c264fe22, 0 0 1px #fff;
+    border: 1.8px solid var(--border-light);
+    position: relative;
+}
+[data-theme="dark"] .feature-card:hover,
+[data-theme="dark"] .usage-item:hover {
+    box-shadow: 0 0 48px 8px #60efff88, 0 0 18px #ff5a8c44, 0 0 2px #fff;
+    z-index: 2;
+}
+[data-theme="dark"] .feature-title,
+[data-theme="dark"] .section-title,
+[data-theme="dark"] .usage-title {
+    text-shadow: 0 0 12px var(--neon-blue), 0 0 6px #fff, 0 0 1px #60efff;
+}
+[data-theme="dark"] .feature-icon,
+[data-theme="dark"] .usage-title i {
+    text-shadow: 0 0 16px var(--neon-blue), 0 0 4px #fff;
+}
+[data-theme="dark"] .header-btn,
+[data-theme="dark"] .footer-link {
+    transition: box-shadow 0.3s, text-shadow 0.3s, filter 0.3s;
+}
+[data-theme="dark"] .header-btn:hover,
+[data-theme="dark"] .footer-link:hover {
+    box-shadow: 0 0 24px var(--neon-blue), 0 0 8px #fff;
+    text-shadow: 0 0 16px var(--neon-blue), 0 0 4px #fff;
+    filter: brightness(1.2);
+    animation: neon-pulse 1.5s infinite alternate;
+}
+[data-theme="dark"] .header-btn.pink:hover {
+    box-shadow: 0 0 24px var(--neon-pink), 0 0 8px #fff;
+    text-shadow: 0 0 16px var(--neon-pink), 0 0 4px #fff;
+}
+@keyframes neon-pulse {
+    0% { filter: brightness(1.1); }
+    100% { filter: brightness(1.35) drop-shadow(0 0 12px var(--neon-blue)); }
+}
+[data-theme="dark"] .step {
+    border-left: 2.5px solid var(--neon-green);
+    box-shadow: 0 0 10px 2px #0fff5040;
+    background: rgba(18,34,37,0.97);
+    margin-bottom: 1.2rem;
+}
+[data-theme="dark"] .step-number {
+    color: #e0e0fc;
+    text-shadow: 0 0 8px var(--neon-green), 0 0 2px #fff, 0 0 4px #0fff50;
+}
+[data-theme="dark"] .usage-item {
+    box-shadow: 0 0 18px 2px #ff5a8c44, 0 0 6px #60efff44;
+    border: 1.5px solid var(--border-light);
+    background: rgba(11,11,23,0.97);
+    margin-bottom: 1.2rem;
+}
+[data-theme="dark"] .usage-title {
+    color: var(--neon-pink);
+    text-shadow: 0 0 10px var(--neon-pink), 0 0 2px #fff;
+}
+[data-theme="dark"] .usage-desc {
+    color: var(--text-secondary);
+}
+[data-theme="dark"] .usage-desc ul li::before {
+    color: var(--neon-blue);
+}
+[data-theme="dark"] .footer {
+    border-top: 2.5px solid var(--border-light);
+    box-shadow: 0 0 20px 4px #60efff44;
+    background: rgba(18,34,37,0.99);
+}
+[data-theme="dark"] .social-icon {
+    color: var(--neon-purple);
+    text-shadow: 0 0 12px var(--neon-purple), 0 0 3px #fff;
+}
+[data-theme="dark"] a {
+    transition: text-shadow 0.3s, color 0.3s;
+}
+[data-theme="dark"] a:hover {
+    color: var(--neon-blue);
+    text-shadow: 0 0 8px var(--neon-blue), 0 0 2px #fff;
+    text-decoration: underline wavy var(--neon-blue);
+}
+[data-theme="dark"] :focus {
+    outline: 2.5px solid var(--neon-blue);
+    box-shadow: 0 0 10px 2px var(--neon-blue);
+}
+[data-theme="dark"] body {
+    background-color: var(--background-dark);
+    color: var(--text-primary);
+    background-image:
+        radial-gradient(circle at 10% 20%, #60efff22 0%, transparent 25%),
+        radial-gradient(circle at 90% 80%, #c264fe22 0%, transparent 25%),
+        radial-gradient(circle at 50% 50%, #ff5a8c22 0%, transparent 45%);
+    animation: neon-bg 18s linear infinite alternate;
+}
+@keyframes neon-bg {
+    0% { background-position: 0% 0%, 100% 100%, 50% 50%; }
+    100% { background-position: 100% 100%, 0% 0%, 50% 60%; }
+}

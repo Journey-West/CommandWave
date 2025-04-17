@@ -1,1 +1,61 @@
 /* terminal_demo.css - styles for the terminal demo component */
+
+/* ========== Terminal Demo Component Styles ========== */
+.demo-terminal {
+    margin-top: 2rem;
+    border: 1px solid var(--neon-blue);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.terminal-header {
+    display: flex;
+    background-color: rgba(10, 10, 26, 0.9);
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.terminal-tab {
+    background-color: rgba(0, 229, 255, 0.1);
+    color: var(--neon-blue);
+    border: 1px solid var(--neon-blue);
+    border-radius: 4px;
+    padding: 0.3rem 0.8rem;
+    margin-right: 0.5rem;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+}
+
+.terminal-tab.active {
+    background-color: rgba(0, 229, 255, 0.2);
+    box-shadow: var(--shadow-blue);
+}
+
+.terminal-content {
+    background-color: rgba(10, 10, 26, 0.95);
+    padding: 1rem;
+    min-height: 150px;
+    color: var(--text-primary);
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.9rem;
+}
+
+.command-line {
+    display: flex;
+    margin-bottom: 0.5rem;
+}
+
+.prompt {
+    color: var(--neon-green);
+    margin-right: 0.5rem;
+}
+
+.command {
+    color: var(--text-primary);
+}
+
+.output {
+    color: var(--text-secondary);
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+}
