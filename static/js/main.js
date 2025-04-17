@@ -15,6 +15,7 @@ import NotesManager from './ui/notes_manager.js';
 import API from './api/index.js';
 import ErrorHandler from './utils/error_handler.js';
 import VariablesPanel from './ui/variables_panel.js';
+import SearchManager from './ui/search_manager.js';
 import './ui/settings_modal.js';
 
 // Initialize when DOM is ready
@@ -46,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const settingsManager = new SettingsManager();
         const notesManager = new NotesManager();
         const variablesPanel = new VariablesPanel();
+        const searchManager = new SearchManager();
         
         // Make modules available globally for debugging
         window.CommandWave = {
@@ -57,7 +59,9 @@ document.addEventListener('DOMContentLoaded', () => {
             themeManager,
             api: API,
             errorHandler: ErrorHandler,
-            version: '0.2.0' // Modular architecture version
+            version: '0.2.0', // Modular architecture version
+            searchManager,
+            variablesPanel
         };
         
         // Initialize modules
@@ -67,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         settingsManager.init();
         notesManager.init();
         variablesPanel.init();
+        // searchManager does not have an init method, it self-initializes in the constructor
         
         // Register additional modal events after making the components globally available
         // This ensures proper event handling between components
