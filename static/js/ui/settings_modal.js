@@ -60,4 +60,43 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
+
+    // Note Size Selector Logic
+    const noteSizeSelector = document.querySelector('.note-size-selector');
+    if (noteSizeSelector) {
+        // Get currently saved note size or use default
+        const currentSize = localStorage.getItem('commandwave-note-size') || 'medium';
+        
+        // Mark initially selected size
+        const sizeOptions = noteSizeSelector.querySelectorAll('.note-size-option');
+        sizeOptions.forEach(option => {
+            if (option.dataset.size === currentSize) {
+                option.classList.add('selected');
+            }
+            
+            // Add click handlers
+            option.addEventListener('click', function(e) {
+                e.preventDefault();
+                const newSize = this.dataset.size;
+                
+                // Update selected state
+                sizeOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                // Save preference
+                localStorage.setItem('commandwave-note-size', newSize);
+                
+                // Apply size to all note panels
+                document.documentElement.setAttribute('data-note-size', newSize);
+                
+                // Dispatch event for NotesManager to handle
+                document.dispatchEvent(new CustomEvent('note-size-changed', { 
+                    detail: { size: newSize } 
+                }));
+            });
+        });
+        
+        // Initial application of size
+        document.documentElement.setAttribute('data-note-size', currentSize);
+    }
 });
