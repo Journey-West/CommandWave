@@ -1,0 +1,263 @@
+/* amber-interface.css - Retro amber monochrome terminal theme */
+
+[data-theme="amber-interface"] {
+    --background-dark: #0F0A00;
+    --background-medium: #1A1306;
+    --text-primary: #FFB000;
+    --text-secondary: #B38000;
+    --neon-blue: #FFD700;
+    --neon-purple: #FFA000; 
+    --neon-pink: #FF8A00;
+    --neon-yellow: #FFCC00;
+    --neon-green: #E6A000;
+    --accent: #FFC000;
+    --border-light: rgba(255, 176, 0, 0.3);
+    --shadow-blue: 0 0 14px rgba(255, 215, 0, 0.5);
+    --shadow-pink: 0 0 14px rgba(255, 138, 0, 0.5);
+    --shadow-purple: 0 0 14px rgba(255, 160, 0, 0.5);
+    --shadow-yellow: 0 0 14px rgba(255, 204, 0, 0.5);
+    --shadow-green: 0 0 14px rgba(230, 160, 0, 0.5);
+}
+
+/* Page background with scan lines effect */
+[data-theme="amber-interface"] body {
+    background-color: var(--background-dark);
+    color: var(--text-primary);
+    background-image:
+        linear-gradient(0deg, rgba(15, 10, 0, 0.97) 0%, rgba(15, 10, 0, 0.85) 100%),
+        repeating-linear-gradient(0deg, 
+            transparent, 
+            transparent 2px, 
+            rgba(255, 176, 0, 0.03) 2px, 
+            rgba(255, 176, 0, 0.03) 4px);
+    position: relative;
+}
+
+/* Add CRT monitor effect */
+[data-theme="amber-interface"] body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(15, 10, 0, 0.3) 100%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Header Styling */
+[data-theme="amber-interface"] .header {
+    background-color: rgba(15, 10, 0, 0.9);
+    border-bottom: 1px solid var(--neon-yellow);
+}
+
+[data-theme="amber-interface"] .nav-button.github {
+    background-color: rgba(255, 176, 0, 0.1);
+    border-color: var(--neon-yellow);
+    color: var(--neon-yellow);
+}
+
+[data-theme="amber-interface"] .nav-button.docs {
+    background-color: rgba(255, 138, 0, 0.1);
+    border-color: var(--neon-pink);
+    color: var(--neon-pink);
+}
+
+[data-theme="amber-interface"] .nav-button:hover {
+    box-shadow: 0 0 15px var(--neon-yellow);
+    transform: translateY(-2px);
+}
+
+/* Logo styling */
+[data-theme="amber-interface"] .logo {
+    color: var(--text-primary);
+    text-shadow: 0 0 10px rgba(255, 176, 0, 0.7);
+    position: relative;
+}
+
+[data-theme="amber-interface"] .logo span {
+    color: var(--neon-yellow);
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.9);
+    animation: amber-pulse 3s infinite;
+}
+
+@keyframes amber-pulse {
+    0%, 100% { text-shadow: 0 0 15px rgba(255, 215, 0, 0.9); }
+    50% { text-shadow: 0 0 25px rgba(255, 215, 0, 0.7); }
+}
+
+[data-theme="amber-interface"] .theme-toggle {
+    border-color: var(--neon-yellow);
+    color: var(--neon-yellow);
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.5);
+}
+
+/* Terminal styling */
+[data-theme="amber-interface"] .terminal-window {
+    background: rgba(15, 10, 0, 0.9);
+    border: 1px solid var(--neon-yellow);
+    box-shadow: 0 0 20px rgba(255, 176, 0, 0.3);
+    position: relative;
+}
+
+[data-theme="amber-interface"] .terminal-window::before {
+    content: "READY";
+    position: absolute;
+    top: -1.5rem;
+    right: 0;
+    color: var(--neon-yellow);
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+}
+
+[data-theme="amber-interface"] .terminal-header {
+    background: rgba(26, 19, 6, 0.95);
+    border-bottom: 1px solid var(--border-light);
+}
+
+[data-theme="amber-interface"] .terminal-title {
+    color: var(--text-secondary);
+    font-family: 'Roboto Mono', monospace;
+}
+
+[data-theme="amber-interface"] .terminal-body {
+    color: var(--text-primary);
+    position: relative;
+}
+
+/* Add scan line effect to terminal */
+[data-theme="amber-interface"] .terminal-body::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(0deg, 
+        transparent, 
+        transparent 2px, 
+        rgba(255, 176, 0, 0.04) 2px, 
+        rgba(255, 176, 0, 0.04) 4px);
+    pointer-events: none;
+    z-index: 1;
+}
+
+[data-theme="amber-interface"] .prompt {
+    color: var(--neon-yellow);
+}
+
+[data-theme="amber-interface"] .cmd {
+    color: var(--text-primary);
+}
+
+[data-theme="amber-interface"] .arg {
+    color: var(--neon-green);
+}
+
+[data-theme="amber-interface"] .output {
+    color: var(--text-secondary);
+}
+
+[data-theme="amber-interface"] .highlight-cyan {
+    color: var(--neon-yellow);
+}
+
+[data-theme="amber-interface"] .highlight-pink {
+    color: var(--neon-pink);
+}
+
+/* Content sections */
+[data-theme="amber-interface"] .section-title {
+    color: var(--neon-yellow);
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    letter-spacing: 2px;
+    font-weight: bold;
+}
+
+[data-theme="amber-interface"] .section-title::before {
+    content: "> ";
+    color: var(--text-primary);
+}
+
+[data-theme="amber-interface"] .bracket {
+    color: var(--neon-pink);
+}
+
+[data-theme="amber-interface"] .feature-card,
+[data-theme="amber-interface"] .usage-item {
+    background: rgba(26, 19, 6, 0.8);
+    border: 1px solid var(--neon-yellow);
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(255, 176, 0, 0.2);
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="amber-interface"] .feature-card::after,
+[data-theme="amber-interface"] .usage-item::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--neon-yellow);
+}
+
+[data-theme="amber-interface"] .feature-card:hover,
+[data-theme="amber-interface"] .usage-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    border-color: var(--neon-pink);
+}
+
+[data-theme="amber-interface"] .feature-card:hover::after,
+[data-theme="amber-interface"] .usage-item:hover::after {
+    background: var(--neon-pink);
+}
+
+[data-theme="amber-interface"] .feature-icon {
+    color: var(--neon-yellow);
+    text-shadow: 0 0 10px rgba(255, 204, 0, 0.6);
+}
+
+[data-theme="amber-interface"] .feature-title,
+[data-theme="amber-interface"] .usage-item h3 {
+    color: var(--neon-green);
+    text-shadow: 0 0 8px rgba(230, 160, 0, 0.5);
+    font-family: 'Orbitron', sans-serif;
+}
+
+/* Terminal text */
+[data-theme="amber-interface"] .blink {
+    color: var(--neon-yellow);
+    animation: amber-blink 1.5s infinite;
+}
+
+@keyframes amber-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Footer */
+[data-theme="amber-interface"] .footer {
+    background: rgba(15, 10, 0, 0.95);
+    border-top: 1px solid var(--border-light);
+}
+
+[data-theme="amber-interface"] .footer-link {
+    color: var(--neon-yellow);
+    transition: all 0.3s;
+}
+
+[data-theme="amber-interface"] .footer-link:hover {
+    color: var(--neon-pink);
+    text-shadow: 0 0 8px rgba(255, 138, 0, 0.6);
+}
+
+[data-theme="amber-interface"] .social-link {
+    color: var(--neon-green);
+}

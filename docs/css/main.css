@@ -429,6 +429,194 @@ section {
   color: #c5b5e0;
 }
 
+.theme-option.digital-rain .theme-preview {
+  background: #0c0c0c;
+  border: 1px solid #00ff41;
+  color: #cdcdcd;
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-option.digital-rain .theme-preview::before {
+  content: "10101";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.05;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 2rem;
+  color: #00ff41;
+  overflow: hidden;
+}
+
+.theme-option.digital-rain .theme-preview h3 {
+  color: #00ff41;
+  text-shadow: 0 0 8px rgba(0, 255, 65, 0.7);
+  position: relative;
+}
+
+.theme-option.digital-rain .theme-preview p {
+  color: #33ff57;
+  position: relative;
+}
+
+.theme-option.outrun-sunset .theme-preview {
+  background: #1f1147;
+  border: 1px solid #ff1b8d;
+  color: #f0eff1;
+  position: relative;
+  overflow: hidden;
+  background-image: linear-gradient(0deg, #1f1147 0%, #2b1055 100%);
+}
+
+.theme-option.outrun-sunset .theme-preview::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #ff1b8d, #29cdff, #ff9e1f);
+}
+
+.theme-option.outrun-sunset .theme-preview h3 {
+  color: #ff1b8d;
+  text-shadow: 0 0 8px rgba(255, 27, 141, 0.7);
+}
+
+.theme-option.outrun-sunset .theme-preview p {
+  color: #29cdff;
+}
+
+.theme-option.corporate-dystopia .theme-preview {
+  background: #1F2833;
+  border: 1px solid #45A29E;
+  color: #C5C6C7;
+}
+
+.theme-option.corporate-dystopia .theme-preview h3 {
+  color: #66FCF1;
+  text-transform: uppercase;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+}
+
+.theme-option.corporate-dystopia .theme-preview p {
+  color: #808e9b;
+}
+
+.theme-option.holographic .theme-preview {
+  background: rgba(2, 13, 25, 0.8);
+  border: 1px solid #08F7FE;
+  color: #ffffff;
+  backdrop-filter: blur(5px);
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-option.holographic .theme-preview::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 300%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+      transparent, 
+      rgba(8, 247, 254, 0.2), 
+      transparent);
+  animation: holographic-preview 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes holographic-preview {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(50%); }
+}
+
+.theme-option.holographic .theme-preview h3 {
+  background: linear-gradient(to right, #FF2079, #08F7FE, #04FEBF);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+}
+
+.theme-option.holographic .theme-preview p {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.theme-option.tokyo-night .theme-preview {
+  background: #1a1b26;
+  border: 1px solid #7aa2f7;
+  color: #a9b1d6;
+  position: relative;
+}
+
+.theme-option.tokyo-night .theme-preview::after {
+  content: "東京";
+  position: absolute;
+  bottom: 5px;
+  right: 8px;
+  font-size: 0.7rem;
+  color: rgba(247, 118, 142, 0.2);
+  pointer-events: none;
+}
+
+.theme-option.tokyo-night .theme-preview h3 {
+  color: #7aa2f7;
+  text-shadow: 0 0 8px rgba(122, 162, 247, 0.4);
+}
+
+.theme-option.tokyo-night .theme-preview p {
+  color: #9aa5ce;
+}
+
+.theme-option.amber-interface .theme-preview {
+  background: #0F0A00;
+  border: 1px solid #FFB000;
+  color: #FFB000;
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-option.amber-interface .theme-preview::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(0deg, 
+      transparent, 
+      transparent 5px, 
+      rgba(255, 176, 0, 0.03) 5px, 
+      rgba(255, 176, 0, 0.03) 10px);
+  pointer-events: none;
+}
+
+.theme-option.amber-interface .theme-preview h3 {
+  color: #FFD700;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+.theme-option.amber-interface .theme-preview p {
+  color: #B38000;
+}
+
+.theme-option.amber-interface .theme-preview::after {
+  content: "READY";
+  position: absolute;
+  top: 5px;
+  right: 8px;
+  font-size: 0.6rem;
+  color: #FFD700;
+  font-family: 'Roboto Mono', monospace;
+  letter-spacing: 1px;
+}
+
 /* Installation Section */
 .installation-terminal {
   margin-bottom: 2rem;

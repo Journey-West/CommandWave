@@ -91,6 +91,8 @@ function updateThemeIcon(theme) {
         themeIcon.className = 'fas fa-vr-cardboard';
     } else if (theme === 'tokyo-night') {
         themeIcon.className = 'fas fa-torii-gate';
+    } else if (theme === 'amber-interface') {
+        themeIcon.className = 'fas fa-terminal';
     }
 }
 
@@ -104,7 +106,8 @@ function cycleTheme() {
         'outrun-sunset', 
         'corporate-dystopia', 
         'holographic', 
-        'tokyo-night'
+        'tokyo-night',
+        'amber-interface'
     ];
     
     // Find current theme index
