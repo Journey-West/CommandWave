@@ -34,14 +34,32 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: none;
+    padding-bottom: 0;
+    background: transparent;
 }
-#settingsModal .close-modal-btn {
+#settingsModal .modal-header h2 {
+    color: var(--text-primary);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.8rem;
+    margin: 0;
+    text-shadow: 0 0 10px var(--neon-purple, rgba(194, 100, 254, 0.8));
+    letter-spacing: 0.05em;
+}
+#settingsModal .modal-close {
     background: none;
     border: none;
+    color: var(--text-primary);
     font-size: 1.5rem;
-    color: var(--neon-purple);
     cursor: pointer;
+    opacity: 0.8;
+    transition: all 0.3s;
+}
+#settingsModal .modal-close:hover {
+    color: var(--neon-purple);
+    opacity: 1;
+    transform: scale(1.1);
 }
 #settingsModal .modal-body {
     margin-bottom: 1.5rem;
@@ -71,6 +89,10 @@
     display: flex;
     justify-content: flex-end;
     gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: none;
+    background: transparent;
 }
 #settingsModal .modal-btn {
     padding: 0.5rem 1.2rem;
@@ -81,13 +103,35 @@
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
 }
-#settingsModal .modal-btn.submit {
-    background: var(--neon-purple);
-    color: #fff;
+.save-btn, 
+.cancel-btn {
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
 }
-#settingsModal .modal-btn.cancel {
-    background: #333;
-    color: #fff;
+.save-btn {
+    background-color: var(--neon-purple, #c264fe);
+    color: var(--dark-bg, #181828);
+    box-shadow: 0 0 12px rgba(194, 100, 254, 0.7);
+}
+.save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(194, 100, 254, 0.9);
+}
+.cancel-btn {
+    background-color: rgba(55, 55, 75, 0.8);
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
+}
+.cancel-btn:hover {
+    background-color: rgba(85, 85, 105, 0.8);
+    transform: translateY(-2px);
 }
 
 /* Theme cards - GitHub style */

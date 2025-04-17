@@ -8,18 +8,20 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
+    padding: 1rem 2rem;
     border-bottom: 1px solid var(--header-border);
     background-color: var(--header-background);
+    backdrop-filter: blur(5px);
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 100;
     height: 70px;
     box-sizing: border-box;
 }
 
-/* App Logo */
-.app-logo {
+/* App Logo and Main Title */
+.app-logo,
+.main-title {
     font-family: 'Orbitron', sans-serif;
     color: var(--neon-blue);
     font-size: 1.5rem;
@@ -27,6 +29,23 @@ header {
     margin: 0;
     display: flex;
     align-items: center;
+}
+
+.main-title {
+    font-weight: 900;
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-primary);
+    text-shadow: 0 0 10px rgba(224, 224, 252, 0.3);
+}
+
+.wave-text {
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: var(--shadow-blue);
 }
 
 /* Header Controls */
@@ -61,6 +80,34 @@ header {
 
 .header-btn i {
     margin-right: 0.5rem;
+}
+
+/* Notes and Settings Button styles */
+#globalNotesBtn {
+    color: var(--neon-blue);
+    border-color: var(--neon-blue);
+}
+
+#tabNotesBtn {
+    color: var(--neon-pink);
+    border-color: var(--neon-pink);
+    box-shadow: var(--shadow-pink);
+}
+
+#tabNotesBtn:hover {
+    background-color: rgba(255, 90, 140, 0.1);
+    box-shadow: var(--shadow-pink);
+}
+
+#settingsBtn {
+    color: var(--neon-purple);
+    border-color: var(--neon-purple);
+    box-shadow: var(--shadow-purple);
+}
+
+#settingsBtn:hover {
+    background-color: rgba(194, 100, 254, 0.1);
+    box-shadow: var(--shadow-purple);
 }
 
 /* Button variants for specific actions */
