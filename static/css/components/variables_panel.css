@@ -59,11 +59,10 @@
     font-family: 'Orbitron', sans-serif;
     font-size: 0.8rem;
     color: var(--text-secondary);
-    display: none;
+    display: inline;
 }
 
 .toggle-variables-btn:hover .toggle-text {
-    display: inline;
     color: var(--neon-yellow);
 }
 
@@ -71,9 +70,15 @@
     transition: transform 0.3s ease;
 }
 
+/* Collapsed state for variable content */
+.variable-section.collapsed .variable-content {
+    max-height: 0;
+    padding: 0 1rem;
+    border-top: none;
+}
+
 /* Rotate icon when collapsed */
-.variable-content.collapsed ~ .variable-header .toggle-variables-btn i,
-#variableContent.collapsed + .toggle-variables-btn i {
+.variable-section.collapsed .toggle-variables-btn i {
     transform: rotate(180deg);
 }
 
@@ -83,12 +88,6 @@
     border-top: 1px solid var(--border-light);
     transition: max-height 0.3s ease, padding 0.3s ease;
     overflow: hidden;
-}
-
-.variable-content.collapsed {
-    max-height: 0;
-    padding: 0 1rem;
-    border-top: none;
 }
 
 /* Variable Input Groups */

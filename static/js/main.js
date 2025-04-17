@@ -14,6 +14,7 @@ import SettingsManager from './ui/settings_manager.js';
 import NotesManager from './ui/notes_manager.js';
 import API from './api/index.js';
 import ErrorHandler from './utils/error_handler.js';
+import VariablesPanel from './ui/variables_panel.js';
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
@@ -43,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const variableManager = new VariableManager();
         const settingsManager = new SettingsManager();
         const notesManager = new NotesManager();
+        const variablesPanel = new VariablesPanel();
         
         // Make modules available globally for debugging
         window.CommandWave = {
@@ -63,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         variableManager.init();
         settingsManager.init();
         notesManager.init();
+        variablesPanel.init();
         
         // Register additional modal events after making the components globally available
         // This ensures proper event handling between components
