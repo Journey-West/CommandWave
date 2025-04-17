@@ -120,8 +120,10 @@
     font-weight: 600;
     margin-right: 0.5rem;
     font-family: 'Orbitron', sans-serif;
-    font-size: 0.9rem;
+    font-size: 0.98rem;
     text-shadow: 0 0 5px rgba(255, 90, 140, 0.5);
+    letter-spacing: 0.02em;
+    padding-right: 0.3em;
 }
 
 [data-theme="light"] .search-result-item .filename {
@@ -129,12 +131,83 @@
 }
 
 .search-result-item .line-number {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.8rem;
-    font-family: 'Consolas', monospace;
-    margin-right: 0.5rem;
+    color: var(--neon-blue);
+    font-size: 0.92rem;
+    font-family: 'Roboto Mono', monospace;
+    margin-right: 0.7rem;
+    opacity: 0.82;
+    text-shadow: 0 0 4px rgba(96,239,255,0.4);
+}
+
+.search-result-item .result-line {
+    color: var(--input-text);
+    font-size: 0.98rem;
+    font-family: 'Roboto Mono', monospace;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin-left: 0.2em;
+    margin-top: 0.08em;
+}
+
+.search-highlight {
+    background: var(--neon-blue);
+    color: #111;
+    border-radius: 3px;
+    padding: 0 0.2em;
+    font-weight: bold;
+    box-shadow: 0 0 6px var(--neon-blue), 0 0 1px #fff;
+    text-shadow: none;
+    transition: background 0.2s;
 }
 
 [data-theme="light"] .search-result-item .line-number {
     color: #4a4a6a;
+}
+
+[data-theme="light"] .search-highlight {
+    background: #00bfff;
+    color: #fff;
+}
+
+.result-line-box {
+    background: rgba(96,239,255,0.10);
+    border: 1.5px solid var(--neon-blue);
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(96,239,255,0.08);
+    margin: 0.15em 0 0.1em 0;
+    padding: 0.52em 0.95em 0.52em 0.95em;
+    transition: border 0.2s, box-shadow 0.2s;
+    display: block;
+    overflow-x: auto;
+}
+
+.result-line-box .result-line {
+    color: var(--input-text);
+    font-size: 1.01rem;
+    font-family: 'Roboto Mono', monospace;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+    padding: 0;
+}
+
+.result-line-box .search-highlight {
+    background: var(--neon-blue);
+    color: #111;
+    border-radius: 3px;
+    padding: 0 0.2em;
+    font-weight: bold;
+    box-shadow: 0 0 6px var(--neon-blue), 0 0 1px #fff;
+    text-shadow: none;
+    transition: background 0.2s;
+}
+
+[data-theme="light"] .result-line-box {
+    background: #eaf6ff;
+    border-color: #00bfff;
+}
+
+[data-theme="light"] .result-line-box .search-highlight {
+    background: #00bfff;
+    color: #fff;
 }

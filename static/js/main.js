@@ -78,6 +78,50 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         
+        // --- SEARCH FUNCTIONALITY PATCH ---
+        // Attach search event listener directly to input
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        if (searchInput && searchResults) {
+            searchInput.addEventListener('input', async function() {
+                const query = searchInput.value.trim();
+                if (query.length < 2) {
+                    searchResults.style.display = 'none';
+                    searchResults.innerHTML = '';
+                    return;
+                }
+                searchResults.innerHTML = '<div class="search-result-item">Searching...</div>';
+                searchResults.style.display = 'block';
+                try {
+                    const resp = await fetch(`/api/playbooks/search?query=${encodeURIComponent(query)}`);
+                    const data = await resp.json();
+                    if (data.success && data.results && data.results.length > 0) {
+                        searchResults.innerHTML = data.results.map(r =>
+                            `<div class=\"search-result-item\">`
+                            + `<div class=\"result-header\">`
+                            + `<span class=\"filename\">${r.filename}</span>`
+                            + `<span class=\"line-number\">${r.line_number}</span>`
+                            + `</div>`
+                            + `<div class=\"result-line-box\"><span class=\"result-line\">${highlightQuery(r.line, query)}</span></div>`
+                            + `</div>`
+                        ).join('');
+                    } else {
+                        searchResults.innerHTML = '<div class="search-result-item">No results found.</div>';
+                    }
+                } catch (err) {
+                    searchResults.innerHTML = '<div class="search-result-item">Error searching.</div>';
+                }
+            });
+        }
+        // --- END SEARCH FUNCTIONALITY PATCH ---
+
+        // Highlight query inside results
+        function highlightQuery(line, query) {
+            if (!query) return line;
+            const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')})`, 'gi');
+            return line.replace(regex, '<span class="search-highlight">$1</span>');
+        }
+        
         // Setup global error handling for uncaught exceptions
         window.addEventListener('error', (event) => {
             ErrorHandler.handleError(event.error || new Error(event.message), 
