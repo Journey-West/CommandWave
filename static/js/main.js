@@ -17,6 +17,7 @@ import ErrorHandler from './utils/error_handler.js';
 import VariablesPanel from './ui/variables_panel.js';
 import SearchManager from './ui/search_manager.js';
 import PlaybookManager from './ui/playbook_manager.js';
+import NotificationManager from './ui/notification_manager.js';
 import './ui/settings_modal.js';
 
 // Initialize when DOM is ready
@@ -64,7 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
             version: '0.2.0', // Modular architecture version
             searchManager,
             variablesPanel,
-            playbookManager
+            playbookManager,
+            notificationManager: NotificationManager
         };
         
         // Initialize modules
@@ -76,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         variablesPanel.init();
         // searchManager does not have an init method, it self-initializes in the constructor
         // playbookManager initialized in its constructor
+        // notificationManager is a singleton that doesn't need initialization
         
         // Register additional modal events after making the components globally available
         // This ensures proper event handling between components

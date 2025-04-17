@@ -65,12 +65,15 @@ class PlaybookManager {
      * @param {string} type - Notification type (success, error, info)
      */
     showNotification(title, message, type = 'info') {
-        if (this.modalController) {
+        // Always use NotificationManager directly, bypassing the modal controller
+        if (window.CommandWave && window.CommandWave.notificationManager) {
+            window.CommandWave.notificationManager.show(title, message, type);
+        } else if (this.modalController) {
+            // Fallback to modal controller if available
             this.modalController.showNotification(title, message, type);
         } else {
-            // Fallback if modal controller is not available
+            // Last resort - log to console but do NOT use alert
             console.log(`${type.toUpperCase()}: ${title} - ${message}`);
-            alert(`${title}: ${message}`);
         }
     }
 
@@ -297,15 +300,30 @@ class PlaybookManager {
             this.editPlaybook(playbook.id);
         });
         
-        // Add delete button
+        // Add delete button with hold-to-delete functionality
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'delete-btn';
         deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
-        deleteBtn.title = 'Delete Playbook';
-        deleteBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent triggering the header click
-            this.deletePlaybook(playbook.id);
-        });
+        deleteBtn.title = 'Hold to Delete Playbook';
+        
+        // Add progress container and bar
+        const progressContainer = document.createElement('div');
+        progressContainer.className = 'progress-container';
+        const progressBar = document.createElement('div');
+        progressBar.className = 'progress-bar';
+        progressContainer.appendChild(progressBar);
+        
+        // Add countdown element
+        const countdown = document.createElement('div');
+        countdown.className = 'countdown';
+        countdown.textContent = '3';
+        
+        // Append progress elements to delete button
+        deleteBtn.appendChild(progressContainer);
+        deleteBtn.appendChild(countdown);
+        
+        // Setup the hold-to-delete functionality
+        this.setupHoldToDelete(deleteBtn, progressBar, countdown, playbook.id);
         
         controls.appendChild(editBtn);
         controls.appendChild(deleteBtn);
@@ -363,10 +381,127 @@ class PlaybookManager {
     /**
      * Delete a playbook
      * @param {string} id - Playbook ID to delete
+     * @deprecated - This is no longer used directly, replaced by hold-to-delete
      */
-    deletePlaybook(id) {
+    async deletePlaybook(id) {
         console.log(`Delete playbook: ${id}`);
-        // Will be implemented in a future update
+        // This method is retained for backward compatibility
+        // The actual deletion happens through the hold-to-delete mechanism
+    }
+
+    /**
+     * Setup hold-to-delete functionality for a delete button
+     * @param {HTMLElement} button - Delete button element
+     * @param {HTMLElement} progressBar - Progress bar element
+     * @param {HTMLElement} countdownEl - Countdown element
+     * @param {string} playbookId - ID of the playbook to delete
+     */
+    setupHoldToDelete(button, progressBar, countdownEl, playbookId) {
+        let holdTimer = null;
+        let startTime = 0;
+        const totalHoldTime = 3000; // 3 seconds to delete
+        
+        // When mouse down on delete button, start the hold timer
+        button.addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            startTime = Date.now();
+            button.classList.add('deleting');
+            
+            // Start the animation
+            holdTimer = setInterval(() => {
+                const elapsedTime = Date.now() - startTime;
+                const percentage = Math.min((elapsedTime / totalHoldTime) * 100, 100);
+                
+                // Update progress bar and countdown
+                this.updateDeleteProgress(progressBar, countdownEl, percentage, totalHoldTime);
+                
+                // If held for the required time, trigger delete
+                if (percentage >= 100) {
+                    this.completeDelete(button, holdTimer, playbookId);
+                }
+            }, 50);
+        });
+        
+        // If mouse up or leave before completion, cancel the delete
+        const cancelDelete = () => {
+            if (holdTimer) {
+                clearInterval(holdTimer);
+                holdTimer = null;
+                button.classList.remove('deleting');
+                progressBar.style.width = '0%';
+                countdownEl.textContent = '3';
+            }
+        };
+        
+        button.addEventListener('mouseup', cancelDelete);
+        button.addEventListener('mouseleave', cancelDelete);
+        
+        // Add click event to stop propagation and prevent header click
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+        });
+    }
+
+    /**
+     * Update the delete button progress
+     * @param {HTMLElement} progressBar - Progress bar element
+     * @param {HTMLElement} countdownEl - Countdown element
+     * @param {number} percentage - Current percentage (0-100)
+     * @param {number} totalTime - Total hold time in ms
+     */
+    updateDeleteProgress(progressBar, countdownEl, percentage, totalTime) {
+        // Update progress bar width
+        progressBar.style.width = `${percentage}%`;
+        
+        // Update countdown text (3...2...1...)
+        const remainingTime = Math.ceil((totalTime - (percentage / 100 * totalTime)) / 1000);
+        countdownEl.textContent = remainingTime;
+    }
+
+    /**
+     * Complete the delete operation when hold is complete
+     * @param {HTMLElement} button - Delete button
+     * @param {number} holdTimer - Interval timer ID
+     * @param {string} playbookId - ID of the playbook to delete
+     */
+    async completeDelete(button, holdTimer, playbookId) {
+        clearInterval(holdTimer);
+        button.classList.remove('deleting');
+        button.classList.add('delete-confirmed');
+        
+        try {
+            // Get the playbook element
+            const playbookElement = document.getElementById(`playbook-${this.sanitizeId(playbookId)}`);
+            if (!playbookElement) {
+                throw new Error(`Playbook element not found for ID: ${playbookId}`);
+            }
+            
+            // Get the playbook title for the notification message
+            const titleElement = playbookElement.querySelector('h3');
+            const playbookTitle = titleElement ? titleElement.textContent : 'this playbook';
+            
+            // Show loading state
+            playbookElement.classList.add('deleting');
+            
+            // Call the API to delete the playbook
+            await playbookAPI.deletePlaybook(playbookId);
+            
+            // Remove the playbook element from the DOM with animation
+            playbookElement.classList.add('deleted');
+            setTimeout(() => {
+                playbookElement.remove();
+            }, 300); // Match this with the CSS transition time
+            
+            // Show success notification
+            this.showNotification('Success', `Playbook "${playbookTitle}" has been deleted.`, 'success');
+        } catch (error) {
+            console.error(`Error deleting playbook ${playbookId}:`, error);
+            this.showNotification('Error', `Failed to delete playbook: ${error.message}`, 'error');
+            
+            // Reset the button
+            button.classList.remove('delete-confirmed');
+        }
     }
 
     /**

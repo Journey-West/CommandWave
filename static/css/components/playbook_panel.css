@@ -361,6 +361,59 @@
     color: var(--neon-red);
 }
 
+/* Hold to delete button */
+.delete-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.delete-btn .progress-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.delete-btn .progress-bar {
+    height: 100%;
+    width: 0;
+    background: var(--neon-red);
+    transition: width 0.1s linear;
+    box-shadow: 0 0 5px var(--neon-red);
+}
+
+.delete-btn .countdown {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--neon-red);
+    font-size: 0.75rem;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.delete-btn.deleting .countdown {
+    opacity: 1;
+}
+
+.delete-btn.deleting i {
+    opacity: 0.3;
+}
+
+.delete-btn.delete-confirmed {
+    background-color: var(--neon-red);
+    color: var(--bg-color);
+}
+
+.delete-btn.delete-confirmed i {
+    color: var(--bg-color);
+    opacity: 1;
+}
+
 /* Playbook Content Typography */
 .playbook-content h1,
 .playbook-content h2,
@@ -464,6 +517,53 @@
 [data-theme="light"] .playbook-content blockquote {
     border-left: 3px solid #00a8e8;
     color: #555;
+}
+
+/* Playbook Deletion Animation */
+.playbook.deleting {
+    animation: playbook-deleting 0.5s ease;
+    border-color: var(--neon-red);
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+.playbook.deleted {
+    animation: playbook-deleted 0.3s ease forwards;
+}
+
+@keyframes playbook-deleting {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(255, 0, 0, 0);
+    }
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
+    }
+}
+
+@keyframes playbook-deleted {
+    from {
+        transform: translateX(0);
+        opacity: 0.8;
+    }
+    to {
+        transform: translateX(-100%);
+        opacity: 0;
+        height: 0;
+        margin: 0;
+        padding: 0;
+    }
+}
+
+/* Light theme variants */
+[data-theme="light"] .playbook.deleting {
+    border-color: #ff3366;
+    box-shadow: 0 0 10px rgba(255, 51, 102, 0.3);
 }
 
 /* Playbook NetExec Styles */

@@ -99,6 +99,31 @@ def get_playbook(playbook_id):
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@playbook_routes.route('/<playbook_id>/delete', methods=['POST'])
+def delete_playbook(playbook_id):
+    """Delete a specific playbook by ID."""
+    try:
+        if playbook_id in playbooks:
+            # Get the playbook details before removing
+            playbook = playbooks[playbook_id]
+            
+            # Delete the file from disk
+            file_path = playbook['path']
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            
+            # Remove from in-memory storage
+            del playbooks[playbook_id]
+            
+            return jsonify({
+                'success': True,
+                'message': f"Playbook '{playbook['filename']}' deleted successfully"
+            })
+        else:
+            return jsonify({'success': False, 'error': 'Playbook not found'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @playbook_routes.route('/search', methods=['GET'])
 def search_playbooks():
     """Search for playbooks by query."""

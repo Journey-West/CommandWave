@@ -1,12 +1,15 @@
 /**
- * modal_controller.js - Modular modal management for CommandWave
- * Handles modal opening, closing, and interaction
+ * modal_controller.js - UI module for modal management
+ * Handles showing/hiding modals and modal interactions
  */
+
+import NotificationManager from './notification_manager.js';
 
 class ModalController {
     constructor() {
         this.modalRegistry = {};
         this.activeModal = null;
+        this.confirmCallback = null;
         
         // Initialize controller
         this.init();
@@ -56,6 +59,9 @@ class ModalController {
         
         // For backward compatibility - handle specific modals that don't use data attributes
         this.setupLegacyTriggers();
+        
+        // Setup confirmation modal handlers
+        this.setupConfirmationModal();
     }
     
     /**
@@ -78,6 +84,49 @@ class ModalController {
                 e.preventDefault();
                 this.openModal('createVariableModal');
                 document.getElementById('newVariableName')?.focus();
+            });
+        }
+    }
+    
+    /**
+     * Set up the confirmation modal handlers
+     */
+    setupConfirmationModal() {
+        const confirmModal = document.getElementById('confirmModal');
+        if (confirmModal) {
+            // Confirm button
+            const confirmBtn = confirmModal.querySelector('#confirmAction');
+            if (confirmBtn) {
+                confirmBtn.addEventListener('click', () => {
+                    this.closeModal('confirmModal');
+                    if (this.confirmCallback) {
+                        this.confirmCallback(true);
+                        this.confirmCallback = null;
+                    }
+                });
+            }
+            
+            // Cancel button
+            const cancelBtn = confirmModal.querySelector('#confirmCancel');
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', () => {
+                    this.closeModal('confirmModal');
+                    if (this.confirmCallback) {
+                        this.confirmCallback(false);
+                        this.confirmCallback = null;
+                    }
+                });
+            }
+            
+            // Handle clicks outside the modal content
+            confirmModal.addEventListener('click', (e) => {
+                if (e.target === confirmModal) {
+                    this.closeModal('confirmModal');
+                    if (this.confirmCallback) {
+                        this.confirmCallback(false);
+                        this.confirmCallback = null;
+                    }
+                }
             });
         }
     }
@@ -114,17 +163,56 @@ class ModalController {
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.activeModal) {
                 this.closeModal(this.activeModal);
+                
+                // If confirmation modal is open and escape is pressed, trigger cancel
+                if (this.activeModal === 'confirmModal' && this.confirmCallback) {
+                    this.confirmCallback(false);
+                    this.confirmCallback = null;
+                }
             }
         });
         
         // Close when clicking outside the modal
         document.querySelectorAll('.modal-container').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    this.closeModal(modal.id);
-                }
-            });
+            if (modal.id !== 'confirmModal') { // Skip confirmModal, handled separately
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        this.closeModal(modal.id);
+                    }
+                });
+            }
         });
+    }
+    
+    /**
+     * Show a confirmation dialog with custom modal
+     * @param {string} title - Confirmation title
+     * @param {string} message - Confirmation message
+     * @param {Function} callback - Callback function that receives boolean result
+     */
+    showConfirmation(title, message, callback) {
+        const confirmModal = document.getElementById('confirmModal');
+        if (!confirmModal) {
+            console.warn('Confirmation modal not found, falling back to browser confirm');
+            const result = confirm(message);
+            if (callback) {
+                callback(result);
+            }
+            return;
+        }
+        
+        // Set the title and message
+        const titleElement = confirmModal.querySelector('#confirmTitle');
+        const messageElement = confirmModal.querySelector('#confirmMessage');
+        
+        if (titleElement) titleElement.textContent = title;
+        if (messageElement) messageElement.textContent = message;
+        
+        // Store the callback
+        this.confirmCallback = callback;
+        
+        // Show the modal
+        this.openModal('confirmModal');
     }
     
     /**
@@ -139,7 +227,7 @@ class ModalController {
         }
         
         // Close any active modal
-        if (this.activeModal && this.activeModal !== modalId) {
+        if (this.activeModal) {
             this.closeModal(this.activeModal);
         }
         
@@ -203,7 +291,23 @@ class ModalController {
         alert(message);
         return false;
     }
+    
+    /**
+     * Show a notification to the user
+     * @param {string} title - Notification title
+     * @param {string} message - Notification message
+     * @param {string} type - Notification type (success, error, info)
+     */
+    showNotification(title, message, type = 'info') {
+        if (type === 'error') {
+            // Use error modal for critical errors
+            this.showError(message);
+        } else {
+            // Use toast notification for success and info messages
+            NotificationManager.show(title, message, type);
+        }
+    }
 }
 
-// Export for use in other modules
+// Export the class itself (not an instance) for compatibility with main.js
 export default ModalController;
