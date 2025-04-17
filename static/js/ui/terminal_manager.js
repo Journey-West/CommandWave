@@ -243,14 +243,8 @@ export default class TerminalManager {
             });
         }
         
-        // Delete terminal button
-        const deleteBtn = document.getElementById('deleteTerminalBtn');
-        if (deleteBtn) {
-            deleteBtn.addEventListener('click', () => {
-                console.log('Delete terminal button clicked');
-                this.handleDeleteTerminal();
-            });
-        }
+        // Delete terminal button with hold-to-delete functionality
+        this.setupHoldToDeleteButton();
         
         // Add enter key support for the terminal name input
         const nameInput = document.getElementById('renameTerminalName');
@@ -261,6 +255,173 @@ export default class TerminalManager {
                     this.handleRenameTerminal();
                 }
             });
+        }
+    }
+    
+    /**
+     * Setup the hold-to-delete functionality for the delete terminal button
+     */
+    setupHoldToDeleteButton() {
+        const deleteBtn = document.getElementById('deleteTerminalBtn');
+        const HOLD_TIME = 3000; // 3 seconds in milliseconds
+        
+        if (!deleteBtn) return;
+        
+        const progressBar = deleteBtn.querySelector('.delete-progress');
+        const countdownEl = deleteBtn.querySelector('.delete-countdown');
+        
+        let holdStartTime = 0;
+        let holdTimer = null;
+        let animationFrameId = null;
+        
+        // Handle mouse down - start hold timer
+        deleteBtn.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            
+            // Prevent accidental double-clicks
+            if (holdTimer !== null) return;
+            
+            holdStartTime = Date.now();
+            deleteBtn.classList.add('delete-active');
+            
+            // Start the progress animation
+            this.updateDeleteProgress(progressBar, countdownEl, 0, HOLD_TIME);
+            
+            // Update the progress continuously
+            const updateProgress = () => {
+                const elapsed = Date.now() - holdStartTime;
+                const percentage = Math.min(100, (elapsed / HOLD_TIME) * 100);
+                
+                this.updateDeleteProgress(progressBar, countdownEl, percentage, HOLD_TIME);
+                
+                if (percentage < 100) {
+                    animationFrameId = requestAnimationFrame(updateProgress);
+                }
+            };
+            
+            animationFrameId = requestAnimationFrame(updateProgress);
+            
+            // Set timeout for the delete action
+            holdTimer = setTimeout(() => {
+                console.log('Delete terminal button held for required time');
+                this.handleDeleteTerminal();
+                this.resetDeleteButton(deleteBtn, progressBar, countdownEl);
+            }, HOLD_TIME);
+        });
+        
+        // Handle mouse up - cancel if released too early
+        const cancelDelete = () => {
+            if (holdTimer !== null) {
+                clearTimeout(holdTimer);
+                holdTimer = null;
+                
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
+                
+                this.resetDeleteButton(deleteBtn, progressBar, countdownEl);
+            }
+        };
+        
+        deleteBtn.addEventListener('mouseup', cancelDelete);
+        deleteBtn.addEventListener('mouseleave', cancelDelete);
+        
+        // Touch events for mobile support
+        deleteBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            
+            // Prevent accidental double-touches
+            if (holdTimer !== null) return;
+            
+            holdStartTime = Date.now();
+            deleteBtn.classList.add('delete-active');
+            
+            // Update the progress continuously
+            const updateProgress = () => {
+                const elapsed = Date.now() - holdStartTime;
+                const percentage = Math.min(100, (elapsed / HOLD_TIME) * 100);
+                
+                this.updateDeleteProgress(progressBar, countdownEl, percentage, HOLD_TIME);
+                
+                if (percentage < 100) {
+                    animationFrameId = requestAnimationFrame(updateProgress);
+                }
+            };
+            
+            animationFrameId = requestAnimationFrame(updateProgress);
+            
+            // Set timeout for the delete action
+            holdTimer = setTimeout(() => {
+                console.log('Delete terminal button held for required time');
+                this.handleDeleteTerminal();
+                this.resetDeleteButton(deleteBtn, progressBar, countdownEl);
+            }, HOLD_TIME);
+        });
+        
+        deleteBtn.addEventListener('touchend', cancelDelete);
+        deleteBtn.addEventListener('touchcancel', cancelDelete);
+    }
+    
+    /**
+     * Update the delete button progress and countdown
+     * @param {HTMLElement} progressBar - Progress bar element
+     * @param {HTMLElement} countdownEl - Countdown text element
+     * @param {number} percentage - Current percentage (0-100)
+     * @param {number} totalTime - Total hold time in ms
+     */
+    updateDeleteProgress(progressBar, countdownEl, percentage, totalTime) {
+        if (!progressBar || !countdownEl) return;
+        
+        // Update progress bar width
+        progressBar.style.width = `${percentage}%`;
+        
+        // Update countdown text
+        const remaining = Math.ceil((totalTime - (percentage * totalTime / 100)) / 1000);
+        countdownEl.textContent = remaining <= 0 ? 'Deleting...' : `Hold ${remaining}s to delete...`;
+    }
+    
+    /**
+     * Reset the delete button state
+     * @param {HTMLElement} button - Delete button element
+     * @param {HTMLElement} progressBar - Progress bar element
+     * @param {HTMLElement} countdownEl - Countdown text element
+     */
+    resetDeleteButton(button, progressBar, countdownEl) {
+        if (button) button.classList.remove('delete-active');
+        if (progressBar) progressBar.style.width = '0%';
+        if (countdownEl) countdownEl.textContent = 'Hold to delete...';
+    }
+    
+    /**
+     * Handle the delete terminal button click
+     */
+    handleDeleteTerminal() {
+        try {
+            const portInput = document.getElementById('renameTerminalPort');
+            
+            if (!portInput || !portInput.value) {
+                console.error('Missing port for terminal deletion');
+                return;
+            }
+            
+            const port = portInput.value;
+            
+            // Close the modal
+            if (window.CommandWave && window.CommandWave.modalController) {
+                window.CommandWave.modalController.closeModal('renameTerminalModal');
+            } else {
+                // Direct DOM manipulation fallback
+                const modal = document.getElementById('renameTerminalModal');
+                if (modal) {
+                    modal.classList.remove('active');
+                }
+            }
+            
+            // Delete the terminal
+            this.deleteTerminal(port);
+        } catch (error) {
+            console.error('Error handling delete terminal:', error);
         }
     }
     
@@ -576,41 +737,6 @@ export default class TerminalManager {
             this.renameTerminal(port, terminalName);
         } catch (error) {
             console.error('Error handling rename terminal:', error);
-        }
-    }
-    
-    /**
-     * Handle the delete terminal button click
-     */
-    handleDeleteTerminal() {
-        try {
-            const portInput = document.getElementById('renameTerminalPort');
-            
-            if (!portInput || !portInput.value) {
-                console.error('Missing port for terminal deletion');
-                return;
-            }
-            
-            const port = portInput.value;
-            
-            // Ask for confirmation before deleting
-            if (confirm(`Are you sure you want to delete this terminal? This action cannot be undone.`)) {
-                // Close the modal
-                if (window.CommandWave && window.CommandWave.modalController) {
-                    window.CommandWave.modalController.closeModal('renameTerminalModal');
-                } else {
-                    // Direct DOM manipulation fallback
-                    const modal = document.getElementById('renameTerminalModal');
-                    if (modal) {
-                        modal.classList.remove('active');
-                    }
-                }
-                
-                // Delete the terminal
-                this.deleteTerminal(port);
-            }
-        } catch (error) {
-            console.error('Error handling delete terminal:', error);
         }
     }
     

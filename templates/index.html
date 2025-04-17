@@ -222,6 +222,15 @@
         .delete-active .delete-countdown {
             opacity: 1;
         }
+        
+        /* Hide the original button text when countdown is active */
+        .modal-btn.delete .button-text {
+            transition: opacity 0.2s;
+        }
+        
+        .modal-btn.delete.delete-active .button-text {
+            opacity: 0;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
@@ -438,7 +447,7 @@ echo 'Hello, World!'
             </div>
             <div class="modal-footer">
                 <button id="deleteTerminalBtn" class="modal-btn delete">
-                    Delete Terminal
+                    <span class="button-text">Delete Terminal</span>
                     <div class="delete-progress"></div>
                     <div class="delete-countdown">Hold to delete...</div>
                 </button>
