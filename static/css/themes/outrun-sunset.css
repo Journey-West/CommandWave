@@ -1,0 +1,287 @@
+/* outrun-sunset.css - 80s retrowave aesthetics with vibrant gradients */
+
+[data-theme="outrun-sunset"] {
+    /* Base colors */
+    --background-dark: #1f1147;
+    --background-medium: #2b1055;
+    --background-light: #331f67;
+    --text-primary: #f0eff1;
+    --text-secondary: #c2c2d1;
+    --border-light: rgba(255, 27, 141, 0.4);
+    
+    /* Accent colors */
+    --accent-pink: #ff1b8d;
+    --accent-blue: #29cdff;
+    --accent-orange: #ff9e1f;
+    
+    /* Component colors */
+    --header-bg: rgba(31, 17, 71, 0.95);
+    --terminal-bg: rgba(43, 16, 85, 0.9);
+    --terminal-header-bg: rgba(31, 17, 71, 0.95);
+    --sidebar-bg: rgba(43, 16, 85, 0.8);
+    --modal-bg: rgba(31, 17, 71, 0.95);
+    --card-bg: rgba(51, 31, 103, 0.8);
+    
+    /* Shadow effects */
+    --shadow-pink: 0 0 10px rgba(255, 27, 141, 0.6);
+    --shadow-blue: 0 0 10px rgba(41, 205, 255, 0.6);
+    --glow-pink: 0 0 15px rgba(255, 27, 141, 0.8);
+    
+    /* Button styles */
+    --btn-primary-bg: rgba(255, 27, 141, 0.2);
+    --btn-primary-border: #ff1b8d;
+    --btn-primary-hover: rgba(255, 27, 141, 0.4);
+    --btn-secondary-bg: rgba(41, 205, 255, 0.2);
+    --btn-secondary-border: #29cdff;
+    --btn-text: #f0eff1;
+    
+    /* Input styles */
+    --input-bg: rgba(31, 17, 71, 0.6);
+    --input-border: rgba(255, 27, 141, 0.4);
+    --input-focus-border: #ff1b8d;
+    --input-text: #f0eff1;
+    --input-placeholder: rgba(194, 194, 209, 0.7);
+    
+    /* Tab styles */
+    --tab-active-bg: rgba(255, 27, 141, 0.2);
+    --tab-active-border: #ff1b8d;
+    --tab-inactive-bg: rgba(31, 17, 71, 0.4);
+    --tab-inactive-border: rgba(255, 27, 141, 0.2);
+    
+    /* Scrollbar */
+    --scrollbar-track: rgba(31, 17, 71, 0.5);
+    --scrollbar-thumb: rgba(255, 27, 141, 0.4);
+    --scrollbar-thumb-hover: rgba(255, 27, 141, 0.6);
+}
+
+/* Outrun Sunset special effects */
+[data-theme="outrun-sunset"] body {
+    background-color: var(--background-dark);
+    background-image: 
+        linear-gradient(180deg, var(--background-dark) 0%, var(--background-medium) 100%),
+        url('../img/grid-bg.png');
+    background-size: cover;
+    background-attachment: fixed;
+    color: var(--text-primary);
+    position: relative;
+}
+
+[data-theme="outrun-sunset"] body::before {
+    content: "";
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 30%;
+    background: linear-gradient(0deg, 
+        rgba(255, 27, 141, 0.2) 0%, 
+        rgba(41, 205, 255, 0.2) 50%, 
+        rgba(255, 158, 31, 0.2) 100%);
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.4;
+}
+
+/* Highlight and selection */
+[data-theme="outrun-sunset"] ::selection {
+    background: rgba(255, 27, 141, 0.3);
+    color: #ffffff;
+}
+
+/* Header style */
+[data-theme="outrun-sunset"] .header {
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--accent-pink);
+    box-shadow: 0 0 15px rgba(255, 27, 141, 0.3);
+}
+
+/* Logo */
+[data-theme="outrun-sunset"] .main-title {
+    color: var(--text-primary);
+}
+
+[data-theme="outrun-sunset"] .wave-text {
+    color: var(--accent-pink);
+    text-shadow: 0 0 10px rgba(255, 27, 141, 0.8);
+}
+
+/* Terminal area */
+[data-theme="outrun-sunset"] .terminal-area {
+    background: var(--terminal-bg);
+    border: 1px solid var(--accent-pink);
+    box-shadow: var(--shadow-pink);
+}
+
+[data-theme="outrun-sunset"] .terminal-tabs {
+    background: var(--terminal-header-bg);
+    border-bottom: 1px solid var(--border-light);
+}
+
+[data-theme="outrun-sunset"] .tab-btn {
+    background: var(--tab-inactive-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--tab-inactive-border);
+}
+
+[data-theme="outrun-sunset"] .tab-btn:hover {
+    border-color: var(--accent-pink);
+    color: var(--accent-pink);
+}
+
+[data-theme="outrun-sunset"] .tab-btn.active {
+    background: var(--tab-active-bg);
+    border-color: var(--tab-active-border);
+    color: var(--accent-pink);
+    text-shadow: 0 0 5px rgba(255, 27, 141, 0.5);
+}
+
+/* Sidebar elements */
+[data-theme="outrun-sunset"] .content-area section {
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-pink);
+}
+
+[data-theme="outrun-sunset"] section h2 {
+    color: var(--accent-pink);
+    text-shadow: 0 0 5px rgba(255, 27, 141, 0.5);
+}
+
+/* Inputs */
+[data-theme="outrun-sunset"] input[type="text"], [data-theme="outrun-sunset"] input[type="password"], [data-theme="outrun-sunset"] textarea, [data-theme="outrun-sunset"] select {
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--input-text);
+}
+
+[data-theme="outrun-sunset"] input[type="text"]:focus, [data-theme="outrun-sunset"] input[type="password"]:focus, [data-theme="outrun-sunset"] textarea:focus, [data-theme="outrun-sunset"] select:focus {
+    border-color: var(--input-focus-border);
+    box-shadow: 0 0 5px rgba(255, 27, 141, 0.5);
+}
+
+[data-theme="outrun-sunset"] input::placeholder {
+    color: var(--input-placeholder);
+}
+
+/* Buttons */
+[data-theme="outrun-sunset"] .btn, [data-theme="outrun-sunset"] button:not(.tab-btn):not(.modal-close) {
+    background: var(--btn-primary-bg);
+    border: 1px solid var(--btn-primary-border);
+    color: var(--btn-text);
+}
+
+[data-theme="outrun-sunset"] .btn:hover, [data-theme="outrun-sunset"] button:not(.tab-btn):not(.modal-close):hover {
+    background: var(--btn-primary-hover);
+    box-shadow: 0 0 10px rgba(255, 27, 141, 0.5);
+}
+
+[data-theme="outrun-sunset"] .btn-secondary {
+    background: var(--btn-secondary-bg);
+    border: 1px solid var(--btn-secondary-border);
+}
+
+/* Cards and containers */
+[data-theme="outrun-sunset"] .playbook-card, [data-theme="outrun-sunset"] .variable-input {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+}
+
+[data-theme="outrun-sunset"] .playbook-card:hover {
+    border-color: var(--accent-pink);
+    box-shadow: var(--shadow-pink);
+}
+
+/* Code blocks */
+[data-theme="outrun-sunset"] pre {
+    background: rgba(31, 17, 71, 0.8) !important;
+    border: 1px solid var(--accent-pink) !important;
+    box-shadow: 0 0 10px rgba(255, 27, 141, 0.3) !important;
+}
+
+[data-theme="outrun-sunset"] code {
+    color: var(--accent-blue) !important;
+}
+
+/* Scrollbars */
+[data-theme="outrun-sunset"] ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+[data-theme="outrun-sunset"] ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+
+[data-theme="outrun-sunset"] ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 5px;
+}
+
+[data-theme="outrun-sunset"] ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+/* Modals */
+[data-theme="outrun-sunset"] .modal-content {
+    background: var(--modal-bg);
+    border: 1px solid var(--accent-pink);
+    box-shadow: 0 0 20px rgba(255, 27, 141, 0.4);
+}
+
+[data-theme="outrun-sunset"] .modal-header {
+    border-bottom: 1px solid var(--border-light);
+}
+
+[data-theme="outrun-sunset"] .modal-header h3 {
+    color: var(--accent-pink);
+    text-shadow: 0 0 5px rgba(255, 27, 141, 0.5);
+}
+
+[data-theme="outrun-sunset"] .modal-close {
+    color: var(--text-secondary);
+}
+
+[data-theme="outrun-sunset"] .modal-close:hover {
+    color: var(--accent-pink);
+}
+
+[data-theme="outrun-sunset"] .modal-footer {
+    border-top: 1px solid var(--border-light);
+}
+
+/* Theme-specific animation */
+@keyframes outrun-glow {
+    0% { text-shadow: 0 0 5px rgba(255, 27, 141, 0.5); }
+    33% { text-shadow: 0 0 5px rgba(41, 205, 255, 0.5); }
+    66% { text-shadow: 0 0 5px rgba(255, 158, 31, 0.5); }
+    100% { text-shadow: 0 0 5px rgba(255, 27, 141, 0.5); }
+}
+
+[data-theme="outrun-sunset"] .wave-text, [data-theme="outrun-sunset"] section h2, [data-theme="outrun-sunset"] .tab-btn.active {
+    animation: outrun-glow 4s infinite;
+}
+
+/* Special button effect */
+[data-theme="outrun-sunset"] .action-buttons .btn {
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="outrun-sunset"] .action-buttons .btn::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        var(--accent-pink), 
+        var(--accent-blue), 
+        var(--accent-orange));
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+}
+
+[data-theme="outrun-sunset"] .action-buttons .btn:hover::after {
+    transform: translateX(0);
+}

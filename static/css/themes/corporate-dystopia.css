@@ -1,0 +1,294 @@
+/* corporate-dystopia.css - Clean slate grays with corporate tech styling */
+
+[data-theme="corporate-dystopia"] {
+    /* Base colors */
+    --background-dark: #1F2833;
+    --background-medium: #2C3E50;
+    --background-light: #34495E;
+    --text-primary: #C5C6C7;
+    --text-secondary: #808e9b;
+    --border-light: rgba(102, 252, 241, 0.3);
+    
+    /* Accent colors */
+    --accent-primary: #66FCF1;
+    --accent-secondary: #45A29E;
+    --accent-warning: #E74C3C;
+    
+    /* Component colors */
+    --header-bg: rgba(31, 40, 51, 0.95);
+    --terminal-bg: rgba(31, 40, 51, 0.9);
+    --terminal-header-bg: rgba(44, 62, 80, 0.95);
+    --sidebar-bg: rgba(44, 62, 80, 0.8);
+    --modal-bg: rgba(31, 40, 51, 0.95);
+    --card-bg: rgba(52, 73, 94, 0.8);
+    
+    /* Shadow effects */
+    --shadow-cyan: 0 0 10px rgba(102, 252, 241, 0.4);
+    --glow-cyan: 0 0 15px rgba(102, 252, 241, 0.6);
+    
+    /* Button styles */
+    --btn-primary-bg: rgba(102, 252, 241, 0.15);
+    --btn-primary-border: #45A29E;
+    --btn-primary-hover: rgba(102, 252, 241, 0.25);
+    --btn-secondary-bg: rgba(31, 40, 51, 0.8);
+    --btn-secondary-border: #45A29E;
+    --btn-text: #C5C6C7;
+    
+    /* Input styles */
+    --input-bg: rgba(31, 40, 51, 0.7);
+    --input-border: #45A29E;
+    --input-focus-border: #66FCF1;
+    --input-text: #C5C6C7;
+    --input-placeholder: #808e9b;
+    
+    /* Tab styles */
+    --tab-active-bg: rgba(102, 252, 241, 0.15);
+    --tab-active-border: #66FCF1;
+    --tab-inactive-bg: rgba(31, 40, 51, 0.5);
+    --tab-inactive-border: #45A29E;
+    
+    /* Scrollbar */
+    --scrollbar-track: rgba(31, 40, 51, 0.5);
+    --scrollbar-thumb: rgba(102, 252, 241, 0.2);
+    --scrollbar-thumb-hover: rgba(102, 252, 241, 0.4);
+}
+
+/* Corporate Dystopia special effects */
+[data-theme="corporate-dystopia"] body {
+    background-color: var(--background-dark);
+    background-image: 
+        linear-gradient(180deg, rgba(31, 40, 51, 0.95) 0%, rgba(44, 62, 80, 0.95) 100%),
+        url('../img/corporate-grid.png');
+    background-size: cover;
+    background-attachment: fixed;
+    color: var(--text-primary);
+    font-family: 'Roboto', sans-serif;
+    letter-spacing: 0.02em;
+}
+
+/* Highlight and selection */
+[data-theme="corporate-dystopia"] ::selection {
+    background: rgba(102, 252, 241, 0.3);
+    color: #ffffff;
+}
+
+/* Header style */
+[data-theme="corporate-dystopia"] .header {
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--accent-secondary);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Logo */
+[data-theme="corporate-dystopia"] .main-title {
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 500;
+}
+
+[data-theme="corporate-dystopia"] .wave-text {
+    color: var(--accent-primary);
+    text-shadow: 0 0 5px rgba(102, 252, 241, 0.6);
+}
+
+/* Terminal area */
+[data-theme="corporate-dystopia"] .terminal-area {
+    background: var(--terminal-bg);
+    border: 1px solid var(--accent-secondary);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="corporate-dystopia"] .terminal-tabs {
+    background: var(--terminal-header-bg);
+    border-bottom: 1px solid var(--border-light);
+}
+
+[data-theme="corporate-dystopia"] .tab-btn {
+    background: var(--tab-inactive-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--tab-inactive-border);
+    text-transform: uppercase;
+    font-size: 0.8em;
+    letter-spacing: 1px;
+}
+
+[data-theme="corporate-dystopia"] .tab-btn:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+[data-theme="corporate-dystopia"] .tab-btn.active {
+    background: var(--tab-active-bg);
+    border-color: var(--tab-active-border);
+    color: var(--accent-primary);
+}
+
+/* Sidebar elements */
+[data-theme="corporate-dystopia"] .content-area section {
+    background: var(--sidebar-bg);
+    border: 1px solid var(--accent-secondary);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="corporate-dystopia"] section h2 {
+    color: var(--accent-primary);
+    text-transform: uppercase;
+    font-size: 1.1em;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+/* Inputs */
+[data-theme="corporate-dystopia"] input[type="text"], [data-theme="corporate-dystopia"] input[type="password"], [data-theme="corporate-dystopia"] textarea, [data-theme="corporate-dystopia"] select {
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--input-text);
+    border-radius: 2px;
+}
+
+[data-theme="corporate-dystopia"] input[type="text"]:focus, [data-theme="corporate-dystopia"] input[type="password"]:focus, [data-theme="corporate-dystopia"] textarea:focus, [data-theme="corporate-dystopia"] select:focus {
+    border-color: var(--input-focus-border);
+    box-shadow: 0 0 5px rgba(102, 252, 241, 0.3);
+}
+
+[data-theme="corporate-dystopia"] input::placeholder {
+    color: var(--input-placeholder);
+}
+
+/* Buttons */
+[data-theme="corporate-dystopia"] .btn, [data-theme="corporate-dystopia"] button:not(.tab-btn):not(.modal-close) {
+    background: var(--btn-primary-bg);
+    border: 1px solid var(--btn-primary-border);
+    color: var(--btn-text);
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 1px;
+    font-weight: 500;
+    border-radius: 2px;
+}
+
+[data-theme="corporate-dystopia"] .btn:hover, [data-theme="corporate-dystopia"] button:not(.tab-btn):not(.modal-close):hover {
+    background: var(--btn-primary-hover);
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 8px rgba(102, 252, 241, 0.4);
+}
+
+[data-theme="corporate-dystopia"] .btn-secondary {
+    background: var(--btn-secondary-bg);
+    border: 1px solid var(--btn-secondary-border);
+}
+
+/* Cards and containers */
+[data-theme="corporate-dystopia"] .playbook-card, [data-theme="corporate-dystopia"] .variable-input {
+    background: var(--card-bg);
+    border: 1px solid var(--accent-secondary);
+    border-radius: 2px;
+}
+
+[data-theme="corporate-dystopia"] .playbook-card:hover {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 10px rgba(102, 252, 241, 0.3);
+}
+
+/* Code blocks */
+[data-theme="corporate-dystopia"] pre {
+    background: rgba(31, 40, 51, 0.9) !important;
+    border: 1px solid var(--accent-secondary) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+    border-radius: 2px !important;
+}
+
+[data-theme="corporate-dystopia"] code {
+    color: var(--accent-primary) !important;
+}
+
+/* Scrollbars */
+[data-theme="corporate-dystopia"] ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+[data-theme="corporate-dystopia"] ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+
+[data-theme="corporate-dystopia"] ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 4px;
+}
+
+[data-theme="corporate-dystopia"] ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+/* Modals */
+[data-theme="corporate-dystopia"] .modal-content {
+    background: var(--modal-bg);
+    border: 1px solid var(--accent-secondary);
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+    border-radius: 3px;
+}
+
+[data-theme="corporate-dystopia"] .modal-header {
+    border-bottom: 1px solid var(--accent-secondary);
+}
+
+[data-theme="corporate-dystopia"] .modal-header h3 {
+    color: var(--accent-primary);
+    text-transform: uppercase;
+    font-size: 1.1em;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+[data-theme="corporate-dystopia"] .modal-close {
+    color: var(--text-secondary);
+}
+
+[data-theme="corporate-dystopia"] .modal-close:hover {
+    color: var(--accent-warning);
+}
+
+[data-theme="corporate-dystopia"] .modal-footer {
+    border-top: 1px solid var(--accent-secondary);
+}
+
+/* Warning elements */
+[data-theme="corporate-dystopia"] .error-message, [data-theme="corporate-dystopia"] .warning {
+    color: var(--accent-warning);
+    border-left: 3px solid var(--accent-warning);
+    padding-left: 10px;
+    background: rgba(231, 76, 60, 0.1);
+}
+
+/* Status indicators */
+[data-theme="corporate-dystopia"] .status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+[data-theme="corporate-dystopia"] .status-active {
+    background-color: var(--accent-primary);
+    box-shadow: 0 0 5px var(--accent-primary);
+}
+
+[data-theme="corporate-dystopia"] .status-warning {
+    background-color: var(--accent-warning);
+    box-shadow: 0 0 5px var(--accent-warning);
+}
+
+/* Corporate badge style */
+[data-theme="corporate-dystopia"] .corporate-badge {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent-secondary);
+    opacity: 0.7;
+}

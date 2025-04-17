@@ -1,0 +1,350 @@
+/* holographic.css - Translucent interfaces with shimmering rainbow highlights */
+
+[data-theme="holographic"] {
+    /* Base colors */
+    --background-dark: rgba(2, 13, 25, 0.9);
+    --background-medium: rgba(4, 18, 32, 0.85);
+    --background-light: rgba(6, 23, 39, 0.8);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --border-light: rgba(8, 247, 254, 0.4);
+    
+    /* Accent colors */
+    --accent-cyan: #08F7FE;
+    --accent-pink: #FF2079;
+    --accent-green: #04FEBF;
+    
+    /* Component colors */
+    --header-bg: rgba(2, 13, 25, 0.85);
+    --terminal-bg: rgba(2, 13, 25, 0.8);
+    --terminal-header-bg: rgba(4, 18, 32, 0.9);
+    --sidebar-bg: rgba(4, 18, 32, 0.7);
+    --modal-bg: rgba(2, 13, 25, 0.9);
+    --card-bg: rgba(6, 23, 39, 0.7);
+    
+    /* Shadow effects */
+    --shadow-rainbow: 0 0 15px rgba(8, 247, 254, 0.5);
+    --glow-rainbow: 0 0 20px rgba(8, 247, 254, 0.7);
+    
+    /* Button styles */
+    --btn-primary-bg: rgba(8, 247, 254, 0.15);
+    --btn-primary-border: rgba(8, 247, 254, 0.7);
+    --btn-primary-hover: rgba(8, 247, 254, 0.3);
+    --btn-secondary-bg: rgba(255, 32, 121, 0.15);
+    --btn-secondary-border: rgba(255, 32, 121, 0.7);
+    --btn-text: #ffffff;
+    
+    /* Input styles */
+    --input-bg: rgba(2, 13, 25, 0.5);
+    --input-border: rgba(8, 247, 254, 0.4);
+    --input-focus-border: rgba(8, 247, 254, 0.8);
+    --input-text: #ffffff;
+    --input-placeholder: rgba(255, 255, 255, 0.5);
+    
+    /* Tab styles */
+    --tab-active-bg: rgba(8, 247, 254, 0.2);
+    --tab-active-border: rgba(8, 247, 254, 0.8);
+    --tab-inactive-bg: rgba(2, 13, 25, 0.6);
+    --tab-inactive-border: rgba(8, 247, 254, 0.3);
+    
+    /* Scrollbar */
+    --scrollbar-track: rgba(2, 13, 25, 0.3);
+    --scrollbar-thumb: rgba(8, 247, 254, 0.3);
+    --scrollbar-thumb-hover: rgba(8, 247, 254, 0.5);
+}
+
+/* Holographic special effects */
+[data-theme="holographic"] body {
+    background-color: var(--background-dark);
+    background-image: 
+        linear-gradient(135deg, rgba(2, 13, 25, 0.97) 0%, rgba(4, 18, 32, 0.95) 100%);
+    color: var(--text-primary);
+    position: relative;
+    backdrop-filter: blur(5px);
+}
+
+[data-theme="holographic"] body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(8, 247, 254, 0.1), transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(255, 32, 121, 0.1), transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(4, 254, 191, 0.05), transparent 60%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Glass effect for all components */
+[data-theme="holographic"] .header, 
+[data-theme="holographic"] .terminal-area, 
+[data-theme="holographic"] .content-area section, 
+[data-theme="holographic"] .modal-content, 
+[data-theme="holographic"] .playbook-card, 
+[data-theme="holographic"] .variable-input {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Highlight and selection */
+[data-theme="holographic"] ::selection {
+    background: rgba(8, 247, 254, 0.3);
+    color: #ffffff;
+}
+
+/* Header style */
+[data-theme="holographic"] .header {
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border-light);
+    box-shadow: 0 0 15px rgba(8, 247, 254, 0.2);
+}
+
+/* Logo */
+[data-theme="holographic"] .main-title {
+    color: var(--text-primary);
+}
+
+[data-theme="holographic"] .wave-text {
+    background: linear-gradient(to right, var(--accent-pink), var(--accent-cyan), var(--accent-green));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+}
+
+/* Terminal area */
+[data-theme="holographic"] .terminal-area {
+    background: var(--terminal-bg);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-rainbow);
+}
+
+[data-theme="holographic"] .terminal-tabs {
+    background: var(--terminal-header-bg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="holographic"] .tab-btn {
+    background: var(--tab-inactive-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--tab-inactive-border);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+[data-theme="holographic"] .tab-btn:hover {
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+}
+
+[data-theme="holographic"] .tab-btn.active {
+    background: var(--tab-active-bg);
+    border-color: var(--tab-active-border);
+    color: var(--accent-cyan);
+    text-shadow: 0 0 5px rgba(8, 247, 254, 0.5);
+}
+
+/* Sidebar elements */
+[data-theme="holographic"] .content-area section {
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border-light);
+    box-shadow: 0 0 15px rgba(8, 247, 254, 0.2);
+}
+
+[data-theme="holographic"] section h2 {
+    background: linear-gradient(to right, var(--accent-cyan), var(--accent-green));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+/* Inputs */
+[data-theme="holographic"] input[type="text"], 
+[data-theme="holographic"] input[type="password"], 
+[data-theme="holographic"] textarea, 
+[data-theme="holographic"] select {
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--input-text);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+[data-theme="holographic"] input[type="text"]:focus, 
+[data-theme="holographic"] input[type="password"]:focus, 
+[data-theme="holographic"] textarea:focus, 
+[data-theme="holographic"] select:focus {
+    border-color: var(--input-focus-border);
+    box-shadow: 0 0 10px rgba(8, 247, 254, 0.4);
+}
+
+[data-theme="holographic"] input::placeholder {
+    color: var(--input-placeholder);
+}
+
+/* Buttons */
+[data-theme="holographic"] .btn, 
+[data-theme="holographic"] button:not(.tab-btn):not(.modal-close) {
+    background: var(--btn-primary-bg);
+    border: 1px solid var(--btn-primary-border);
+    color: var(--btn-text);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+[data-theme="holographic"] .btn:hover, 
+[data-theme="holographic"] button:not(.tab-btn):not(.modal-close):hover {
+    background: var(--btn-primary-hover);
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 15px rgba(8, 247, 254, 0.4);
+}
+
+[data-theme="holographic"] .btn-secondary {
+    background: var(--btn-secondary-bg);
+    border: 1px solid var(--btn-secondary-border);
+}
+
+[data-theme="holographic"] .btn-secondary:hover {
+    border-color: var(--accent-pink);
+    box-shadow: 0 0 15px rgba(255, 32, 121, 0.4);
+}
+
+/* Cards and containers */
+[data-theme="holographic"] .playbook-card, 
+[data-theme="holographic"] .variable-input {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+[data-theme="holographic"] .playbook-card:hover {
+    border: 1px solid var(--accent-cyan);
+    box-shadow: 0 0 15px rgba(8, 247, 254, 0.3);
+}
+
+/* Code blocks */
+[data-theme="holographic"] pre {
+    background: rgba(2, 13, 25, 0.7) !important;
+    border: 1px solid var(--border-light) !important;
+    box-shadow: 0 0 15px rgba(8, 247, 254, 0.2) !important;
+    backdrop-filter: blur(5px) !important;
+    -webkit-backdrop-filter: blur(5px) !important;
+}
+
+[data-theme="holographic"] code {
+    color: var(--accent-cyan) !important;
+}
+
+/* Scrollbars */
+[data-theme="holographic"] ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+[data-theme="holographic"] ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+
+[data-theme="holographic"] ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 4px;
+}
+
+[data-theme="holographic"] ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+/* Modals */
+[data-theme="holographic"] .modal-content {
+    background: var(--modal-bg);
+    border: 1px solid var(--border-light);
+    box-shadow: 0 0 25px rgba(8, 247, 254, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+[data-theme="holographic"] .modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="holographic"] .modal-header h3 {
+    background: linear-gradient(to right, var(--accent-cyan), var(--accent-green));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+[data-theme="holographic"] .modal-close {
+    color: var(--text-secondary);
+}
+
+[data-theme="holographic"] .modal-close:hover {
+    color: var(--accent-pink);
+}
+
+[data-theme="holographic"] .modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Holographic animation */
+@keyframes holographic-shimmer {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+[data-theme="holographic"] .btn:not(.tab-btn):not(.modal-close)::before, 
+[data-theme="holographic"] .tab-btn.active::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 150%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.2), 
+        transparent);
+    transform: skewX(-25deg);
+    animation: holographic-shimmer 3s infinite;
+    pointer-events: none;
+}
+
+/* Special hover effects */
+[data-theme="holographic"] .btn:hover, 
+[data-theme="holographic"] .tab-btn:hover, 
+[data-theme="holographic"] .playbook-card:hover, 
+[data-theme="holographic"] section h2:hover {
+    position: relative;
+}
+
+[data-theme="holographic"] .btn:hover::after, 
+[data-theme="holographic"] .tab-btn:hover::after, 
+[data-theme="holographic"] .playbook-card:hover::after, 
+[data-theme="holographic"] section h2:hover::after {
+    content: "";
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        var(--accent-cyan), 
+        var(--accent-pink), 
+        var(--accent-green));
+    animation: holographic-shimmer 2s infinite;
+}

@@ -898,8 +898,8 @@ header {
 .playbook-action-btn {
     background-color: transparent;
     border: none;
-    cursor: pointer;
     color: var(--text-secondary);
+    cursor: pointer;
     font-size: 1rem;
     transition: all 0.3s ease;
     display: flex;
@@ -2022,6 +2022,11 @@ button[data-action="execute"]:hover {
     display: block;
 }
 
+/* Make dropdown visible when show class is applied */
+.settings-dropdown-content.show {
+    display: block;
+}
+
 /* Modal Styling */
 .modal-container {
     display: none;
@@ -2036,6 +2041,11 @@ button[data-action="execute"]:hover {
     backdrop-filter: blur(5px);
 }
 
+/* Display modal when active class is applied */
+.modal-container.active {
+    display: block;
+}
+
 .modal-content {
     position: relative;
     background-color: var(--modal-background);
@@ -2045,6 +2055,7 @@ button[data-action="execute"]:hover {
     max-width: 600px;
     border: 1px solid var(--modal-border);
     border-radius: 5px;
+    overflow: hidden;
     box-shadow: 0 0 15px var(--neon-purple), 0 0 30px rgba(136, 0, 255, 0.4);
     animation: modal-glow 1.5s infinite alternate;
 }
@@ -2917,10 +2928,15 @@ button[data-action="execute"]:hover {
     color: var(--text-secondary);
     font-size: 0.8rem;
     margin-left: 0.5rem;
+    background-color: rgba(255, 90, 140, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Roboto Mono', monospace;
 }
 
 [data-theme="light"] .search-modal-line {
     color: #4a4a6a;
+    background-color: rgba(209, 39, 101, 0.1);
 }
 
 .search-modal-content-block {
@@ -3006,7 +3022,6 @@ button[data-action="execute"]:hover {
     background-color: rgba(209, 39, 101, 0.1);
 }
 
-/* Enhance the code blocks in search results */
 .search-modal-content-block {
     background-color: var(--code-background);
     padding: 0.8rem;
@@ -3243,35 +3258,6 @@ button[data-action="execute"]:hover {
 [data-theme="witchhazel"] .result-action-btn.execute:hover {
     background-color: rgba(255, 121, 198, 0.3);
     box-shadow: 0 0 8px rgba(255, 121, 198, 0.5);
-}
-
-/* Additional Witch Hazel button styling for the code block buttons in playbooks */
-[data-theme="witchhazel"] .code-action-btn.copy,
-[data-theme="witchhazel"] .code-block .copy {
-    background-color: rgba(180, 91, 207, 0.1);
-    color: #b45bcf !important;
-    border: 1px solid #b45bcf;
-    box-shadow: 0 0 5px rgba(180, 91, 207, 0.3);
-}
-
-[data-theme="witchhazel"] .code-action-btn.copy:hover,
-[data-theme="witchhazel"] .code-block .copy:hover {
-    background-color: rgba(180, 91, 207, 0.2);
-    box-shadow: 0 0 10px rgba(180, 91, 207, 0.4);
-}
-
-[data-theme="witchhazel"] .code-action-btn.execute,
-[data-theme="witchhazel"] .code-block .execute {
-    background-color: rgba(255, 121, 198, 0.1);
-    color: #ff79c6 !important;
-    border: 1px solid #ff79c6;
-    box-shadow: 0 0 5px rgba(255, 121, 198, 0.3);
-}
-
-[data-theme="witchhazel"] .code-action-btn.execute:hover,
-[data-theme="witchhazel"] .code-block .execute:hover {
-    background-color: rgba(255, 121, 198, 0.2);
-    box-shadow: 0 0 10px rgba(255, 121, 198, 0.4);
 }
 
 /* Also updating the Import button for consistency */
@@ -3617,4 +3603,3 @@ pre code span:first-child:contains('nxc') {
     color: #ff5a8c !important;
     font-weight: bold;
 }
-

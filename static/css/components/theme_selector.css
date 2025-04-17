@@ -1,0 +1,245 @@
+/* theme_selector.css - Component styling for theme selection modal */
+
+.theme-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.theme-option {
+    cursor: pointer;
+    width: calc(33.33% - 10px);
+    min-width: 120px;
+    border-radius: 5px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    opacity: 0.8;
+}
+
+.theme-option:hover {
+    transform: translateY(-3px);
+    opacity: 1;
+}
+
+.theme-option.active {
+    opacity: 1;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px var(--accent-primary, rgba(96, 239, 255, 0.5));
+}
+
+.theme-preview {
+    border-radius: 5px;
+    height: 80px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid transparent;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.theme-name {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+/* Theme preview styles - each one matches the associated theme */
+
+/* Cyberpunk Dark theme preview */
+.theme-preview.dark {
+    background: rgba(11, 11, 23, 0.9);
+    border: 1px solid #60efff;
+    color: #e0e0fc;
+}
+
+.theme-preview.dark::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, #60efff, transparent);
+}
+
+/* Neon Light theme preview */
+.theme-preview.light {
+    background: #f0f4f8;
+    border: 1px solid #0083b0;
+    color: #2a2a4a;
+}
+
+.theme-preview.light::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    background: radial-gradient(circle, rgba(209, 39, 101, 0.3), transparent 70%);
+}
+
+/* Witch Hazel theme preview */
+.theme-preview.witchhazel {
+    background: #282634;
+    border: 1px solid #81ffff;
+    color: #f8f8f2;
+}
+
+.theme-preview.witchhazel::before {
+    content: "✦";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #ff79c6;
+    font-size: 1.2em;
+}
+
+/* Digital Rain theme preview */
+.theme-preview.digital-rain {
+    background: #0c0c0c;
+    border: 1px solid #00ff41;
+    color: #cdcdcd;
+    position: relative;
+}
+
+.theme-preview.digital-rain::before {
+    content: "10101";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 1.2em;
+    color: #00ff41;
+    opacity: 0.2;
+}
+
+/* Outrun Sunset theme preview */
+.theme-preview.outrun-sunset {
+    background: #1f1147;
+    border: 1px solid #ff1b8d;
+    color: #f0eff1;
+    position: relative;
+    background-image: linear-gradient(0deg, #1f1147 0%, #2b1055 100%);
+}
+
+.theme-preview.outrun-sunset::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #ff1b8d, #29cdff, #ff9e1f);
+}
+
+/* Corporate Dystopia theme preview */
+.theme-preview.corporate-dystopia {
+    background: #1F2833;
+    border: 1px solid #45A29E;
+    color: #C5C6C7;
+}
+
+.theme-preview.corporate-dystopia::before {
+    content: "CORP";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.7em;
+    letter-spacing: 2px;
+    color: #66FCF1;
+    text-transform: uppercase;
+}
+
+/* Holographic theme preview */
+.theme-preview.holographic {
+    background: rgba(2, 13, 25, 0.8);
+    border: 1px solid #08F7FE;
+    color: #ffffff;
+    position: relative;
+    overflow: hidden;
+}
+
+.theme-preview.holographic::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(8, 247, 254, 0.2), 
+        transparent);
+    animation: holographic-preview 2s ease-in-out infinite;
+}
+
+@keyframes holographic-preview {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(50%); }
+}
+
+/* Tokyo Night theme preview */
+.theme-preview.tokyo-night {
+    background: #1a1b26;
+    border: 1px solid #7aa2f7;
+    color: #a9b1d6;
+    position: relative;
+}
+
+.theme-preview.tokyo-night::after {
+    content: "東京";
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    font-size: 0.7em;
+    color: rgba(247, 118, 142, 0.2);
+}
+
+/* Amber Interface theme preview */
+.theme-preview.amber-interface {
+    background: #0F0A00;
+    border: 1px solid #FFB000;
+    color: #FFB000;
+    position: relative;
+}
+
+.theme-preview.amber-interface::after {
+    content: "READY";
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 0.5em;
+    color: #FFD700;
+    font-family: 'Roboto Mono', monospace;
+    letter-spacing: 1px;
+}
+
+.theme-preview.amber-interface::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(0deg, 
+        transparent, 
+        transparent 5px, 
+        rgba(255, 176, 0, 0.03) 5px, 
+        rgba(255, 176, 0, 0.03) 10px);
+    pointer-events: none;
+}

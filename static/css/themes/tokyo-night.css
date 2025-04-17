@@ -1,0 +1,288 @@
+/* tokyo-night.css - Japanese cyberpunk aesthetics with indigo and pink accents */
+
+[data-theme="tokyo-night"] {
+    /* Base colors */
+    --background-dark: #1a1b26;
+    --background-medium: #24283b;
+    --background-light: #414868;
+    --text-primary: #a9b1d6;
+    --text-secondary: #9aa5ce;
+    --border-light: rgba(122, 162, 247, 0.3);
+    
+    /* Accent colors */
+    --accent-blue: #7aa2f7;
+    --accent-pink: #f7768e;
+    --accent-teal: #2ac3de;
+    --accent-purple: #bb9af7;
+    
+    /* Component colors */
+    --header-bg: rgba(26, 27, 38, 0.95);
+    --terminal-bg: rgba(36, 40, 59, 0.95);
+    --terminal-header-bg: rgba(26, 27, 38, 0.95);
+    --sidebar-bg: rgba(36, 40, 59, 0.9);
+    --modal-bg: rgba(26, 27, 38, 0.97);
+    --card-bg: rgba(36, 40, 59, 0.8);
+    
+    /* Shadow effects */
+    --shadow-blue: 0 0 10px rgba(122, 162, 247, 0.4);
+    --shadow-pink: 0 0 10px rgba(247, 118, 142, 0.4);
+    --glow-blue: 0 0 15px rgba(122, 162, 247, 0.6);
+    
+    /* Button styles */
+    --btn-primary-bg: rgba(122, 162, 247, 0.15);
+    --btn-primary-border: rgba(122, 162, 247, 0.5);
+    --btn-primary-hover: rgba(122, 162, 247, 0.25);
+    --btn-secondary-bg: rgba(247, 118, 142, 0.15);
+    --btn-secondary-border: rgba(247, 118, 142, 0.5);
+    --btn-text: #a9b1d6;
+    
+    /* Input styles */
+    --input-bg: rgba(26, 27, 38, 0.6);
+    --input-border: rgba(122, 162, 247, 0.4);
+    --input-focus-border: rgba(122, 162, 247, 0.8);
+    --input-text: #a9b1d6;
+    --input-placeholder: rgba(169, 177, 214, 0.5);
+    
+    /* Tab styles */
+    --tab-active-bg: rgba(122, 162, 247, 0.15);
+    --tab-active-border: rgba(122, 162, 247, 0.7);
+    --tab-inactive-bg: rgba(26, 27, 38, 0.6);
+    --tab-inactive-border: rgba(122, 162, 247, 0.3);
+    
+    /* Scrollbar */
+    --scrollbar-track: rgba(26, 27, 38, 0.8);
+    --scrollbar-thumb: rgba(122, 162, 247, 0.3);
+    --scrollbar-thumb-hover: rgba(122, 162, 247, 0.5);
+}
+
+/* Tokyo Night special effects */
+[data-theme="tokyo-night"] body {
+    background-color: var(--background-dark);
+    background-image: 
+        linear-gradient(180deg, rgba(26, 27, 38, 0.97) 0%, rgba(36, 40, 59, 0.95) 100%);
+    color: var(--text-primary);
+    position: relative;
+}
+
+[data-theme="tokyo-night"] body::before {
+    content: "東京";
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 8rem;
+    color: rgba(122, 162, 247, 0.05);
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Highlight and selection */
+[data-theme="tokyo-night"] ::selection {
+    background: rgba(122, 162, 247, 0.3);
+    color: #ffffff;
+}
+
+/* Header style */
+[data-theme="tokyo-night"] .header {
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border-light);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+}
+
+/* Logo */
+[data-theme="tokyo-night"] .main-title {
+    color: var(--text-primary);
+}
+
+[data-theme="tokyo-night"] .wave-text {
+    color: var(--accent-blue);
+    text-shadow: 0 0 8px rgba(122, 162, 247, 0.4);
+}
+
+/* Terminal area */
+[data-theme="tokyo-night"] .terminal-area {
+    background: var(--terminal-bg);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-blue);
+}
+
+[data-theme="tokyo-night"] .terminal-tabs {
+    background: var(--terminal-header-bg);
+    border-bottom: 1px solid var(--border-light);
+}
+
+[data-theme="tokyo-night"] .tab-btn {
+    background: var(--tab-inactive-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--tab-inactive-border);
+}
+
+[data-theme="tokyo-night"] .tab-btn:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+}
+
+[data-theme="tokyo-night"] .tab-btn.active {
+    background: var(--tab-active-bg);
+    border-color: var(--tab-active-border);
+    color: var(--accent-blue);
+    text-shadow: 0 0 5px rgba(122, 162, 247, 0.4);
+}
+
+/* Sidebar elements */
+[data-theme="tokyo-night"] .content-area section {
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border-light);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="tokyo-night"] section h2 {
+    color: var(--accent-blue);
+    text-shadow: 0 0 5px rgba(122, 162, 247, 0.4);
+}
+
+/* Inputs */
+[data-theme="tokyo-night"] input[type="text"], [data-theme="tokyo-night"] input[type="password"], [data-theme="tokyo-night"] textarea, [data-theme="tokyo-night"] select {
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--input-text);
+    border-radius: 3px;
+}
+
+[data-theme="tokyo-night"] input[type="text"]:focus, [data-theme="tokyo-night"] input[type="password"]:focus, [data-theme="tokyo-night"] textarea:focus, [data-theme="tokyo-night"] select:focus {
+    border-color: var(--input-focus-border);
+    box-shadow: 0 0 8px rgba(122, 162, 247, 0.4);
+}
+
+[data-theme="tokyo-night"] input::placeholder {
+    color: var(--input-placeholder);
+}
+
+/* Buttons */
+[data-theme="tokyo-night"] .btn, [data-theme="tokyo-night"] button:not(.tab-btn):not(.modal-close) {
+    background: var(--btn-primary-bg);
+    border: 1px solid var(--btn-primary-border);
+    color: var(--btn-text);
+    border-radius: 3px;
+}
+
+[data-theme="tokyo-night"] .btn:hover, [data-theme="tokyo-night"] button:not(.tab-btn):not(.modal-close):hover {
+    background: var(--btn-primary-hover);
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 8px rgba(122, 162, 247, 0.4);
+    color: var(--accent-blue);
+}
+
+[data-theme="tokyo-night"] .btn-secondary {
+    background: var(--btn-secondary-bg);
+    border: 1px solid var(--btn-secondary-border);
+}
+
+[data-theme="tokyo-night"] .btn-secondary:hover {
+    border-color: var(--accent-pink);
+    box-shadow: 0 0 8px rgba(247, 118, 142, 0.4);
+    color: var(--accent-pink);
+}
+
+/* Cards and containers */
+[data-theme="tokyo-night"] .playbook-card, [data-theme="tokyo-night"] .variable-input {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 3px;
+}
+
+[data-theme="tokyo-night"] .playbook-card:hover {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 10px rgba(122, 162, 247, 0.3);
+}
+
+/* Code blocks */
+[data-theme="tokyo-night"] pre {
+    background: rgba(26, 27, 38, 0.8) !important;
+    border: 1px solid var(--border-light) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    border-radius: 3px !important;
+}
+
+[data-theme="tokyo-night"] code {
+    color: var(--accent-teal) !important;
+}
+
+/* Variable tags - make them more unique with pink accents */
+[data-theme="tokyo-night"] .variable-tag, [data-theme="tokyo-night"] .substituted {
+    color: var(--accent-pink) !important;
+    background: rgba(247, 118, 142, 0.1) !important;
+    border: 1px solid rgba(247, 118, 142, 0.3) !important;
+    border-radius: 3px !important;
+    padding: 0 4px !important;
+}
+
+/* Scrollbars */
+[data-theme="tokyo-night"] ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+[data-theme="tokyo-night"] ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+
+[data-theme="tokyo-night"] ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 4px;
+}
+
+[data-theme="tokyo-night"] ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+/* Modals */
+[data-theme="tokyo-night"] .modal-content {
+    background: var(--modal-bg);
+    border: 1px solid var(--border-light);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+}
+
+[data-theme="tokyo-night"] .modal-header {
+    border-bottom: 1px solid var(--border-light);
+}
+
+[data-theme="tokyo-night"] .modal-header h3 {
+    color: var(--accent-blue);
+    text-shadow: 0 0 5px rgba(122, 162, 247, 0.4);
+}
+
+[data-theme="tokyo-night"] .modal-close {
+    color: var(--text-secondary);
+}
+
+[data-theme="tokyo-night"] .modal-close:hover {
+    color: var(--accent-pink);
+}
+
+[data-theme="tokyo-night"] .modal-footer {
+    border-top: 1px solid var(--border-light);
+}
+
+/* Custom theme elements */
+[data-theme="tokyo-night"] .theme-preview.tokyo-night {
+    background: var(--background-dark);
+    border: 1px solid var(--accent-blue);
+    color: var(--text-primary);
+    position: relative;
+}
+
+[data-theme="tokyo-night"] .theme-preview.tokyo-night::after {
+    content: "東京";
+    position: absolute;
+    bottom: 5px;
+    right: 8px;
+    font-size: 0.7rem;
+    color: rgba(247, 118, 142, 0.2);
+}
+
+/* Form groups and labels */
+[data-theme="tokyo-night"] label {
+    color: var(--accent-purple);
+    font-size: 0.9em;
+}
