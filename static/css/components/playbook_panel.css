@@ -39,6 +39,21 @@
     padding-bottom: 0.5rem;
 }
 
+/* Playbook Section - Modularized from style.css */
+.playbook-section {
+    background-color: var(--background-medium);
+    border: 1px solid rgba(255, 90, 140, 0.3);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0;
+    box-shadow: 0 0 10px rgba(255, 90, 140, 0.5);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
 /* Playbook Container */
 .playbook-container {
     background-color: var(--background-secondary);
