@@ -14,13 +14,23 @@
     right: -350px;
     width: 350px;
     height: calc(100vh - 80px);
-    background-color: var(--notes-panel-bg);
-    border-left: 1px solid var(--notes-panel-border);
+    background: linear-gradient(90deg, rgba(96,239,255,0.12) 0%, rgba(11,11,23,0.96) 100%);
+    border-left: 2px solid var(--neon-blue);
+    border-bottom: 2px solid var(--neon-blue);
+    box-shadow: -3px 0 15px rgba(96,239,255,0.15);
     transition: right 0.3s ease, width 0.3s ease, height 0.3s ease;
     z-index: 50;
-    padding: 1rem;
+    padding: 0;
     display: flex;
     flex-direction: column;
+}
+
+/* Tab Notes Panel specific styling */
+#tabNotesPanel {
+    background: linear-gradient(90deg, rgba(255,90,140,0.12) 0%, rgba(11,11,23,0.96) 100%);
+    border-left: 2px solid var(--neon-pink);
+    border-bottom: 2px solid var(--neon-pink);
+    box-shadow: -3px 0 15px rgba(255,90,140,0.15);
 }
 
 .notes-panel.visible {
@@ -63,14 +73,45 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
-    border-bottom: 1px solid var(--border-light);
+    padding: 0.8rem 1rem;
+    background: linear-gradient(90deg, rgba(96,239,255,0.18) 0%, rgba(11,11,23,0.98) 100%);
+    border-bottom: 1.5px solid rgba(96,239,255,0.3);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Tab Notes header specific styling */
+#tabNotesPanel .notes-header {
+    background: linear-gradient(90deg, rgba(255,90,140,0.18) 0%, rgba(11,11,23,0.98) 100%);
+    border-bottom: 1.5px solid rgba(255,90,140,0.3);
 }
 
 .notes-header h3 {
     font-family: 'Orbitron', sans-serif;
     color: var(--neon-blue);
     font-size: 1.1rem;
+    text-shadow: var(--shadow-blue);
+    margin: 0;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Tab Notes header text styling */
+#tabNotesPanel .notes-header h3 {
+    color: var(--neon-pink);
+    text-shadow: var(--shadow-pink);
+}
+
+.notes-header h3:before {
+    content: "\f249"; /* fa-sticky-note */
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    font-size: 0.9em;
+}
+
+#tabNotesPanel .notes-header h3:before {
+    content: "\f24d"; /* fa-clone */
 }
 
 .notes-header h3.tab-name {
@@ -80,8 +121,8 @@
 
 /* Notes Buttons */
 .header-notes-btn {
-    background-color: rgba(11, 11, 23, 0.8);
-    border: 1px solid var(--border-light);
+    background: rgba(11, 11, 23, 0.8);
+    border: 1px solid var(--neon-blue);
     color: var(--neon-blue);
     padding: 0.5rem 1rem;
     border-radius: 4px;
@@ -94,7 +135,7 @@
 
 .header-notes-btn:hover {
     background-color: rgba(96, 239, 255, 0.1);
-    box-shadow: var(--shadow-blue);
+    box-shadow: 0 0 10px rgba(96, 239, 255, 0.5);
     transform: translateY(-2px);
 }
 
@@ -105,15 +146,31 @@
 .close-notes-btn {
     background: none;
     border: none;
-    color: var(--text-primary);
+    color: var(--neon-blue);
     font-size: 1.5rem;
     cursor: pointer;
     outline: none;
-    transition: color 0.3s;
+    transition: all 0.3s;
+    text-shadow: 0 0 5px rgba(96, 239, 255, 0.5);
+    margin-left: 0.5rem;
+}
+
+/* Tab Notes close button styling */
+#tabNotesPanel .close-notes-btn {
+    color: var(--neon-pink);
+    text-shadow: 0 0 5px rgba(255, 90, 140, 0.5);
 }
 
 .close-notes-btn:hover {
-    color: var(--accent-primary);
+    color: #fff;
+    text-shadow: 0 0 8px rgba(96, 239, 255, 0.8);
+    transform: scale(1.1);
+}
+
+/* Tab Notes close button hover state */
+#tabNotesPanel .close-notes-btn:hover {
+    color: #fff;
+    text-shadow: 0 0 8px rgba(255, 90, 140, 0.8);
 }
 
 /* Notes Content Area */
@@ -123,43 +180,67 @@
     flex: 1;
     width: 100%;
     height: 100%;
-    background-color: var(--notes-panel-bg);
+    background: rgba(16, 16, 32, 0.6);
     border: none;
     color: var(--text-primary);
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Roboto Mono', monospace;
     font-size: 0.9rem;
     resize: none;
     outline: none;
-    padding: 0.5rem;
+    padding: 1rem;
     box-sizing: border-box;
     min-height: calc(100% - 80px); /* Account for header */
     overflow-y: auto;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4);
+    border-top: 1px solid rgba(96, 239, 255, 0.1);
+}
+
+/* Tab Notes text area styling */
+#tabNotesText {
+    border-top: 1px solid rgba(255, 90, 140, 0.1);
 }
 
 .notes-panel textarea {
     flex-grow: 1;
     resize: none;
-    background-color: rgba(0, 0, 0, 0.2);
+    background: rgba(16, 16, 32, 0.6);
     color: var(--text-primary);
-    border: 1px solid var(--border-light);
+    border: 1px solid rgba(96, 239, 255, 0.2);
     border-radius: 4px;
     padding: 0.75rem;
-    margin-top: 1rem;
-    font-family: 'Roboto', sans-serif;
+    margin: 1rem;
+    font-family: 'Roboto Mono', monospace;
     outline: none;
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    transition: border-color 0.3s;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s;
+    line-height: 1.4;
+}
+
+/* Tab Notes textarea border color */
+#tabNotesPanel textarea {
+    border: 1px solid rgba(255, 90, 140, 0.2);
 }
 
 .notes-panel textarea:focus {
-    border-color: var(--accent-primary);
-    box-shadow: 0 0 5px var(--neon-glow-medium), inset 0 0 5px rgba(0, 0, 0, 0.3);
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 10px rgba(96, 239, 255, 0.3), inset 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Tab Notes textarea focus state */
+#tabNotesPanel textarea:focus {
+    border-color: var(--neon-pink);
+    box-shadow: 0 0 10px rgba(255, 90, 140, 0.3), inset 0 0 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Notes textarea size adjustments */
 [data-note-size="small"] .notes-panel textarea {
     padding: 0.5rem;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+}
+
+[data-note-size="medium"] .notes-panel textarea {
+    padding: 0.75rem;
+    font-size: 0.9rem;
 }
 
 [data-note-size="large"] .notes-panel textarea {
@@ -167,15 +248,30 @@
     font-size: 1rem;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .notes-panel {
-        width: 100%;
-        right: -100%;
-    }
-    
-    .header-notes-btn {
-        font-size: 0.8rem;
-        padding: 0.4rem 0.8rem;
-    }
+/* Scrollbar Styling for Notes Panel */
+.notes-panel textarea::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notes-panel textarea::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.notes-panel textarea::-webkit-scrollbar-thumb {
+    background: rgba(96, 239, 255, 0.4);
+    border-radius: 3px;
+}
+
+/* Tab Notes scrollbar thumb color */
+#tabNotesPanel textarea::-webkit-scrollbar-thumb {
+    background: rgba(255, 90, 140, 0.4);
+}
+
+.notes-panel textarea::-webkit-scrollbar-thumb:hover {
+    background: rgba(96, 239, 255, 0.6);
+}
+
+/* Tab Notes scrollbar thumb hover state */
+#tabNotesPanel textarea::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 90, 140, 0.6);
 }
