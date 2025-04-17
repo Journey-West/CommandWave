@@ -6,30 +6,33 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--terminal-border);
-    border-radius: 8px;
-    background-color: var(--terminal-background);
-    box-shadow: var(--terminal-shadow);
-    height: 100%;
-    width: 50%;
+    background-color: var(--background-primary);
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    padding: 0;
+    margin-bottom: 1rem;
     min-width: 0;
-    max-width: 50%;
-    overflow: hidden; /* Prevent overflow */
+    max-width: 100%;
+    overflow: hidden;
 }
 
+/* Enhanced terminal-tabs for cyberpunk neon blue accent and gradient background */
 .terminal-tabs {
     display: flex;
-    background-color: var(--background-medium);
-    padding: 0.5rem 0.5rem 0;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+    background: linear-gradient(90deg, rgba(96,239,255,0.18) 0%, rgba(11,11,23,0.98) 100%);
+    padding: 0.5rem 0.75rem 0 0.75rem;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
     position: relative;
-    border-bottom: 1px solid var(--border-light);
+    border-bottom: 1.5px solid var(--border-light);
+    border-top: 2.5px solid var(--neon-blue);
+    box-shadow: 0 1px 3px 0 rgba(96,239,255,0.05);
     gap: 0.5rem;
     overflow-x: visible;
     white-space: nowrap;
     flex-wrap: nowrap;
     align-items: center;
+    min-height: 44px;
 }
 
 .terminal-title {
@@ -110,11 +113,11 @@
 }
 
 .terminal-container {
-    flex-grow: 1;
+    flex: 1 1 auto;
+    min-height: 0;
     position: relative;
-    height: 100%;
     width: 100%;
-    overflow: hidden; /* Prevent overflow */
+    overflow: hidden;
 }
 
 .terminal-iframe {
@@ -138,4 +141,34 @@
     display: flex;
     justify-content: flex-end;
     border-bottom: 1px solid rgba(96, 239, 255, 0.3);
+}
+
+/* Theme-specific: Light theme overrides for terminal area */
+[data-theme="light"] .terminal-area {
+    background-color: rgba(255,255,255,0.9);
+    border: 1px solid rgba(0, 131, 176, 0.3);
+    border-radius: 6px;
+}
+
+[data-theme="light"] .terminal-tabs {
+    background: linear-gradient(90deg, rgba(0,131,176,0.11) 0%, #dbe4f0 100%);
+    border-top: 2.5px solid #0083b0;
+    border-bottom: 1.5px solid rgba(0,131,176,0.25);
+    box-shadow: 0 1px 3px 0 rgba(0,131,176,0.05);
+}
+
+[data-theme="light"] .tab-btn {
+    background-color: rgba(0, 131, 176, 0.05);
+    color: #2a2a4a;
+}
+
+[data-theme="light"] .tab-btn:hover {
+    background-color: rgba(0, 131, 176, 0.1);
+    box-shadow: 0 0 10px rgba(0, 131, 176, 0.3);
+    color: var(--neon-blue);
+}
+
+[data-theme="light"] .tab-btn.active {
+    background-color: rgba(0, 131, 176, 0.15);
+    color: var(--neon-blue);
 }
