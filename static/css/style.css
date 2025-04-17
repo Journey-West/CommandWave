@@ -20,11 +20,6 @@
     --shadow-green: 0 0 10px rgba(15, 255, 80, 0.5);
     --neon-red: rgb(255, 50, 50);
     
-    /* Terminal Area */
-    --terminal-background: var(--background-medium);
-    --terminal-border: var(--border-light);
-    --terminal-shadow: var(--shadow-blue);
-    
     /* Modal styling */
     --modal-background: #0a0a16;
     --modal-border: #44009980;
@@ -70,11 +65,6 @@
     --shadow-green: 0 0 10px rgba(0, 168, 107, 0.4);
     --neon-red: rgb(205, 32, 40);
     
-    /* Terminal Area */
-    --terminal-background: #1a1a2e;  /* Keep terminal dark for readability */
-    --terminal-border: rgba(0, 131, 176, 0.3);
-    --terminal-shadow: 0 0 10px rgba(0, 131, 176, 0.3);
-    
     /* Modal styling */
     --modal-background: #f0f4f8;
     --modal-border: rgba(130, 69, 191, 0.3);
@@ -118,11 +108,6 @@
     --shadow-purple: 0 0 10px rgba(180, 91, 207, 0.5);
     --shadow-yellow: 0 0 10px rgba(244, 213, 84, 0.5);
     --shadow-green: 0 0 10px rgba(139, 255, 128, 0.5);
-    
-    /* Terminal Area */
-    --terminal-background: rgba(40, 38, 52, 0.9);
-    --terminal-border: rgba(129, 255, 255, 0.3);
-    --terminal-shadow: var(--shadow-purple);
     
     /* Modal styling */
     --modal-background: #282634;
@@ -205,145 +190,7 @@ body {
     flex-direction: column;
 }
 
-/* Terminal Area */
-.terminal-area {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    border: 1px solid var(--terminal-border);
-    border-radius: 8px;
-    background-color: var(--terminal-background);
-    box-shadow: var(--terminal-shadow);
-    height: 100%;
-    width: 50%;
-    min-width: 0;
-    max-width: 50%;
-    overflow: hidden; /* Prevent overflow */
-}
-
-.terminal-tabs {
-    display: flex;
-    background-color: var(--background-medium);
-    padding: 0.5rem 0.5rem 0;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    position: relative;
-    border-bottom: 1px solid var(--border-light);
-    gap: 0.5rem;
-    overflow-x: visible;
-    white-space: nowrap;
-    flex-wrap: nowrap;
-    align-items: center;
-}
-
-.terminal-title {
-    font-family: 'Orbitron', sans-serif;
-    color: var(--neon-green);
-    text-shadow: var(--shadow-green);
-    font-size: 1.1rem;
-    margin-left: auto;
-    padding: 0.5rem 1rem;
-    align-self: center;
-    letter-spacing: 1px;
-    flex-shrink: 0;
-}
-
-.tab-btn {
-    background-color: transparent;
-    border: 1px solid var(--border-light);
-    color: var(--text-secondary);
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-    position: relative;
-}
-
-.tab-btn .tab-close {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    font-size: 0.8rem;
-    width: 16px;
-    height: 16px;
-    line-height: 14px;
-    text-align: center;
-    border-radius: 50%;
-    background-color: rgba(255, 90, 140, 0.2);
-    color: var(--neon-pink);
-    margin-left: 8px;
-    border: none;
-    cursor: pointer;
-    opacity: 0.7;
-    transition: all 0.3s ease;
-}
-
-.tab-btn .tab-close:hover {
-    opacity: 1;
-    background-color: rgba(255, 90, 140, 0.4);
-}
-
-.tab-btn:hover {
-    background-color: rgba(96, 239, 255, 0.1);
-    box-shadow: var(--shadow-blue);
-    color: var(--neon-blue);
-}
-
-.tab-btn.active {
-    background-color: rgba(96, 239, 255, 0.15);
-    color: var(--neon-blue);
-    border-color: var(--neon-blue);
-    box-shadow: var(--shadow-blue);
-}
-
-.tab-btn.add-tab {
-    font-size: 1.2rem;
-    padding: 0.4rem 0.8rem;
-    color: var(--neon-blue);
-    border-color: var(--neon-blue);
-    background-color: rgba(96, 239, 255, 0.1);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.tab-btn.add-tab:hover {
-    background-color: rgba(96, 239, 255, 0.2);
-    box-shadow: 0 0 10px rgba(96, 239, 255, 0.5);
-}
-
-.terminal-container {
-    flex-grow: 1;
-    position: relative;
-    height: 100%;
-    width: 100%;
-    overflow: hidden; /* Prevent overflow */
-}
-
-.terminal-iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-    display: none;
-    background-color: #111;
-    overflow: hidden; /* Prevent scrollbars */
-}
-
-.terminal-iframe.active {
-    display: block;
-}
-
-/* Terminal header with Tmux title */
-.terminal-header {
-    padding: 0.5rem 1rem;
-    display: flex;
-    justify-content: flex-end;
-    border-bottom: 1px solid rgba(96, 239, 255, 0.3);
-}
+/* Terminal Area styles moved to components/terminal_area.css */
 
 /* Variable Section */
 /* Variable styles - Moved to components/variables_panel.css */
@@ -1002,12 +849,6 @@ body {
     .container {
         flex-direction: column;
         height: auto;
-    }
-
-    .terminal-area {
-        height: 70vh;
-        min-width: 100%;
-        max-width: 100%;
     }
 
     .content-area {
