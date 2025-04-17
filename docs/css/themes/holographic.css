@@ -1,0 +1,349 @@
+/* holographic.css - Holographic UI Theme */
+[data-theme="holographic"] {
+    --background-dark: #010b19;
+    --background-medium: #021933;
+    --text-primary: #ffffff;
+    --text-secondary: #a9d0f5;
+    --neon-blue: #08F7FE;
+    --neon-purple: #8A2BE2;
+    --neon-pink: #FF2079;
+    --neon-yellow: #F5D300;
+    --neon-green: #04FEBD;
+    --accent: #08F7FE;
+    --border-light: rgba(8, 247, 254, 0.3);
+    --shadow-blue: 0 0 14px rgba(8, 247, 254, 0.6);
+    --shadow-pink: 0 0 14px rgba(255, 32, 121, 0.6);
+    --shadow-purple: 0 0 14px rgba(138, 43, 226, 0.6);
+    --shadow-yellow: 0 0 14px rgba(245, 211, 0, 0.6);
+    --shadow-green: 0 0 14px rgba(4, 254, 189, 0.6);
+}
+
+[data-theme="holographic"] body {
+    background-color: var(--background-dark);
+    color: var(--text-primary);
+    background-image:
+        radial-gradient(circle at 50% 50%, rgba(8, 247, 254, 0.03) 0%, rgba(255, 32, 121, 0.02) 25%, transparent 70%);
+    position: relative;
+}
+
+/* Add holographic effect */
+[data-theme="holographic"] body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: 
+        linear-gradient(125deg, 
+            rgba(8, 247, 254, 0.05) 0%, 
+            rgba(255, 32, 121, 0.05) 25%, 
+            rgba(138, 43, 226, 0.05) 50%, 
+            rgba(4, 254, 189, 0.05) 75%, 
+            rgba(8, 247, 254, 0.05) 100%);
+    background-size: 400% 400%;
+    opacity: 0.7;
+    z-index: -1;
+    animation: hologram-shift 15s ease infinite;
+}
+
+@keyframes hologram-shift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Header elements */
+[data-theme="holographic"] .header {
+    background-color: rgba(1, 11, 25, 0.6);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--neon-blue);
+    box-shadow: 0 0 20px rgba(8, 247, 254, 0.2);
+}
+
+[data-theme="holographic"] .nav-button {
+    background-color: transparent;
+    color: var(--text-primary);
+    backdrop-filter: blur(5px);
+    border: 1px solid transparent;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+}
+
+[data-theme="holographic"] .nav-button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        rgba(8, 247, 254, 0.5) 0%, 
+        rgba(255, 32, 121, 0.5) 25%, 
+        rgba(138, 43, 226, 0.5) 50%, 
+        rgba(4, 254, 189, 0.5) 75%, 
+        rgba(8, 247, 254, 0.5) 100%);
+    opacity: 0.3;
+    z-index: -1;
+    transition: transform 0.5s;
+}
+
+[data-theme="holographic"] .nav-button:hover::before {
+    transform: translateX(50%);
+}
+
+[data-theme="holographic"] .nav-button.github {
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 10px rgba(8, 247, 254, 0.3);
+}
+
+[data-theme="holographic"] .nav-button.docs {
+    border-color: var(--neon-pink);
+    box-shadow: 0 0 10px rgba(255, 32, 121, 0.3);
+}
+
+[data-theme="holographic"] .logo {
+    font-family: 'Orbitron', sans-serif;
+    background: linear-gradient(90deg, 
+        #08F7FE, 
+        #FF2079, 
+        #8A2BE2, 
+        #04FEBD);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(8, 247, 254, 0.5);
+    position: relative;
+    display: inline-block;
+}
+
+[data-theme="holographic"] .logo span {
+    background: linear-gradient(90deg, 
+        #04FEBD,
+        #08F7FE);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    display: inline-block;
+    animation: holographic-flicker 5s infinite;
+}
+
+@keyframes holographic-flicker {
+    0%, 100% {
+        opacity: 1;
+        text-shadow: 0 0 20px rgba(8, 247, 254, 0.7);
+    }
+    8%, 10% {
+        opacity: 0.8;
+        text-shadow: 0 0 30px rgba(8, 247, 254, 0.9);
+    }
+    20%, 25%, 30% {
+        opacity: 1;
+        text-shadow: 0 0 20px rgba(8, 247, 254, 0.7), 0 0 10px rgba(4, 254, 189, 0.5);
+    }
+    40%, 42% {
+        opacity: 0.9;
+        text-shadow: 0 0 30px rgba(8, 247, 254, 0.9), 0 0 15px rgba(4, 254, 189, 0.7);
+    }
+}
+
+[data-theme="holographic"] .theme-toggle {
+    border-color: var(--neon-purple);
+    color: var(--neon-purple);
+    box-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
+    background: rgba(1, 11, 25, 0.3);
+    backdrop-filter: blur(5px);
+}
+
+/* Terminal styling */
+[data-theme="holographic"] .terminal-window {
+    background: rgba(1, 11, 25, 0.5);
+    border: 1px solid var(--neon-blue);
+    box-shadow: 0 0 20px rgba(8, 247, 254, 0.3);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="holographic"] .terminal-window::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 300%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(8, 247, 254, 0.2), 
+        transparent);
+    animation: holographic-sweep 4s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes holographic-sweep {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(50%); }
+}
+
+[data-theme="holographic"] .terminal-header {
+    background: rgba(2, 25, 51, 0.7);
+    border-bottom: 1px solid rgba(8, 247, 254, 0.3);
+}
+
+[data-theme="holographic"] .terminal-body {
+    position: relative;
+}
+
+[data-theme="holographic"] .prompt {
+    color: var(--neon-blue);
+    text-shadow: 0 0 5px rgba(8, 247, 254, 0.7);
+}
+
+[data-theme="holographic"] .cmd {
+    color: var(--text-primary);
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="holographic"] .arg {
+    color: var(--neon-green);
+    text-shadow: 0 0 5px rgba(4, 254, 189, 0.5);
+}
+
+[data-theme="holographic"] .output {
+    color: var(--text-secondary);
+}
+
+[data-theme="holographic"] .highlight-cyan {
+    color: var(--neon-blue);
+    text-shadow: 0 0 5px rgba(8, 247, 254, 0.7);
+}
+
+[data-theme="holographic"] .highlight-pink {
+    color: var(--neon-pink);
+    text-shadow: 0 0 5px rgba(255, 32, 121, 0.7);
+}
+
+/* Content sections */
+[data-theme="holographic"] .section-title {
+    color: var(--neon-blue);
+    text-shadow: 0 0 10px rgba(8, 247, 254, 0.6);
+    background: linear-gradient(90deg, 
+        var(--neon-blue), 
+        var(--neon-purple), 
+        var(--neon-blue));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% auto;
+    animation: holographic-gradient 4s linear infinite;
+}
+
+@keyframes holographic-gradient {
+    to {
+        background-position: 200% center;
+    }
+}
+
+[data-theme="holographic"] .bracket {
+    color: var(--neon-pink);
+    text-shadow: 0 0 10px rgba(255, 32, 121, 0.6);
+}
+
+[data-theme="holographic"] .feature-card,
+[data-theme="holographic"] .usage-item {
+    background: rgba(1, 11, 25, 0.4);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(8, 247, 254, 0.2);
+    box-shadow: 0 0 15px rgba(8, 247, 254, 0.1);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+[data-theme="holographic"] .feature-card::before,
+[data-theme="holographic"] .usage-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, 
+        transparent 30%, 
+        rgba(8, 247, 254, 0.1) 45%, 
+        transparent 60%);
+    pointer-events: none;
+}
+
+[data-theme="holographic"] .feature-card:hover,
+[data-theme="holographic"] .usage-item:hover {
+    border-color: rgba(8, 247, 254, 0.5);
+    box-shadow: 
+        0 0 20px rgba(8, 247, 254, 0.3),
+        inset 0 0 10px rgba(8, 247, 254, 0.1);
+    transform: translateY(-5px);
+}
+
+[data-theme="holographic"] .feature-icon {
+    color: var(--neon-green);
+    text-shadow: 0 0 10px rgba(4, 254, 189, 0.7);
+}
+
+[data-theme="holographic"] .feature-title,
+[data-theme="holographic"] .usage-item h3 {
+    background: linear-gradient(90deg, 
+        var(--neon-green), 
+        var(--neon-blue), 
+        var(--neon-purple));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 5px rgba(8, 247, 254, 0.3);
+}
+
+[data-theme="holographic"] .blink {
+    animation: holographic-blink 1s infinite alternate;
+}
+
+@keyframes holographic-blink {
+    from {
+        opacity: 1;
+        text-shadow: 0 0 5px rgba(8, 247, 254, 0.7);
+    }
+    to {
+        opacity: 0.6;
+        text-shadow: 0 0 15px rgba(8, 247, 254, 0.9);
+    }
+}
+
+/* Footer */
+[data-theme="holographic"] .footer {
+    background: rgba(1, 11, 25, 0.5);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(8, 247, 254, 0.2);
+}
+
+[data-theme="holographic"] .footer-link {
+    color: var(--text-secondary);
+    transition: all 0.3s;
+}
+
+[data-theme="holographic"] .footer-link:hover {
+    color: var(--neon-blue);
+    text-shadow: 0 0 8px rgba(8, 247, 254, 0.7);
+}
+
+[data-theme="holographic"] .social-link {
+    color: var(--neon-purple);
+}
+
+[data-theme="holographic"] .social-link:hover {
+    color: var(--neon-pink);
+    text-shadow: 0 0 8px rgba(255, 32, 121, 0.7);
+}

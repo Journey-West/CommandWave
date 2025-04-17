@@ -232,8 +232,6 @@ body {
 
 .line {
   margin-bottom: 0.5rem;
-  display: flex;
-  flex-wrap: wrap;
 }
 
 .prompt {
@@ -261,6 +259,16 @@ body {
 }
 
 .highlight-pink {
+  color: var(--accent-pink);
+  position: relative;
+}
+
+.highlight-blue {
+  color: var(--accent-cyan);
+  position: relative;
+}
+
+.highlight-green {
   color: var(--accent-pink);
   position: relative;
 }

@@ -81,20 +81,38 @@ function updateThemeIcon(theme) {
         themeIcon.className = 'fas fa-moon';
     } else if (theme === 'witchhazel') {
         themeIcon.className = 'fas fa-hat-wizard';
+    } else if (theme === 'digital-rain') {
+        themeIcon.className = 'fas fa-code';
+    } else if (theme === 'outrun-sunset') {
+        themeIcon.className = 'fas fa-car';
+    } else if (theme === 'corporate-dystopia') {
+        themeIcon.className = 'fas fa-building';
+    } else if (theme === 'holographic') {
+        themeIcon.className = 'fas fa-vr-cardboard';
+    } else if (theme === 'tokyo-night') {
+        themeIcon.className = 'fas fa-torii-gate';
     }
 }
 
 function cycleTheme() {
     const currentTheme = localStorage.getItem('commandwave-docs-theme') || 'dark';
+    const themes = [
+        'dark', 
+        'light', 
+        'witchhazel', 
+        'digital-rain', 
+        'outrun-sunset', 
+        'corporate-dystopia', 
+        'holographic', 
+        'tokyo-night'
+    ];
     
-    let newTheme;
-    if (currentTheme === 'dark') {
-        newTheme = 'light';
-    } else if (currentTheme === 'light') {
-        newTheme = 'witchhazel';
-    } else {
-        newTheme = 'dark';
-    }
+    // Find current theme index
+    const currentIndex = themes.indexOf(currentTheme);
+    
+    // Get next theme (or first if at end of array)
+    const nextIndex = (currentIndex + 1) % themes.length;
+    const newTheme = themes[nextIndex];
     
     applyTheme(newTheme);
     

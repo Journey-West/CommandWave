@@ -11,6 +11,11 @@
     <link rel="stylesheet" href="css/themes/cyberpunk-dark.css">
     <link rel="stylesheet" href="css/themes/light.css">
     <link rel="stylesheet" href="css/themes/witchhazel.css">
+    <link rel="stylesheet" href="css/themes/digital-rain.css">
+    <link rel="stylesheet" href="css/themes/outrun-sunset.css">
+    <link rel="stylesheet" href="css/themes/corporate-dystopia.css">
+    <link rel="stylesheet" href="css/themes/holographic.css">
+    <link rel="stylesheet" href="css/themes/tokyo-night.css">
     <link rel="stylesheet" href="css/components/terminal_demo.css">
 </head>
 <body>
@@ -54,10 +59,10 @@
                         <div class="line output">Ready.</div>
                         <div class="line"><span class="prompt">$</span> <span class="cmd">describe</span> <span class="arg">CommandWave</span></div>
                         <div class="line output">A cyberpunk-themed web interface for terminal sessions</div>
-                        <div class="line output">with executable Markdown playbooks.</div>
+                        <div class="line output">with executable <span class="highlight-pink">Markdown</span> <span class="highlight-pink">Playbooks</span>.</div>
                         <div class="line"><span class="prompt">$</span> <span class="cmd">show</span> <span class="arg">features</span></div>
                         <div class="line output">- Terminal Management with <span class="highlight-cyan">tmux</span> and <span class="highlight-cyan">ttyd</span></div>
-                        <div class="line output">- Executable <span class="highlight-pink">Markdown Playbooks</span></div>
+                        <div class="line output">- Executable <span class="highlight-pink">Markdown</span> <span class="highlight-pink">Playbooks</span></div>
                         <div class="line output">- Variable <span class="highlight-cyan">Substitution</span> and <span class="highlight-pink">Synchronization</span></div>
                         <div class="line"><span class="prompt">$</span> <span class="blink">_</span></div>
                     </div>
@@ -112,6 +117,36 @@
                         <p>Softer purple/pastel neon palette with mystical tech aesthetic</p>
                     </div>
                 </div>
+                <div class="theme-option digital-rain" data-theme="digital-rain">
+                    <div class="theme-preview">
+                        <h3>Digital Rain</h3>
+                        <p>Matrix-inspired green code rain on deep black backgrounds</p>
+                    </div>
+                </div>
+                <div class="theme-option outrun-sunset" data-theme="outrun-sunset">
+                    <div class="theme-preview">
+                        <h3>Outrun Sunset</h3>
+                        <p>80s retrowave aesthetics with vibrant gradients and grid patterns</p>
+                    </div>
+                </div>
+                <div class="theme-option corporate-dystopia" data-theme="corporate-dystopia">
+                    <div class="theme-preview">
+                        <h3>Corporate Dystopia</h3>
+                        <p>Clean slate grays with corporate tech styling and warning accents</p>
+                    </div>
+                </div>
+                <div class="theme-option holographic" data-theme="holographic">
+                    <div class="theme-preview">
+                        <h3>Holographic</h3>
+                        <p>Translucent interfaces with shimmering rainbow highlights and glass effects</p>
+                    </div>
+                </div>
+                <div class="theme-option tokyo-night" data-theme="tokyo-night">
+                    <div class="theme-preview">
+                        <h3>Tokyo Night</h3>
+                        <p>Japanese cyberpunk aesthetics with indigo, pink and kanji elements</p>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -130,7 +165,7 @@
                     <div class="line"><span class="prompt">$</span> <span class="cmd">cd</span> <span class="arg">CommandWave</span></div>
                     <div class="line"><span class="prompt">$</span> <span class="cmd">pip</span> <span class="arg">install -r requirements.txt</span></div>
                     <div class="line"><span class="prompt">$</span> <span class="cmd">python</span> <span class="arg">main.py --use-default-tmux-config</span></div>
-                    <div class="line output">Server started at <span class="highlight-cyan">http://localhost:5000</span></div>
+                    <div class="line output">Server started at: <span class="highlight-cyan">http://localhost:5000</span></div>
                     <div class="line"><span class="prompt">$</span> <span class="cmd">echo</span> <span class="arg">"CommandWave is ready for use"</span></div>
                     <div class="line output">CommandWave is ready for use</div>
                     <div class="line"><span class="prompt">$</span> <span class="blink">_</span></div>

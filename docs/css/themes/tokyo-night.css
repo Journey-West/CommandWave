@@ -1,0 +1,261 @@
+/* tokyo-night.css - Japanese Cyberpunk Theme */
+[data-theme="tokyo-night"] {
+    --background-dark: #1a1b26;
+    --background-medium: #24283b;
+    --text-primary: #a9b1d6;
+    --text-secondary: #787c99;
+    --neon-blue: #7aa2f7;
+    --neon-purple: #bb9af7;
+    --neon-pink: #f7768e;
+    --neon-yellow: #e0af68;
+    --neon-green: #9ece6a;
+    --accent: #f7768e;
+    --border-light: rgba(122, 162, 247, 0.3);
+    --shadow-blue: 0 0 14px rgba(122, 162, 247, 0.6);
+    --shadow-pink: 0 0 14px rgba(247, 118, 142, 0.6);
+    --shadow-purple: 0 0 14px rgba(187, 154, 247, 0.6);
+    --shadow-yellow: 0 0 14px rgba(224, 175, 104, 0.6);
+    --shadow-green: 0 0 14px rgba(158, 206, 106, 0.6);
+}
+
+[data-theme="tokyo-night"] body {
+    background-color: var(--background-dark);
+    color: var(--text-primary);
+    background-image:
+        linear-gradient(0deg, #1a1b26, #24283b);
+    position: relative;
+}
+
+/* Japanese-inspired elements */
+[data-theme="tokyo-night"] body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background-image: 
+        radial-gradient(circle at 80% 20%, rgba(247, 118, 142, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 20% 80%, rgba(122, 162, 247, 0.05) 0%, transparent 50%);
+    opacity: 0.8;
+    z-index: -1;
+}
+
+/* Add kanji-like elements */
+[data-theme="tokyo-night"] body::after {
+    content: "サイバーパンク";
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-family: sans-serif;
+    font-size: 3rem;
+    color: rgba(247, 118, 142, 0.05);
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Header */
+[data-theme="tokyo-night"] .header {
+    background-color: rgba(26, 27, 38, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--neon-pink);
+}
+
+[data-theme="tokyo-night"] .nav-button.github {
+    background-color: transparent;
+    border-color: var(--neon-blue);
+    color: var(--neon-blue);
+    box-shadow: 0 0 10px rgba(122, 162, 247, 0.3);
+}
+
+[data-theme="tokyo-night"] .nav-button.docs {
+    background-color: transparent;
+    border-color: var(--neon-pink);
+    color: var(--neon-pink);
+    box-shadow: 0 0 10px rgba(247, 118, 142, 0.3);
+}
+
+[data-theme="tokyo-night"] .nav-button:hover {
+    box-shadow: 0 0 15px currentColor;
+    transform: translateY(-2px);
+}
+
+/* Logo styling */
+[data-theme="tokyo-night"] .logo {
+    color: var(--text-primary);
+    text-shadow: 0 0 10px rgba(169, 177, 214, 0.4);
+    position: relative;
+}
+
+[data-theme="tokyo-night"] .logo span {
+    color: var(--neon-pink);
+    text-shadow: 0 0 15px rgba(247, 118, 142, 0.7);
+}
+
+[data-theme="tokyo-night"] .theme-toggle {
+    border-color: var(--neon-purple);
+    color: var(--neon-purple);
+    box-shadow: 0 0 15px rgba(187, 154, 247, 0.4);
+}
+
+/* Terminal styling */
+[data-theme="tokyo-night"] .terminal-window {
+    background: #1a1b26;
+    border: 1px solid var(--neon-blue);
+    box-shadow: 0 0 20px rgba(122, 162, 247, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="tokyo-night"] .terminal-header {
+    background: #24283b;
+    border-bottom: 1px solid var(--border-light);
+}
+
+[data-theme="tokyo-night"] .terminal-title {
+    color: var(--text-secondary);
+    font-family: 'Roboto Mono', monospace;
+}
+
+[data-theme="tokyo-night"] .terminal-body {
+    color: var(--text-primary);
+}
+
+[data-theme="tokyo-night"] .prompt {
+    color: var(--neon-green);
+}
+
+[data-theme="tokyo-night"] .cmd {
+    color: var(--neon-blue);
+}
+
+[data-theme="tokyo-night"] .arg {
+    color: var(--text-primary);
+}
+
+[data-theme="tokyo-night"] .output {
+    color: var(--text-secondary);
+}
+
+[data-theme="tokyo-night"] .highlight-cyan {
+    color: var(--neon-blue);
+}
+
+[data-theme="tokyo-night"] .highlight-pink {
+    color: var(--neon-pink);
+}
+
+/* Occasionally add glitch effect */
+[data-theme="tokyo-night"] .blink {
+    color: var(--neon-pink);
+    position: relative;
+    animation: tokyo-blink 1.2s infinite alternate;
+}
+
+@keyframes tokyo-blink {
+    0%, 100% { opacity: 1; transform: skew(0); }
+    10% { opacity: 0.9; transform: skew(-1deg); }
+    20% { opacity: 1; transform: skew(0); }
+    90% { opacity: 0.9; }
+}
+
+/* Content sections */
+[data-theme="tokyo-night"] .section-title {
+    color: var(--neon-blue);
+    text-shadow: 0 0 10px rgba(122, 162, 247, 0.5);
+    font-family: 'Orbitron', sans-serif;
+    position: relative;
+    display: inline-block;
+}
+
+[data-theme="tokyo-night"] .section-title::before {
+    content: "«";
+    color: var(--neon-pink);
+    margin-right: 0.5rem;
+    font-weight: 400;
+}
+
+[data-theme="tokyo-night"] .bracket {
+    color: var(--neon-pink);
+    text-shadow: 0 0 10px rgba(247, 118, 142, 0.5);
+}
+
+[data-theme="tokyo-night"] .feature-card,
+[data-theme="tokyo-night"] .usage-item {
+    background: rgba(36, 40, 59, 0.7);
+    border: 1px solid var(--neon-blue);
+    border-image: linear-gradient(to right, var(--neon-pink), var(--neon-blue)) 1;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+/* Add line design reminiscent of circuit boards */
+[data-theme="tokyo-night"] .feature-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    pointer-events: none;
+    background-image: 
+        linear-gradient(90deg, transparent 15px, var(--neon-pink) 15px, var(--neon-pink) 16px, transparent 16px),
+        linear-gradient(0deg, transparent 15px, var(--neon-pink) 15px, var(--neon-pink) 16px, transparent 16px);
+    opacity: 0.7;
+}
+
+[data-theme="tokyo-night"] .feature-card:hover,
+[data-theme="tokyo-night"] .usage-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--neon-pink);
+}
+
+[data-theme="tokyo-night"] .feature-icon {
+    color: var(--neon-pink);
+    text-shadow: 0 0 10px rgba(247, 118, 142, 0.5);
+}
+
+[data-theme="tokyo-night"] .feature-title,
+[data-theme="tokyo-night"] .usage-item h3 {
+    color: var(--neon-blue);
+    text-shadow: 0 0 8px rgba(122, 162, 247, 0.4);
+    font-family: 'Orbitron', sans-serif;
+    border-bottom: 1px dotted rgba(122, 162, 247, 0.3);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.8rem;
+}
+
+/* Footer styling */
+[data-theme="tokyo-night"] .footer {
+    background: #24283b;
+    border-top: 1px solid var(--neon-blue);
+    position: relative;
+}
+
+[data-theme="tokyo-night"] .footer::before {
+    content: "コマンドウェーブ";
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    font-size: 0.7rem;
+    color: rgba(122, 162, 247, 0.3);
+    pointer-events: none;
+}
+
+[data-theme="tokyo-night"] .footer-link {
+    color: var(--neon-blue);
+    transition: all 0.3s;
+}
+
+[data-theme="tokyo-night"] .footer-link:hover {
+    color: var(--neon-pink);
+    text-shadow: 0 0 8px rgba(247, 118, 142, 0.6);
+}
+
+[data-theme="tokyo-night"] .social-link {
+    color: var(--neon-purple);
+}

@@ -1,0 +1,277 @@
+/* corporate-dystopia.css - Corporate Cyberpunk Theme */
+[data-theme="corporate-dystopia"] {
+    --background-dark: #1F2833;
+    --background-medium: #2C3440;
+    --text-primary: #C5C6C7;
+    --text-secondary: #808e9b;
+    --neon-blue: #45A29E;
+    --neon-purple: #66FCF1;
+    --neon-pink: #FC5185;
+    --neon-yellow: #FFE400;
+    --neon-green: #39D47D;
+    --accent: #FFE400;
+    --border-light: rgba(69, 162, 158, 0.3);
+    --shadow-blue: 0 0 14px rgba(69, 162, 158, 0.5);
+    --shadow-pink: 0 0 14px rgba(252, 81, 133, 0.5);
+    --shadow-purple: 0 0 14px rgba(102, 252, 241, 0.5);
+    --shadow-yellow: 0 0 14px rgba(255, 228, 0, 0.5);
+    --shadow-green: 0 0 14px rgba(57, 212, 125, 0.5);
+    
+    /* Corporate UI colors */
+    --warning-color: #FFE400;
+    --error-color: #FC4445;
+    --success-color: #39D47D;
+    --info-color: #66FCF1;
+}
+
+[data-theme="corporate-dystopia"] body {
+    background-color: var(--background-dark);
+    color: var(--text-primary);
+    background-image:
+        linear-gradient(0deg, rgba(31, 40, 51, 0.95) 0%, rgba(31, 40, 51, 0.85) 100%),
+        repeating-linear-gradient(90deg, 
+            transparent, 
+            transparent 20px, 
+            rgba(69, 162, 158, 0.03) 20px, 
+            rgba(69, 162, 158, 0.03) 40px);
+}
+
+/* Corporate HUD elements */
+[data-theme="corporate-dystopia"] body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 150px;
+    height: 150px;
+    pointer-events: none;
+    background-image: 
+        linear-gradient(45deg, transparent 48%, rgba(69, 162, 158, 0.2) 48%, rgba(69, 162, 158, 0.2) 52%, transparent 52%),
+        linear-gradient(-45deg, transparent 48%, rgba(69, 162, 158, 0.2) 48%, rgba(69, 162, 158, 0.2) 52%, transparent 52%);
+    background-size: 30px 30px;
+    opacity: 0.6;
+    z-index: -1;
+}
+
+[data-theme="corporate-dystopia"] body::before {
+    content: "";
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 150px;
+    height: 150px;
+    pointer-events: none;
+    border-top: 2px solid rgba(69, 162, 158, 0.3);
+    border-right: 2px solid rgba(69, 162, 158, 0.3);
+    border-top-right-radius: 20px;
+    opacity: 0.6;
+    z-index: -1;
+}
+
+/* Header */
+[data-theme="corporate-dystopia"] .header {
+    background-color: rgba(31, 40, 51, 0.95);
+    border-bottom: 1px solid var(--neon-blue);
+    padding: 1rem 2rem;
+}
+
+[data-theme="corporate-dystopia"] .nav-button.github {
+    border-color: var(--neon-blue);
+    color: var(--neon-blue);
+    background-color: rgba(69, 162, 158, 0.1);
+    box-shadow: none;
+    transition: all 0.3s;
+}
+
+[data-theme="corporate-dystopia"] .nav-button.docs {
+    border-color: var(--warning-color);
+    color: var(--warning-color);
+    background-color: rgba(255, 228, 0, 0.1);
+    box-shadow: none;
+    transition: all 0.3s;
+}
+
+[data-theme="corporate-dystopia"] .nav-button.github:hover {
+    background-color: var(--neon-blue);
+    color: var(--background-dark);
+    box-shadow: 0 0 10px rgba(69, 162, 158, 0.5);
+}
+
+[data-theme="corporate-dystopia"] .nav-button.docs:hover {
+    background-color: var(--warning-color);
+    color: var(--background-dark);
+    box-shadow: 0 0 10px rgba(255, 228, 0, 0.5);
+}
+
+/* Logo */
+[data-theme="corporate-dystopia"] .logo {
+    color: var(--text-primary);
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 3px;
+    position: relative;
+}
+
+[data-theme="corporate-dystopia"] .logo span {
+    color: var(--neon-blue);
+    position: relative;
+}
+
+[data-theme="corporate-dystopia"] .logo::before {
+    content: "[SYSTEM]";
+    font-size: 0.8rem;
+    position: absolute;
+    top: -1.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--neon-blue);
+    opacity: 0.7;
+    letter-spacing: 1px;
+}
+
+/* Terminal */
+[data-theme="corporate-dystopia"] .terminal-window {
+    background: rgba(31, 40, 51, 0.9);
+    border: 1px solid var(--neon-blue);
+    box-shadow: 0 0 20px rgba(69, 162, 158, 0.2);
+    border-radius: 4px;
+    position: relative;
+}
+
+[data-theme="corporate-dystopia"] .terminal-window::before {
+    content: "STATUS: ONLINE";
+    position: absolute;
+    top: -1.5rem;
+    right: 0;
+    color: var(--success-color);
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+}
+
+[data-theme="corporate-dystopia"] .terminal-header {
+    background: #2C3440;
+    border-bottom: 1px solid var(--border-light);
+}
+
+[data-theme="corporate-dystopia"] .terminal-title {
+    color: var(--neon-blue);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+/* Content sections */
+[data-theme="corporate-dystopia"] .section-title {
+    color: var(--neon-blue);
+    position: relative;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-left: 1.5rem;
+}
+
+[data-theme="corporate-dystopia"] .section-title::before {
+    content: ">>";
+    position: absolute;
+    left: -1.5rem;
+    color: var(--neon-yellow);
+}
+
+[data-theme="corporate-dystopia"] .bracket {
+    color: var(--warning-color);
+}
+
+[data-theme="corporate-dystopia"] .feature-card,
+[data-theme="corporate-dystopia"] .usage-item {
+    background: #2C3440;
+    border: 1px solid var(--neon-blue);
+    border-radius: 4px;
+    box-shadow: none;
+    transition: all 0.3s;
+    position: relative;
+}
+
+[data-theme="corporate-dystopia"] .feature-card::after,
+[data-theme="corporate-dystopia"] .usage-item::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--neon-blue);
+}
+
+[data-theme="corporate-dystopia"] .feature-card:hover,
+[data-theme="corporate-dystopia"] .usage-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    border-color: var(--warning-color);
+}
+
+[data-theme="corporate-dystopia"] .feature-card:hover::after,
+[data-theme="corporate-dystopia"] .usage-item:hover::after {
+    background: var(--warning-color);
+}
+
+[data-theme="corporate-dystopia"] .feature-icon {
+    color: var(--neon-blue);
+}
+
+[data-theme="corporate-dystopia"] .feature-title,
+[data-theme="corporate-dystopia"] .usage-item h3 {
+    color: var(--text-primary);
+    font-family: 'Orbitron', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 1.1rem;
+}
+
+/* Terminal text */
+[data-theme="corporate-dystopia"] .prompt {
+    color: var(--neon-blue);
+}
+
+[data-theme="corporate-dystopia"] .cmd {
+    color: var(--text-primary);
+    font-weight: bold;
+}
+
+[data-theme="corporate-dystopia"] .output {
+    color: var(--text-secondary);
+}
+
+[data-theme="corporate-dystopia"] .highlight-cyan {
+    color: var(--info-color);
+}
+
+[data-theme="corporate-dystopia"] .highlight-pink {
+    color: var(--error-color);
+}
+
+[data-theme="corporate-dystopia"] .blink {
+    color: var(--warning-color);
+    animation: corpBlink 1.5s infinite;
+}
+
+@keyframes corpBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Footer */
+[data-theme="corporate-dystopia"] .footer {
+    background: rgba(31, 40, 51, 0.95);
+    border-top: 1px solid var(--border-light);
+}
+
+[data-theme="corporate-dystopia"] .footer-link {
+    color: var(--neon-blue);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+}
+
+[data-theme="corporate-dystopia"] .footer-link:hover {
+    color: var(--warning-color);
+}
