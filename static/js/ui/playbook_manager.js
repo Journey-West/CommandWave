@@ -12,6 +12,9 @@ class PlaybookManager {
         this.activePlaybook = null;
         this.modalController = null;
         this.playbooksById = {}; // Store playbook data by ID
+        this.activeEditableCodeBlock = null;
+        this.originalCodeContent = '';
+        this.originalCodeBlock = '';
         this.init();
         
         // Make this instance globally available for event handlers
@@ -77,6 +80,21 @@ class PlaybookManager {
             // Handle execute button clicks
             if (e.target.closest('.execute-btn')) {
                 this.handleExecuteButtonClick(e);
+            }
+            
+            // Handle click outside of an editable code block to save it
+            if (this.activeEditableCodeBlock && 
+                !e.target.closest('.code-editable') && 
+                !e.target.closest('.code-edit-actions')) {
+                this.saveEditableCodeBlock();
+            }
+        });
+        
+        // Double-click event for code blocks to make them editable
+        document.addEventListener('dblclick', (e) => {
+            const codeBlock = e.target.closest('.code-block-wrapper');
+            if (codeBlock && !codeBlock.classList.contains('editing')) {
+                this.makeCodeBlockEditable(codeBlock);
             }
         });
     }
@@ -513,6 +531,7 @@ class PlaybookManager {
         const playbookElement = document.createElement('div');
         playbookElement.className = 'playbook';
         playbookElement.id = `playbook-${this.sanitizeId(playbook.id)}`;
+        playbookElement.dataset.id = playbook.id; // Add data-id attribute
         
         // Playbook header
         const header = document.createElement('div');
@@ -592,14 +611,20 @@ class PlaybookManager {
      * @param {Object} playbook - Updated playbook data
      */
     updatePlaybookElement(element, playbook) {
-        const titleElement = element.querySelector('h3');
-        if (titleElement) {
-            titleElement.textContent = playbook.title || playbook.filename;
+        // Update id (in case the id changed)
+        element.id = `playbook-${this.sanitizeId(playbook.id)}`;
+        element.dataset.id = playbook.id; // Update data-id attribute
+        
+        // Update title
+        const title = element.querySelector('.playbook-header h3');
+        if (title) {
+            title.textContent = playbook.title || playbook.filename;
         }
         
-        const contentElement = element.querySelector('.playbook-content');
-        if (contentElement) {
-            contentElement.innerHTML = this.renderPlaybookContent(playbook);
+        // Update content
+        const content = element.querySelector('.playbook-content');
+        if (content) {
+            content.innerHTML = this.renderPlaybookContent(playbook);
         }
     }
 
@@ -992,6 +1017,246 @@ class PlaybookManager {
                 );
             }
         }
+    }
+
+    /**
+     * Make a code block editable
+     * @param {HTMLElement} codeBlock - The code block element to make editable
+     */
+    makeCodeBlockEditable(codeBlock) {
+        // If there's already an active editable code block, save it first
+        if (this.activeEditableCodeBlock) {
+            this.saveEditableCodeBlock();
+        }
+        
+        // Mark this code block as the active editable one
+        this.activeEditableCodeBlock = codeBlock;
+        codeBlock.classList.add('editing');
+        
+        // Get the code content
+        const preElement = codeBlock.querySelector('pre');
+        const codeElement = preElement.querySelector('code');
+        const language = codeBlock.dataset.language || 'plaintext';
+        
+        // Get the original code content (without formatting)
+        let codeContent = codeElement.textContent;
+        
+        // Create an editable textarea
+        const editableArea = document.createElement('div');
+        editableArea.className = 'code-editable';
+        editableArea.innerHTML = `
+            <textarea class="code-editor" spellcheck="false">${codeContent}</textarea>
+            <div class="code-edit-actions">
+                <button class="code-edit-save-btn">
+                    <i class="fas fa-check"></i>
+                    <span>Save</span>
+                </button>
+                <button class="code-edit-cancel-btn">
+                    <i class="fas fa-times"></i>
+                    <span>Cancel</span>
+                </button>
+            </div>
+        `;
+        
+        // Store the original content for cancellation
+        this.originalCodeContent = codeContent;
+        this.originalCodeBlock = preElement.innerHTML;
+        
+        // Replace the pre element with our editable area
+        preElement.style.display = 'none';
+        codeBlock.appendChild(editableArea);
+        
+        // Focus the textarea
+        const textarea = editableArea.querySelector('textarea');
+        textarea.focus();
+        
+        // Setup event listeners for the editing actions
+        const saveBtn = editableArea.querySelector('.code-edit-save-btn');
+        const cancelBtn = editableArea.querySelector('.code-edit-cancel-btn');
+        
+        saveBtn.addEventListener('click', () => this.saveEditableCodeBlock());
+        cancelBtn.addEventListener('click', () => this.cancelEditableCodeBlock());
+        
+        // Also save on Ctrl+Enter
+        textarea.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                this.saveEditableCodeBlock();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                this.cancelEditableCodeBlock();
+            }
+        });
+    }
+    
+    /**
+     * Save the changes to an editable code block
+     */
+    async saveEditableCodeBlock() {
+        if (!this.activeEditableCodeBlock) return;
+        
+        const codeBlock = this.activeEditableCodeBlock;
+        const editableArea = codeBlock.querySelector('.code-editable');
+        if (!editableArea) return;
+        
+        const textarea = editableArea.querySelector('textarea');
+        const newCode = textarea.value;
+        const preElement = codeBlock.querySelector('pre');
+        const language = codeBlock.dataset.language || 'plaintext';
+        
+        // Get the playbook information
+        const playbookElement = codeBlock.closest('.playbook');
+        if (!playbookElement) {
+            this.showNotification('Error', 'Could not find parent playbook for this code block', 'error');
+            return;
+        }
+        
+        const playbookId = playbookElement.dataset.id;
+        if (!playbookId) {
+            this.showNotification('Error', 'Playbook ID not found', 'error');
+            return;
+        }
+        
+        try {
+            // Get the current playbook data
+            const playbook = await playbookAPI.getPlaybook(playbookId);
+            
+            // Extract all code blocks from the current markdown
+            const codeBlocks = this.extractCodeBlocksFromMarkdown(playbook.content);
+            
+            // Get the index of this code block in the playbook
+            const codeBlockIndex = this.findCodeBlockIndex(codeBlock, playbookElement);
+            
+            if (codeBlockIndex === -1 || codeBlockIndex >= codeBlocks.length) {
+                throw new Error('Could not identify which code block was edited');
+            }
+            
+            // Replace the code in the markdown
+            const updatedContent = this.replaceCodeBlockInMarkdown(
+                playbook.content, 
+                codeBlocks[codeBlockIndex], 
+                newCode,
+                language
+            );
+            
+            // Update the playbook content on the server
+            const updatedPlaybook = await playbookAPI.updatePlaybook(playbookId, {
+                ...playbook,
+                content: updatedContent
+            });
+            
+            // Update the playbook in our local cache
+            this.playbooksById[playbookId] = updatedPlaybook;
+            
+            // Re-render just the edited code block
+            const highlightedCode = this.highlightCode(newCode, language);
+            preElement.innerHTML = `<code class="language-${language}">${highlightedCode}</code>`;
+            preElement.style.display = 'block';
+            
+            // Remove the editable area
+            if (editableArea) {
+                editableArea.remove();
+            }
+            
+            // Clear the active editable code block reference
+            this.activeEditableCodeBlock.classList.remove('editing');
+            this.activeEditableCodeBlock = null;
+            
+            this.showNotification('Success', 'Code block updated successfully', 'success', 2000);
+        } catch (error) {
+            console.error('Error updating code block:', error);
+            this.showNotification('Error', `Failed to update code block: ${error.message}`, 'error');
+        }
+    }
+    
+    /**
+     * Cancel editing a code block and revert to original content
+     */
+    cancelEditableCodeBlock() {
+        if (!this.activeEditableCodeBlock) return;
+        
+        const codeBlock = this.activeEditableCodeBlock;
+        const editableArea = codeBlock.querySelector('.code-editable');
+        
+        if (editableArea) {
+            editableArea.remove();
+        }
+        
+        // Restore the original code display
+        const preElement = codeBlock.querySelector('pre');
+        preElement.style.display = 'block';
+        preElement.innerHTML = this.originalCodeBlock;
+        
+        // Clear the active editable code block reference
+        codeBlock.classList.remove('editing');
+        this.activeEditableCodeBlock = null;
+    }
+    
+    /**
+     * Extract code blocks from markdown text
+     * @param {string} markdown - The markdown content
+     * @returns {Array} Array of code block objects with start, end, content, and language
+     */
+    extractCodeBlocksFromMarkdown(markdown) {
+        const codeBlocks = [];
+        const codeBlockRegex = /```([\w]*)\n([\s\S]*?)```/g;
+        
+        let match;
+        while ((match = codeBlockRegex.exec(markdown)) !== null) {
+            codeBlocks.push({
+                start: match.index,
+                end: match.index + match[0].length,
+                fullMatch: match[0],
+                language: match[1],
+                content: match[2]
+            });
+        }
+        
+        return codeBlocks;
+    }
+    
+    /**
+     * Find the index of a code block in the playbook
+     * @param {HTMLElement} codeBlockElement - The code block element
+     * @param {HTMLElement} playbookElement - The parent playbook element
+     * @returns {number} The index of the code block, or -1 if not found
+     */
+    findCodeBlockIndex(codeBlockElement, playbookElement) {
+        const codeBlocks = Array.from(
+            playbookElement.querySelectorAll('.code-block-wrapper')
+        );
+        return codeBlocks.indexOf(codeBlockElement);
+    }
+    
+    /**
+     * Replace a code block in markdown content
+     * @param {string} markdown - The original markdown content
+     * @param {Object} codeBlock - The code block object to replace
+     * @param {string} newCode - The new code content
+     * @param {string} language - The language of the code block
+     * @returns {string} The updated markdown content
+     */
+    replaceCodeBlockInMarkdown(markdown, codeBlock, newCode, language) {
+        return markdown.substring(0, codeBlock.start) + 
+               '```' + language + '\n' + newCode + '```' + 
+               markdown.substring(codeBlock.end);
+    }
+    
+    /**
+     * Highlight code using Prism if available
+     * @param {string} code - The code to highlight
+     * @param {string} language - The language of the code
+     * @returns {string} The highlighted code
+     */
+    highlightCode(code, language) {
+        if (window.Prism && language && Prism.languages[language]) {
+            try {
+                return Prism.highlight(code, Prism.languages[language], language);
+            } catch (e) {
+                console.error('Prism highlighting error:', e);
+            }
+        }
+        return code;
     }
 }
 

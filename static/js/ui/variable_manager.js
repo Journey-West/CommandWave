@@ -438,14 +438,14 @@ class VariableManager {
             valueInput.value = value;
             oldNameInput.value = name;
             
-            // Set up validation for no spaces in name and reference fields
+            // Set up validation for no spaces in reference field
             nameInput.oninput = () => {
-                // Remove spaces
-                nameInput.value = nameInput.value.replace(/\s+/g, '');
+                // Keep spaces in name field, but generate a reference without spaces
+                const nameWithoutSpaces = nameInput.value.replace(/\s+/g, '');
                 
                 // Update reference field if it still has the default pattern
                 if (refInput.value === `$${oldNameInput.value}` || refInput.value.startsWith('$')) {
-                    refInput.value = `$${nameInput.value}`;
+                    refInput.value = `$${nameWithoutSpaces}`;
                 }
             };
             
@@ -511,21 +511,15 @@ class VariableManager {
             return;
         }
         
-        // Check for spaces in variable name
-        if (name.includes(' ')) {
-            this.showError('Variable name cannot contain spaces');
+        // Check for spaces in variable reference
+        if (refValue.includes(' ')) {
+            this.showError('Variable reference cannot contain spaces');
             return;
         }
         
         // Check reference format
         if (!refValue.startsWith('$')) {
             this.showError('Variable reference must start with $');
-            return;
-        }
-        
-        // Check for spaces in variable reference
-        if (refValue.includes(' ')) {
-            this.showError('Variable reference cannot contain spaces');
             return;
         }
         
@@ -550,15 +544,15 @@ class VariableManager {
         const submitBtn = document.getElementById('submitAddVariable');
         const cancelBtn = document.getElementById('cancelAddVariable');
         
-        // Set up validation for no spaces in name and reference fields
+        // Set up validation for no spaces in reference field
         if (nameInput) {
             nameInput.oninput = () => {
-                // Remove spaces
-                nameInput.value = nameInput.value.replace(/\s+/g, '');
+                // Keep spaces in name field, but generate a reference without spaces
+                const nameWithoutSpaces = nameInput.value.replace(/\s+/g, '');
                 
                 // Update reference field
                 if (refInput) {
-                    refInput.value = `$${nameInput.value}`;
+                    refInput.value = `$${nameWithoutSpaces}`;
                 }
             };
         }
@@ -583,12 +577,6 @@ class VariableManager {
                     
                     if (!name) {
                         this.showError('Variable name cannot be empty');
-                        return;
-                    }
-                    
-                    // Check for spaces in variable name
-                    if (name.includes(' ')) {
-                        this.showError('Variable name cannot contain spaces');
                         return;
                     }
                     

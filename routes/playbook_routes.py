@@ -166,6 +166,49 @@ def delete_playbook(playbook_id):
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@playbook_routes.route('/<playbook_id>/update', methods=['POST'])
+def update_playbook(playbook_id):
+    """Update a specific playbook by ID."""
+    try:
+        if playbook_id not in playbooks:
+            return jsonify({'success': False, 'error': 'Playbook not found'}), 404
+            
+        data = request.json
+        if not data or 'content' not in data:
+            return jsonify({'success': False, 'error': 'Missing playbook content'}), 400
+        
+        # Get the updated content
+        updated_content = data['content']
+        
+        # Validate the playbook content
+        valid, error = validate_playbook(updated_content)
+        if not valid:
+            return jsonify({'success': False, 'error': error}), 400
+            
+        # Process the playbook to extract title, description, etc.
+        playbook = playbooks[playbook_id]
+        playbook_data = process_playbook(updated_content, playbook['filename'])
+        
+        # Update the in-memory playbook
+        playbook['content'] = updated_content
+        playbook['title'] = playbook_data.get('title', playbook['filename'])
+        playbook['description'] = playbook_data.get('description', '')
+        playbook['updated_at'] = time.time()
+        
+        # Update the file on disk
+        file_path = playbook['path']
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(updated_content)
+            
+        return jsonify({
+            'success': True,
+            'message': 'Playbook updated successfully',
+            'playbook': playbook
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @playbook_routes.route('/search', methods=['GET'])
 def search_playbooks():
     """Search for playbooks by query."""
