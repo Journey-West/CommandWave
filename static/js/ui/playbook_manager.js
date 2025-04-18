@@ -11,7 +11,14 @@ class PlaybookManager {
     constructor() {
         this.activePlaybook = null;
         this.modalController = null;
-        this.playbooksById = {}; // Store playbook data by ID
+        
+        // Global storage of all playbook data by ID (for reference)
+        this.playbooksById = {}; 
+        
+        // Tab-specific playbook state tracking
+        this.tabPlaybooks = {};
+        this.activeTabId = null;
+        
         this.activeEditableCodeBlock = null;
         this.originalCodeContent = '';
         this.originalCodeBlock = '';
@@ -33,8 +40,37 @@ class PlaybookManager {
         
         this.setupEventListeners();
         
+        // Detect the initial active tab
+        this.detectActiveTab();
+        
+        // Load tab-specific playbook state from local storage
+        this.loadTabPlaybookState();
+        
         // Initialize any existing playbooks that were loaded from the server
         this.initializeExistingPlaybooks();
+        
+        // Listen for variable changes to update playbook content
+        document.addEventListener('variableValueChanged', () => {
+            this.updateAllRenderedPlaybooks();
+        });
+        
+        // Listen for tab changes to:
+        // 1. Update tab-specific playbook display
+        // 2. Update playbook content with tab-specific variables 
+        document.addEventListener('terminal-tab-changed', (event) => {
+            if (event.detail && event.detail.port) {
+                console.log(`Terminal tab changed to: ${event.detail.port}`);
+                this.handleTabChange(event.detail.port);
+            } else {
+                console.warn('Terminal tab changed but no port was provided');
+                setTimeout(() => this.updateAllRenderedPlaybooks(), 100);
+            }
+        });
+        
+        // Listen for window unload events to save state
+        window.addEventListener('beforeunload', () => {
+            this.saveTabPlaybookState();
+        });
         
         console.log('PlaybookManager initialized');
     }
@@ -150,10 +186,35 @@ class PlaybookManager {
                     const response = await playbookAPI.importPlaybook(content, file.name);
                     console.log('API response:', response);
                     
-                    // Display the newly uploaded playbook
-                    this.displayPlaybook(response);
+                    // Ensure we have a valid active tab ID
+                    if (!this.activeTabId) {
+                        this.detectActiveTab();
+                    }
                     
-                    this.showNotification('Success', `Playbook "${file.name}" uploaded successfully!`, 'success');
+                    // Display the newly uploaded playbook
+                    try {
+                        this.displayPlaybook(response);
+                        this.showNotification('Success', `Playbook "${file.name}" uploaded successfully!`, 'success');
+                    } catch (displayError) {
+                        console.error('Error displaying imported playbook:', displayError);
+                        
+                        // Even if display fails, save the playbook data for future use
+                        if (response && response.id) {
+                            this.playbooksById[response.id] = response;
+                            
+                            // If tab tracks playbooks, add this playbook to the list
+                            if (this.activeTabId && this.tabPlaybooks[this.activeTabId]) {
+                                if (!this.tabPlaybooks[this.activeTabId].includes(response.id)) {
+                                    this.tabPlaybooks[this.activeTabId].push(response.id);
+                                    this.saveTabPlaybookState();
+                                }
+                            }
+                            
+                            this.showNotification('Warning', 
+                                `Playbook "${file.name}" imported but could not be displayed. It will be available for later use.`, 
+                                'warning');
+                        }
+                    }
                 } catch (error) {
                     console.error('Error importing playbook:', error);
                     this.showNotification('Error', `Failed to import playbook: ${error.message}`, 'error');
@@ -390,9 +451,24 @@ class PlaybookManager {
             return;
         }
 
-        // Store playbook data for future updates
+        // Make sure we have a valid active tab ID
+        if (!this.activeTabId) {
+            this.detectActiveTab();
+        }
+
+        // Store playbook data for future updates (global reference)
         if (playbook && playbook.id) {
             this.playbooksById[playbook.id] = playbook;
+            
+            // Add playbook to current tab's collection if not already there
+            if (!this.tabPlaybooks[this.activeTabId]) {
+                this.tabPlaybooks[this.activeTabId] = [];
+            }
+            
+            if (!this.tabPlaybooks[this.activeTabId].includes(playbook.id)) {
+                console.log(`Adding playbook ${playbook.id} to tab ${this.activeTabId}`);
+                this.tabPlaybooks[this.activeTabId].push(playbook.id);
+            }
         }
 
         // Check if playbook already exists in the DOM
@@ -422,6 +498,7 @@ class PlaybookManager {
     updateAllRenderedPlaybooks() {
         console.log('Updating all rendered playbooks with latest variable values');
         
+        // Only update playbooks for the current active tab
         const playbooks = document.querySelectorAll('.playbook');
         console.log(`Found ${playbooks.length} playbooks to update`);
         
@@ -433,7 +510,7 @@ class PlaybookManager {
             // Get playbook data
             const playbookData = this.getPlaybookById(playbookId);
             
-            if (playbookData) {
+            if (playbookData && this.isPlaybookInCurrentTab(playbookId)) {
                 console.log(`Found data for playbook: ${playbookId}`);
                 
                 // Find content element to update
@@ -447,9 +524,27 @@ class PlaybookManager {
                     console.warn(`No content element found for playbook: ${playbookId}`);
                 }
             } else {
-                console.warn(`No data found for playbook: ${playbookId}`);
+                console.warn(`No data found for playbook: ${playbookId} or not in current tab`);
+                
+                // If playbook is not in current tab, remove it from DOM
+                if (!this.isPlaybookInCurrentTab(playbookId)) {
+                    playbookEl.remove();
+                }
             }
         });
+    }
+    
+    /**
+     * Check if a playbook is in the current tab's collection
+     * @param {string} playbookId - ID of the playbook to check
+     * @returns {boolean} True if playbook is in current tab
+     */
+    isPlaybookInCurrentTab(playbookId) {
+        if (!this.activeTabId || !this.tabPlaybooks[this.activeTabId]) {
+            return false;
+        }
+        
+        return this.tabPlaybooks[this.activeTabId].includes(playbookId);
     }
 
     /**
@@ -511,9 +606,14 @@ class PlaybookManager {
         let variables = {};
         const variableManager = window.variableManager; 
         
-        if (variableManager && typeof variableManager.getVariableMap === 'function') {
-            variables = variableManager.getVariableMap();
-            console.log('Variables for substitution:', variables);
+        if (variableManager) {
+            // Make sure we're using the active tab's variables
+            if (typeof variableManager.getVariableMap === 'function') {
+                variables = variableManager.getVariableMap();
+                console.log('Variables for substitution:', variables);
+            } else {
+                console.warn('VariableManager.getVariableMap function not available');
+            }
         } else {
             console.warn('VariableManager not available for substitution');
         }
@@ -575,19 +675,12 @@ class PlaybookManager {
         deleteBtn.appendChild(progressContainer);
         deleteBtn.appendChild(countdown);
         
-        // Setup the hold-to-delete functionality
-        this.setupHoldToDelete(deleteBtn, progressBar, countdown, playbook.id);
-        
+        // First add all elements to the DOM structure
         controls.appendChild(editBtn);
         controls.appendChild(deleteBtn);
         
         header.appendChild(title);
         header.appendChild(controls);
-        
-        // Add click event to header for expand/collapse
-        header.addEventListener('click', () => {
-            playbookElement.classList.toggle('expanded');
-        });
         
         // Playbook content
         const content = document.createElement('div');
@@ -596,6 +689,14 @@ class PlaybookManager {
         
         playbookElement.appendChild(header);
         playbookElement.appendChild(content);
+        
+        // Now that everything is in the DOM structure, setup the hold-to-delete functionality
+        this.setupHoldToDelete(deleteBtn, progressBar, countdown, playbook.id);
+        
+        // Add click event to header for expand/collapse
+        header.addEventListener('click', () => {
+            playbookElement.classList.toggle('expanded');
+        });
         
         // Auto-expand the playbook on creation
         setTimeout(() => {
@@ -649,6 +750,73 @@ class PlaybookManager {
     }
 
     /**
+     * Delete a playbook by its ID
+     * @param {string} playbookId - ID of the playbook to delete
+     */
+    async deletePlaybook(playbookId) {
+        try {
+            console.log(`Attempting to delete playbook: ${playbookId}`);
+            
+            // Call API to delete from server
+            await playbookAPI.deletePlaybook(playbookId);
+            
+            // Remove from current tab's collection
+            this.removePlaybookFromTab(playbookId, this.activeTabId);
+            
+            // Remove from global collection
+            delete this.playbooksById[playbookId];
+            
+            // Remove from DOM
+            const playbookElement = document.getElementById(`playbook-${this.sanitizeId(playbookId)}`);
+            if (playbookElement) {
+                playbookElement.remove();
+            }
+            
+            this.showNotification('Success', 'Playbook deleted successfully', 'success');
+        } catch (error) {
+            console.error('Error deleting playbook:', error);
+            this.showNotification('Error', `Failed to delete playbook: ${error.message}`, 'error');
+        }
+    }
+    
+    /**
+     * Remove a playbook from a specific tab
+     * @param {string} playbookId - ID of the playbook to remove
+     * @param {string} tabId - ID of the tab to remove from
+     */
+    removePlaybookFromTab(playbookId, tabId) {
+        if (!tabId || !this.tabPlaybooks[tabId]) return;
+        
+        const index = this.tabPlaybooks[tabId].indexOf(playbookId);
+        if (index !== -1) {
+            console.log(`Removing playbook ${playbookId} from tab ${tabId}`);
+            this.tabPlaybooks[tabId].splice(index, 1);
+        }
+    }
+    
+    /**
+     * Close a playbook in the current tab (without deleting from server)
+     * @param {string} playbookId - ID of the playbook to close
+     */
+    closePlaybook(playbookId) {
+        try {
+            console.log(`Closing playbook: ${playbookId} in tab ${this.activeTabId}`);
+            
+            // Remove from current tab's collection
+            this.removePlaybookFromTab(playbookId, this.activeTabId);
+            
+            // Remove from DOM
+            const playbookElement = document.getElementById(`playbook-${this.sanitizeId(playbookId)}`);
+            if (playbookElement) {
+                playbookElement.remove();
+            }
+        } catch (error) {
+            console.error('Error closing playbook:', error);
+            this.showNotification('Error', `Failed to close playbook: ${error.message}`, 'error');
+        }
+    }
+
+    /**
      * Setup hold-to-delete functionality for a delete button
      * @param {HTMLElement} button - Delete button element
      * @param {HTMLElement} progressBar - Progress bar element
@@ -656,110 +824,92 @@ class PlaybookManager {
      * @param {string} playbookId - ID of the playbook to delete
      */
     setupHoldToDelete(button, progressBar, countdownEl, playbookId) {
+        const HOLD_TIME = 3000; // 3 seconds
+        
+        // Ensure required elements exist
+        if (!button || !progressBar || !countdownEl) {
+            console.error('Missing required elements for hold-to-delete setup');
+            return;
+        }
+        
         let holdTimer = null;
-        let startTime = 0;
-        const totalHoldTime = 3000; // 3 seconds to delete
+        let holdStartTime = 0;
+        let animationFrameId = null;
         
-        // When mouse down on delete button, start the hold timer
-        button.addEventListener('mousedown', (e) => {
-            e.stopPropagation();
-            startTime = Date.now();
-            button.classList.add('deleting');
-            
-            // Start the animation
-            holdTimer = setInterval(() => {
-                const elapsedTime = Date.now() - startTime;
-                const percentage = Math.min((elapsedTime / totalHoldTime) * 100, 100);
-                
-                // Update progress bar and countdown
-                this.updateDeleteProgress(progressBar, countdownEl, percentage, totalHoldTime);
-                
-                // If held for the required time, trigger delete
-                if (percentage >= 100) {
-                    this.completeDelete(button, holdTimer, playbookId);
-                }
-            }, 50);
-        });
-        
-        // If mouse up or leave before completion, cancel the delete
-        const cancelDelete = () => {
-            if (holdTimer) {
-                clearInterval(holdTimer);
-                holdTimer = null;
-                button.classList.remove('deleting');
-                progressBar.style.width = '0%';
-                countdownEl.textContent = '3';
-            }
+        const resetState = () => {
+            if (holdTimer) clearTimeout(holdTimer);
+            holdTimer = null;
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+            button.classList.remove('delete-active');
+            progressBar.style.width = '0%';
+            countdownEl.textContent = '3';
         };
         
-        button.addEventListener('mouseup', cancelDelete);
-        button.addEventListener('mouseleave', cancelDelete);
-        
-        // Add click event to stop propagation and prevent header click
-        button.addEventListener('click', (e) => {
-            e.stopPropagation();
+        // Mouse down - start the hold timer
+        button.addEventListener('mousedown', (e) => {
             e.preventDefault();
+            e.stopPropagation();
+            
+            holdStartTime = Date.now();
+            button.classList.add('delete-active');
+            
+            // Update countdown and progress continuously
+            const updateProgress = () => {
+                const elapsed = Date.now() - holdStartTime;
+                const remaining = Math.max(0, HOLD_TIME - elapsed);
+                const percentage = Math.min(100, (elapsed / HOLD_TIME) * 100);
+                
+                // Update progress bar width
+                progressBar.style.width = `${percentage}%`;
+                
+                // Update countdown number (show seconds remaining)
+                const secondsRemaining = Math.ceil(remaining / 1000);
+                countdownEl.textContent = secondsRemaining.toString();
+                
+                if (percentage < 100) {
+                    animationFrameId = requestAnimationFrame(updateProgress);
+                }
+            };
+            
+            animationFrameId = requestAnimationFrame(updateProgress);
+            
+            // Set timeout for delete action
+            holdTimer = setTimeout(() => {
+                // On complete hold, delete the playbook
+                this.deletePlaybook(playbookId);
+                resetState();
+            }, HOLD_TIME);
         });
-    }
-
-    /**
-     * Update the delete button progress
-     * @param {HTMLElement} progressBar - Progress bar element
-     * @param {HTMLElement} countdownEl - Countdown element
-     * @param {number} percentage - Current percentage (0-100)
-     * @param {number} totalTime - Total hold time in ms
-     */
-    updateDeleteProgress(progressBar, countdownEl, percentage, totalTime) {
-        // Update progress bar width
-        progressBar.style.width = `${percentage}%`;
         
-        // Update countdown text (3...2...1...)
-        const remainingTime = Math.ceil((totalTime - (percentage / 100 * totalTime)) / 1000);
-        countdownEl.textContent = remainingTime;
-    }
-
-    /**
-     * Complete the delete operation when hold is complete
-     * @param {HTMLElement} button - Delete button
-     * @param {number} holdTimer - Interval timer ID
-     * @param {string} playbookId - ID of the playbook to delete
-     */
-    async completeDelete(button, holdTimer, playbookId) {
-        clearInterval(holdTimer);
-        button.classList.remove('deleting');
-        button.classList.add('delete-confirmed');
+        // Mouse up or leave - cancel the deletion
+        const cancelEvents = ['mouseup', 'mouseleave'];
+        cancelEvents.forEach(eventType => {
+            button.addEventListener(eventType, () => {
+                resetState();
+            });
+        });
         
+        // Add a close button next to the delete button for quick closing without deleting
         try {
-            // Get the playbook element
-            const playbookElement = document.getElementById(`playbook-${this.sanitizeId(playbookId)}`);
-            if (!playbookElement) {
-                throw new Error(`Playbook element not found for ID: ${playbookId}`);
+            // Only add the close button if the delete button is in the DOM and has a parent
+            if (button.parentNode) {
+                const closeBtn = document.createElement('button');
+                closeBtn.className = 'close-btn';
+                closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                closeBtn.title = 'Close Playbook (remove from this tab only)';
+                closeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent triggering the header click
+                    this.closePlaybook(playbookId);
+                });
+                
+                // Insert close button before delete button
+                button.parentNode.insertBefore(closeBtn, button);
+            } else {
+                console.warn('Cannot add close button: delete button has no parent node');
             }
-            
-            // Get the playbook title for the notification message
-            const titleElement = playbookElement.querySelector('h3');
-            const playbookTitle = titleElement ? titleElement.textContent : 'this playbook';
-            
-            // Show loading state
-            playbookElement.classList.add('deleting');
-            
-            // Call the API to delete the playbook
-            await playbookAPI.deletePlaybook(playbookId);
-            
-            // Remove the playbook element from the DOM with animation
-            playbookElement.classList.add('deleted');
-            setTimeout(() => {
-                playbookElement.remove();
-            }, 300); // Match this with the CSS transition time
-            
-            // Show success notification
-            this.showNotification('Success', `Playbook "${playbookTitle}" has been deleted.`, 'success');
         } catch (error) {
-            console.error(`Error deleting playbook ${playbookId}:`, error);
-            this.showNotification('Error', `Failed to delete playbook: ${error.message}`, 'error');
-            
-            // Reset the button
-            button.classList.remove('delete-confirmed');
+            console.error('Error adding close button:', error);
         }
     }
 
@@ -1097,75 +1247,76 @@ class PlaybookManager {
         
         const codeBlock = this.activeEditableCodeBlock;
         const editableArea = codeBlock.querySelector('.code-editable');
-        if (!editableArea) return;
         
-        const textarea = editableArea.querySelector('textarea');
-        const newCode = textarea.value;
-        const preElement = codeBlock.querySelector('pre');
-        const language = codeBlock.dataset.language || 'plaintext';
-        
-        // Get the playbook information
-        const playbookElement = codeBlock.closest('.playbook');
-        if (!playbookElement) {
-            this.showNotification('Error', 'Could not find parent playbook for this code block', 'error');
-            return;
-        }
-        
-        const playbookId = playbookElement.dataset.id;
-        if (!playbookId) {
-            this.showNotification('Error', 'Playbook ID not found', 'error');
-            return;
-        }
-        
-        try {
-            // Get the current playbook data
-            const playbook = await playbookAPI.getPlaybook(playbookId);
+        if (editableArea) {
+            const textarea = editableArea.querySelector('textarea');
+            const newCode = textarea.value;
+            const preElement = codeBlock.querySelector('pre');
+            const language = codeBlock.dataset.language || 'plaintext';
             
-            // Extract all code blocks from the current markdown
-            const codeBlocks = this.extractCodeBlocksFromMarkdown(playbook.content);
-            
-            // Get the index of this code block in the playbook
-            const codeBlockIndex = this.findCodeBlockIndex(codeBlock, playbookElement);
-            
-            if (codeBlockIndex === -1 || codeBlockIndex >= codeBlocks.length) {
-                throw new Error('Could not identify which code block was edited');
+            // Get the playbook information
+            const playbookElement = codeBlock.closest('.playbook');
+            if (!playbookElement) {
+                this.showNotification('Error', 'Could not find parent playbook for this code block', 'error');
+                return;
             }
             
-            // Replace the code in the markdown
-            const updatedContent = this.replaceCodeBlockInMarkdown(
-                playbook.content, 
-                codeBlocks[codeBlockIndex], 
-                newCode,
-                language
-            );
-            
-            // Update the playbook content on the server
-            const updatedPlaybook = await playbookAPI.updatePlaybook(playbookId, {
-                ...playbook,
-                content: updatedContent
-            });
-            
-            // Update the playbook in our local cache
-            this.playbooksById[playbookId] = updatedPlaybook;
-            
-            // Re-render just the edited code block
-            const highlightedCode = this.highlightCode(newCode, language);
-            preElement.innerHTML = `<code class="language-${language}">${highlightedCode}</code>`;
-            preElement.style.display = 'block';
-            
-            // Remove the editable area
-            if (editableArea) {
-                editableArea.remove();
+            const playbookId = playbookElement.dataset.id;
+            if (!playbookId) {
+                this.showNotification('Error', 'Playbook ID not found', 'error');
+                return;
             }
             
-            // Clear the active editable code block reference
-            this.activeEditableCodeBlock.classList.remove('editing');
-            this.activeEditableCodeBlock = null;
-            
-            this.showNotification('Success', 'Code block updated successfully', 'success', 2000);
-        } catch (error) {
-            console.error('Error updating code block:', error);
-            this.showNotification('Error', `Failed to update code block: ${error.message}`, 'error');
+            try {
+                // Get the current playbook data
+                const playbook = await playbookAPI.getPlaybook(playbookId);
+                
+                // Extract all code blocks from the current markdown
+                const codeBlocks = this.extractCodeBlocksFromMarkdown(playbook.content);
+                
+                // Get the index of this code block in the playbook
+                const codeBlockIndex = this.findCodeBlockIndex(codeBlock, playbookElement);
+                
+                if (codeBlockIndex === -1 || codeBlockIndex >= codeBlocks.length) {
+                    throw new Error('Could not identify which code block was edited');
+                }
+                
+                // Replace the code in the markdown
+                const updatedContent = this.replaceCodeBlockInMarkdown(
+                    playbook.content, 
+                    codeBlocks[codeBlockIndex], 
+                    newCode,
+                    language
+                );
+                
+                // Update the playbook content on the server
+                const updatedPlaybook = await playbookAPI.updatePlaybook(playbookId, {
+                    ...playbook,
+                    content: updatedContent
+                });
+                
+                // Update the playbook in our local cache
+                this.playbooksById[playbookId] = updatedPlaybook;
+                
+                // Re-render just the edited code block
+                const highlightedCode = this.highlightCode(newCode, language);
+                preElement.innerHTML = `<code class="language-${language}">${highlightedCode}</code>`;
+                preElement.style.display = 'block';
+                
+                // Remove the editable area
+                if (editableArea) {
+                    editableArea.remove();
+                }
+                
+                // Clear the active editable code block reference
+                this.activeEditableCodeBlock.classList.remove('editing');
+                this.activeEditableCodeBlock = null;
+                
+                this.showNotification('Success', 'Code block updated successfully', 'success', 2000);
+            } catch (error) {
+                console.error('Error updating code block:', error);
+                this.showNotification('Error', `Failed to update code block: ${error.message}`, 'error');
+            }
         }
     }
     
@@ -1257,6 +1408,179 @@ class PlaybookManager {
             }
         }
         return code;
+    }
+
+    /**
+     * Detect the initial active tab
+     */
+    detectActiveTab() {
+        // Find the active tab from the terminal tabs
+        const activeTab = document.querySelector('.tab-btn.active');
+        if (activeTab) {
+            const port = activeTab.getAttribute('data-port');
+            if (port) {
+                this.activeTabId = port;
+                console.log(`Detected active tab ID: ${this.activeTabId}`);
+                
+                // Initialize tab playbooks collection if it doesn't exist
+                if (!this.tabPlaybooks[this.activeTabId]) {
+                    this.tabPlaybooks[this.activeTabId] = [];
+                }
+            }
+        }
+        
+        // If no active tab was found, use 'default' as fallback
+        if (!this.activeTabId) {
+            this.activeTabId = 'default';
+            if (!this.tabPlaybooks[this.activeTabId]) {
+                this.tabPlaybooks[this.activeTabId] = [];
+            }
+            console.log(`No active tab detected, using default tab ID: ${this.activeTabId}`);
+        }
+    }
+
+    /**
+     * Handle tab change
+     * @param {string} tabId - ID of the newly active tab
+     */
+    handleTabChange(tabId) {
+        // Save the current tab's state first
+        if (this.activeTabId) {
+            this.saveTabPlaybookState();
+        }
+        
+        // Update the active tab ID
+        this.activeTabId = tabId;
+        
+        // If we don't have a playbook list for this tab yet, initialize it
+        if (!this.tabPlaybooks[tabId]) {
+            this.tabPlaybooks[tabId] = [];
+        }
+        
+        // Update the playbook display for the new tab
+        this.updateTabPlaybookDisplay();
+    }
+
+    /**
+     * Save the tab-specific playbook state to local storage
+     */
+    saveTabPlaybookState() {
+        try {
+            // Convert the tab playbooks structure to a simple format for storage
+            const storageData = {};
+            
+            // For each tab, store the list of playbook IDs
+            for (const [tabId, playbookIds] of Object.entries(this.tabPlaybooks)) {
+                storageData[tabId] = playbookIds;
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('commandwave_tab_playbooks', JSON.stringify(storageData));
+            console.log('Saved tab playbook state to localStorage');
+        } catch (error) {
+            console.error('Error saving tab playbook state:', error);
+        }
+    }
+    
+    /**
+     * Load the tab-specific playbook state from local storage
+     */
+    async loadTabPlaybookState() {
+        try {
+            // Get stored tab playbook data
+            const storedData = localStorage.getItem('commandwave_tab_playbooks');
+            if (!storedData) {
+                console.log('No stored tab playbook state found');
+                return;
+            }
+            
+            // Parse the stored data
+            const tabPlaybooks = JSON.parse(storedData);
+            
+            // Restore tab playbook associations
+            for (const [tabId, playbookIds] of Object.entries(tabPlaybooks)) {
+                this.tabPlaybooks[tabId] = playbookIds;
+                
+                // For the active tab, preload the playbooks
+                if (tabId === this.activeTabId) {
+                    await this.preloadPlaybooksForTab(playbookIds);
+                }
+            }
+            
+            console.log('Loaded tab playbook state from localStorage');
+        } catch (error) {
+            console.error('Error loading tab playbook state:', error);
+        }
+    }
+    
+    /**
+     * Preload playbooks for the active tab on startup
+     * @param {Array} playbookIds - Array of playbook IDs to preload
+     */
+    async preloadPlaybooksForTab(playbookIds) {
+        if (!playbookIds || playbookIds.length === 0) return;
+        
+        console.log(`Preloading ${playbookIds.length} playbooks for active tab`);
+        
+        // Keep track of which playbooks were successfully loaded
+        const validPlaybookIds = [];
+        
+        // Load each playbook in sequence
+        for (const playbookId of playbookIds) {
+            try {
+                // Skip if we already have the playbook data
+                if (this.playbooksById[playbookId]) {
+                    validPlaybookIds.push(playbookId);
+                    continue;
+                }
+                
+                // Try to load the playbook from the server
+                const playbook = await playbookAPI.getPlaybook(playbookId);
+                if (playbook) {
+                    // Store the playbook data without displaying it yet
+                    this.playbooksById[playbookId] = playbook;
+                    validPlaybookIds.push(playbookId);
+                }
+            } catch (error) {
+                console.warn(`Could not preload playbook ${playbookId}:`, error);
+                // Don't add this playbook ID to validPlaybookIds
+            }
+        }
+        
+        // Update the tab's playbook list to only include valid playbooks
+        if (this.activeTabId) {
+            // Replace the tab's playbook list with only valid IDs
+            this.tabPlaybooks[this.activeTabId] = validPlaybookIds;
+            
+            // Save the updated state to localStorage
+            this.saveTabPlaybookState();
+        }
+        
+        // Update the displayed playbooks
+        this.updateTabPlaybookDisplay();
+    }
+
+    /**
+     * Update the playbook display for the current tab
+     */
+    updateTabPlaybookDisplay() {
+        const playbooksContainer = document.getElementById('playbooks');
+        if (!playbooksContainer) return;
+        
+        // Clear the current playbook display
+        playbooksContainer.innerHTML = '';
+        
+        // Get the playbook list for the current tab
+        const tabPlaybooks = this.tabPlaybooks[this.activeTabId];
+        
+        // Display each playbook in the list
+        tabPlaybooks.forEach(playbookId => {
+            const playbook = this.playbooksById[playbookId];
+            if (playbook) {
+                const playbookElement = this.createPlaybookElement(playbook);
+                playbooksContainer.appendChild(playbookElement);
+            }
+        });
     }
 }
 

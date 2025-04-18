@@ -579,23 +579,20 @@ export default class TerminalManager {
             newTabBtn.setAttribute('data-name', name);
             newTabBtn.textContent = name;
             
-            // Insert before the add tab button
+            // Insert before the add button
             tabsContainer.insertBefore(newTabBtn, addTabBtn);
             
-            // Add click event listener
-            newTabBtn.addEventListener('click', () => {
-                this.switchTerminal(port);
-            });
+            // Add click event handler to switch to this terminal
+            newTabBtn.addEventListener('click', () => this.switchTerminal(port));
             
-            // Add double-click event listener for renaming
-            newTabBtn.addEventListener('dblclick', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
+            // Add right click event handler for context menu (rename/delete)
+            newTabBtn.addEventListener('contextmenu', (event) => {
+                event.preventDefault();
                 this.openRenameTerminalModal(port, name);
             });
         }
         
-        // Create new terminal iframe
+        // Create new iframe
         const terminalContainer = document.querySelector('.terminal-container');
         if (terminalContainer) {
             // Create new iframe element
@@ -611,6 +608,17 @@ export default class TerminalManager {
             // Append to the terminal container
             terminalContainer.appendChild(newIframe);
         }
+        
+        // Emit the terminal-tab-created event to notify other components
+        document.dispatchEvent(new CustomEvent('terminal-tab-created', {
+            detail: {
+                port: port,
+                name: name
+            }
+        }));
+        
+        // Save updated terminal names to localStorage
+        this.saveTerminalNames();
     }
     
     /**

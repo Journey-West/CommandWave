@@ -5,7 +5,9 @@
 
 class VariableManager {
     constructor() {
-        this.variables = {};
+        // Change from single variables object to a map of tab IDs to variable sets
+        this.variableSets = {};
+        this.activeTabId = null;
         this.sectionCollapsed = false;
         this.variableSectionElement = document.getElementById('variableContent');
         this.variableInputsContainer = document.getElementById('variableInputsContainer');
@@ -64,6 +66,19 @@ class VariableManager {
      * Initialize variable system
      */
     init() {
+        // Listen for terminal tab changes to update variables 
+        document.addEventListener('terminal-tab-changed', (event) => {
+            this.handleTabChange(event.detail.port);
+        });
+        
+        // Listen for new terminal tab creation
+        document.addEventListener('terminal-tab-created', (event) => {
+            this.handleNewTab(event.detail.port);
+        });
+        
+        // Find the initial active tab
+        this.detectActiveTab();
+        
         // Load variables from DOM
         this.loadVariables();
         
@@ -82,53 +97,259 @@ class VariableManager {
         // Initialize event handlers
         this.initEventHandlers();
         
-        console.log(`Variable manager initialized with ${Object.keys(this.variables).length} variables`);
+        console.log(`Variable manager initialized with active tab ID: ${this.activeTabId}`);
     }
     
     /**
-     * Initialize the event handlers for variable-related actions
+     * Detect the active tab during initialization
      */
-    initEventHandlers() {
-        // Setup for add variable button
-        const addVariableBtn = document.getElementById('addVariableBtn');
-        if (addVariableBtn) {
-            addVariableBtn.addEventListener('click', () => {
-                this.openAddVariableModal();
-            });
+    detectActiveTab() {
+        // Find the active tab from the terminal tabs
+        const activeTab = document.querySelector('.tab-btn.active');
+        if (activeTab) {
+            const port = activeTab.getAttribute('data-port');
+            if (port) {
+                this.activeTabId = port;
+                console.log(`Detected active tab ID: ${this.activeTabId}`);
+                
+                // Initialize variables set for this tab if it doesn't exist
+                if (!this.variableSets[this.activeTabId]) {
+                    this.variableSets[this.activeTabId] = {};
+                }
+            }
         }
         
-        // Initialize modal listeners
-        this.initEditModalListeners();
-        this.initAddModalListeners();
-        
-        // Setup variable search
-        this.setupVariableSearch();
+        // If no active tab was found, use 'default' as fallback
+        if (!this.activeTabId) {
+            this.activeTabId = 'default';
+            if (!this.variableSets[this.activeTabId]) {
+                this.variableSets[this.activeTabId] = {};
+            }
+            console.log(`No active tab detected, using default tab ID: ${this.activeTabId}`);
+        }
     }
     
     /**
-     * Open the add variable modal
+     * Handle tab change event
+     * @param {string} tabId - The ID of the newly active tab
      */
-    openAddVariableModal() {
-        const modal = document.getElementById('addVariableModal');
-        const nameInput = document.getElementById('newVariableName');
-        const refInput = document.getElementById('newVariableReference');
-        const valueInput = document.getElementById('newVariableValue');
+    handleTabChange(tabId) {
+        console.log(`Tab changed to: ${tabId}`);
         
-        if (modal && nameInput && valueInput && refInput) {
-            // Reset form
-            nameInput.value = '';
-            refInput.value = '$';
-            valueInput.value = '';
+        if (!tabId) {
+            console.error('Tab change event received but no tabId provided');
+            return;
+        }
+        
+        // Save previous tab's variables
+        if (this.activeTabId) {
+            try {
+                this.saveCurrentVariables();
+            } catch (error) {
+                console.error(`Error saving variables for previous tab ${this.activeTabId}:`, error);
+            }
+        }
+        
+        // Update active tab ID
+        this.activeTabId = tabId;
+        
+        // Initialize variables for this tab if needed
+        if (!this.variableSets[this.activeTabId]) {
+            console.log(`Creating new variable set for tab ${this.activeTabId}`);
+            this.variableSets[this.activeTabId] = {};
             
-            // Show the modal
-            if (window.modalController) {
-                window.modalController.openModal('addVariableModal');
-            } else {
-                modal.classList.add('active');
+            // Try to load variables from server for this tab
+            try {
+                this.loadVariablesFromServer(this.activeTabId);
+            } catch (error) {
+                console.error(`Error loading variables from server for tab ${this.activeTabId}:`, error);
+            }
+        } else {
+            console.log(`Using existing variable set for tab ${this.activeTabId} with ${Object.keys(this.variableSets[this.activeTabId]).length} variables`);
+        }
+        
+        // Update UI with the variables for this tab
+        try {
+            this.updateVariableUI();
+        } catch (error) {
+            console.error(`Error updating variable UI for tab ${this.activeTabId}:`, error);
+            // If there's an error, make sure the tab has an initialized variable set
+            if (!this.variableSets[this.activeTabId]) {
+                this.variableSets[this.activeTabId] = {};
+            }
+        }
+    }
+    
+    /**
+     * Handle the creation of a new terminal tab
+     * @param {string} tabId - ID of the newly created tab
+     */
+    handleNewTab(tabId) {
+        if (!tabId) {
+            console.error('New tab event received but no tabId provided');
+            return;
+        }
+        
+        console.log(`Initializing variables for new tab: ${tabId}`);
+        
+        // Create a fresh empty variable set for the new tab
+        // Don't inherit from any existing tabs or localStorage
+        this.variableSets[tabId] = {};
+        
+        // Initialize default variables with empty values
+        const defaultVars = [
+            { name: 'Host' },
+            { name: 'Port' },
+            { name: 'Username' },
+            { name: 'Password' },
+            { name: 'Domain' },
+            { name: 'Protocol' },
+            { name: 'TargetIP' },
+            { name: 'DCIP' },
+            { name: 'UserFile' },
+            { name: 'PassFile' },
+            { name: 'Wordlist' },
+            { name: 'ControlSocket' }
+        ];
+        
+        for (const { name } of defaultVars) {
+            this.variableSets[tabId][name] = { value: '', element: null };
+        }
+        
+        console.log(`Created empty variable set for new tab ${tabId} with ${Object.keys(this.variableSets[tabId]).length} variables`);
+    }
+    
+    /**
+     * Save the current variables to the active tab's variable set
+     */
+    saveCurrentVariables() {
+        if (!this.activeTabId) return;
+        
+        // Collect variables from DOM inputs
+        const variables = {};
+        
+        // Collect custom variables
+        const customVariableInputs = document.querySelectorAll('.variable-input.custom-variable');
+        customVariableInputs.forEach(item => {
+            const input = item.querySelector('.custom-variable-input');
+            if (input && input.dataset.variableName) {
+                const name = input.dataset.variableName;
+                const value = input.value.trim();
+                variables[name] = { value, element: input };
+            }
+        });
+        
+        // Collect default variables
+        const defaultVars = [
+            { id: 'targetIP', name: 'TargetIP' },
+            { id: 'port', name: 'Port' },
+            { id: 'dcIP', name: 'DCIP' },
+            { id: 'userFile', name: 'UserFile' },
+            { id: 'passFile', name: 'PassFile' },
+            { id: 'wordlist', name: 'Wordlist' },
+            { id: 'controlSocket', name: 'ControlSocket' }
+        ];
+        
+        defaultVars.forEach(({ id, name }) => {
+            const input = document.getElementById(id);
+            if (input) {
+                variables[name] = { value: input.value.trim(), element: input };
+            }
+        });
+        
+        // Store in the variable set for the active tab
+        this.variableSets[this.activeTabId] = variables;
+    }
+    
+    /**
+     * Update the UI to display variables for the active tab
+     */
+    updateVariableUI() {
+        if (!this.activeTabId || !this.variableSets[this.activeTabId]) return;
+        
+        const tabVariables = this.variableSets[this.activeTabId];
+        
+        // Update custom variable inputs
+        document.querySelectorAll('.variable-input.custom-variable').forEach(item => {
+            const input = item.querySelector('.custom-variable-input');
+            if (input && input.dataset.variableName) {
+                const name = input.dataset.variableName;
+                if (tabVariables[name]) {
+                    input.value = tabVariables[name].value;
+                } else {
+                    input.value = ''; // Clear if no value exists for this tab
+                }
+            }
+        });
+        
+        // Update default variable inputs
+        const defaultVars = [
+            { id: 'targetIP', name: 'TargetIP' },
+            { id: 'port', name: 'Port' },
+            { id: 'dcIP', name: 'DCIP' },
+            { id: 'userFile', name: 'UserFile' },
+            { id: 'passFile', name: 'PassFile' },
+            { id: 'wordlist', name: 'Wordlist' },
+            { id: 'controlSocket', name: 'ControlSocket' }
+        ];
+        
+        defaultVars.forEach(({ id, name }) => {
+            const input = document.getElementById(id);
+            if (input) {
+                if (tabVariables[name]) {
+                    input.value = tabVariables[name].value;
+                } else {
+                    input.value = ''; // Clear if no value exists for this tab
+                }
+            }
+        });
+        
+        // Dispatch event to notify other components
+        document.dispatchEvent(new CustomEvent('variablesUpdated', {
+            detail: { tabId: this.activeTabId, variables: tabVariables }
+        }));
+    }
+    
+    /**
+     * Load variables from server for a specific tab
+     * @param {string} tabId - The tab ID to load variables for
+     */
+    async loadVariablesFromServer(tabId) {
+        try {
+            // Build URL with tab ID
+            const apiUrl = `${this.apiBaseUrl}api/variables/load/${tabId}`.replace(/([^:]\/)\/+/g, '$1');
+            console.log(`Loading variables for tab ${tabId} from: ${apiUrl}`);
+            
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                throw new Error(`Server responded with ${response.status}`);
             }
             
-            // Focus the name input
-            nameInput.focus();
+            const data = await response.json();
+            if (data.success && data.variables) {
+                // Store the variables in our tab-specific set
+                const variables = {};
+                
+                // Process the loaded variables
+                Object.entries(data.variables).forEach(([name, value]) => {
+                    variables[name] = { value };
+                });
+                
+                this.variableSets[tabId] = variables;
+                
+                // Update UI if this is the active tab
+                if (tabId === this.activeTabId) {
+                    this.updateVariableUI();
+                }
+                
+                console.log(`Loaded ${Object.keys(variables).length} variables for tab ${tabId}`);
+            }
+        } catch (error) {
+            console.error(`Error loading variables for tab ${tabId}:`, error);
+            // Initialize with empty set if loading fails
+            if (!this.variableSets[tabId]) {
+                this.variableSets[tabId] = {};
+            }
         }
     }
     
@@ -145,14 +366,28 @@ class VariableManager {
             const value = input.value.trim();
             
             if (name) {
-                this.variables[name] = {
+                if (!this.variableSets[this.activeTabId]) {
+                    this.variableSets[this.activeTabId] = {};
+                }
+                this.variableSets[this.activeTabId][name] = {
                     value: value,
                     element: input
                 };
                 
                 // Keep variable map updated on input change
                 input.addEventListener('input', (e) => {
-                    this.variables[name].value = e.target.value.trim();
+                    if (!this.variableSets[this.activeTabId]) {
+                        this.variableSets[this.activeTabId] = {};
+                    }
+                    
+                    if (!this.variableSets[this.activeTabId][name]) {
+                        this.variableSets[this.activeTabId][name] = {
+                            value: '',
+                            element: e.target
+                        };
+                    }
+                    
+                    this.variableSets[this.activeTabId][name].value = e.target.value.trim();
                     // Dispatch event so playbook content can re-render
                     document.dispatchEvent(new CustomEvent('variableValueChanged'));
                 });
@@ -177,10 +412,24 @@ class VariableManager {
         defaultVars.forEach(({ id, name }) => {
             const input = document.getElementById(id);
             if (input) {
-                this.variables[name] = { value: input.value.trim(), element: input };
+                if (!this.variableSets[this.activeTabId]) {
+                    this.variableSets[this.activeTabId] = {};
+                }
+                this.variableSets[this.activeTabId][name] = { value: input.value.trim(), element: input };
                 // Keep variable map updated on input change
                 input.addEventListener('input', (e) => {
-                    this.variables[name].value = e.target.value.trim();
+                    if (!this.variableSets[this.activeTabId]) {
+                        this.variableSets[this.activeTabId] = {};
+                    }
+                    
+                    if (!this.variableSets[this.activeTabId][name]) {
+                        this.variableSets[this.activeTabId][name] = {
+                            value: '',
+                            element: e.target
+                        };
+                    }
+                    
+                    this.variableSets[this.activeTabId][name].value = e.target.value.trim();
                     // Dispatch event so playbook content can re-render
                     document.dispatchEvent(new CustomEvent('variableValueChanged'));
                 });
@@ -367,9 +616,14 @@ class VariableManager {
      * @param {HTMLFormElement} form - The form element (for resetting)
      */
     createVariable(name, value, form) {
+        if (!this.activeTabId) {
+            this.showError('No active tab to create variable for');
+            return;
+        }
+        
         // Ensure URL doesn't have double slashes
-        const apiUrl = `${this.apiBaseUrl}api/variables/create`.replace(/([^:]\/)\/+/g, '$1');
-        console.log('Creating variable with URL:', apiUrl);
+        const apiUrl = `${this.apiBaseUrl}api/variables/create/${this.activeTabId}`.replace(/([^:]\/)\/+/g, '$1');
+        console.log(`Creating variable with URL: ${apiUrl} for tab ${this.activeTabId}`);
         
         fetch(apiUrl, {
             method: 'POST',
@@ -401,6 +655,33 @@ class VariableManager {
             console.error('API error:', error);
             this.showError('Error creating variable: ' + error.message);
         });
+    }
+    
+    /**
+     * Open the add variable modal
+     */
+    openAddVariableModal() {
+        const modal = document.getElementById('addVariableModal');
+        const nameInput = document.getElementById('newVariableName');
+        const refInput = document.getElementById('newVariableReference');
+        const valueInput = document.getElementById('newVariableValue');
+        
+        if (modal && nameInput && valueInput && refInput) {
+            // Reset form
+            nameInput.value = '';
+            refInput.value = '$';
+            valueInput.value = '';
+            
+            // Show the modal
+            if (window.modalController) {
+                window.modalController.openModal('addVariableModal');
+            } else {
+                modal.classList.add('active');
+            }
+            
+            // Focus the name input
+            nameInput.focus();
+        }
     }
     
     /**
@@ -697,14 +978,14 @@ class VariableManager {
                 variableElement.placeholder = `$${newName}`;
                 
                 // Update our internal variables collection
-                if (this.variables[oldName]) {
+                if (this.variableSets[this.activeTabId][oldName]) {
                     // If name changed, remove old entry and create new one
                     if (oldName !== newName) {
-                        delete this.variables[oldName];
+                        delete this.variableSets[this.activeTabId][oldName];
                     }
                     
                     // Add/update entry with new name
-                    this.variables[newName] = {
+                    this.variableSets[this.activeTabId][newName] = {
                         value: value,
                         element: variableElement
                     };
@@ -721,7 +1002,7 @@ class VariableManager {
                         oldName, 
                         newName, 
                         value,
-                        variables: this.variables
+                        variables: this.variableSets[this.activeTabId]
                     }
                 }));
             } else {
@@ -800,8 +1081,8 @@ class VariableManager {
                 variableElement.closest('.variable-input').remove();
                 
                 // Remove from our internal variables list
-                if (this.variables[name]) {
-                    delete this.variables[name];
+                if (this.variableSets[this.activeTabId][name]) {
+                    delete this.variableSets[this.activeTabId][name];
                 }
                 
                 // Close the modal if it's open
@@ -821,9 +1102,14 @@ class VariableManager {
      * Refresh the variable list from the server
      */
     refreshVariableList() {
-        // Using direct endpoint to bypass routing issues
-        const apiUrl = `${this.apiBaseUrl}api/variables/list-direct`.replace(/([^:]\/)\/+/g, '$1');
-        console.log('Refreshing variables with URL:', apiUrl);
+        if (!this.activeTabId) {
+            console.error('Cannot refresh variables: No active tab ID');
+            return;
+        }
+        
+        // Using direct endpoint with tab ID
+        const apiUrl = `${this.apiBaseUrl}api/variables/list-direct/${this.activeTabId}`.replace(/([^:]\/)\/+/g, '$1');
+        console.log(`Refreshing variables for tab ${this.activeTabId} with URL: ${apiUrl}`);
         
         fetch(apiUrl)
         .then(response => {
@@ -854,13 +1140,13 @@ class VariableManager {
                     
                     // Dispatch event for other components
                     document.dispatchEvent(new CustomEvent('variablesRefreshed', {
-                        detail: { variables: this.variables }
+                        detail: { tabId: this.activeTabId, variables: this.variableSets[this.activeTabId] }
                     }));
                 }
             }
         })
         .catch(error => {
-            console.error('Error refreshing variables:', error);
+            console.error(`Error refreshing variables for tab ${this.activeTabId}:`, error);
         });
     }
     
@@ -901,10 +1187,109 @@ class VariableManager {
      */
     getVariableMap() {
         const map = {};
-        for (const [name, obj] of Object.entries(this.variables)) {
+        if (!this.activeTabId || !this.variableSets[this.activeTabId]) {
+            return map; // Return empty map if no active tab or no variables for this tab
+        }
+        
+        for (const [name, obj] of Object.entries(this.variableSets[this.activeTabId])) {
             map[name] = obj.value;
         }
         return map;
+    }
+    
+    /**
+     * Initialize the event handlers for variable-related actions
+     */
+    initEventHandlers() {
+        // Setup for add variable button
+        const addVariableBtn = document.getElementById('addVariableBtn');
+        if (addVariableBtn) {
+            addVariableBtn.addEventListener('click', () => {
+                this.openAddVariableModal();
+            });
+        }
+        
+        // Initialize modal listeners
+        this.initEditModalListeners();
+        this.initAddModalListeners();
+        
+        // Setup variable search
+        this.setupVariableSearch();
+        
+        // Add event listener for variable value changes to trigger synchronization
+        document.addEventListener('variableValueChanged', () => {
+            // Save the changes to the current tab's variables
+            this.saveCurrentVariables();
+            
+            // Sync with server
+            this.syncVariablesToServer();
+        });
+    }
+    
+    /**
+     * Sync the current tab's variables to the server
+     */
+    async syncVariablesToServer() {
+        if (!this.activeTabId) return;
+        
+        try {
+            // Create a simpler object with just the variable values
+            const variables = {};
+            for (const [name, obj] of Object.entries(this.variableSets[this.activeTabId])) {
+                variables[name] = obj.value;
+            }
+            
+            // Build URL with tab ID
+            const apiUrl = `${this.apiBaseUrl}api/variables/sync/${this.activeTabId}`.replace(/([^:]\/)\/+/g, '$1');
+            console.log(`Syncing variables for tab ${this.activeTabId} to server: ${apiUrl}`);
+            
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ variables })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Server responded with ${response.status}`);
+            }
+            
+            const data = await response.json();
+            if (data.success) {
+                console.log(`Successfully synced ${Object.keys(variables).length} variables for tab ${this.activeTabId}`);
+            } else {
+                console.error(`Failed to sync variables: ${data.error || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error(`Error syncing variables for tab ${this.activeTabId}:`, error);
+        }
+    }
+    
+    /**
+     * Setup variable search functionality
+     */
+    setupVariableSearch() {
+        const searchInput = document.getElementById('variableSearch');
+        
+        if (!searchInput) return;
+        
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            const variables = document.querySelectorAll('.variable-input');
+            
+            variables.forEach(variable => {
+                const label = variable.querySelector('label');
+                const input = variable.querySelector('input');
+                const labelText = label ? label.textContent.toLowerCase() : '';
+                const inputValue = input ? input.value.toLowerCase() : '';
+                
+                const isMatch = labelText.includes(searchTerm) || 
+                                inputValue.includes(searchTerm);
+                
+                variable.style.display = isMatch ? 'flex' : 'none';
+            });
+        });
     }
     
     /**
@@ -1049,32 +1434,6 @@ class VariableManager {
         if (button) button.classList.remove('delete-active');
         if (progressBar) progressBar.style.width = '0%';
         if (countdownEl) countdownEl.textContent = 'Hold to delete...';
-    }
-    
-    /**
-     * Setup variable search functionality
-     */
-    setupVariableSearch() {
-        const searchInput = document.getElementById('variableSearch');
-        
-        if (!searchInput) return;
-        
-        searchInput.addEventListener('input', () => {
-            const searchTerm = searchInput.value.toLowerCase();
-            const variables = document.querySelectorAll('.variable-input');
-            
-            variables.forEach(variable => {
-                const label = variable.querySelector('label');
-                const input = variable.querySelector('input');
-                const labelText = label ? label.textContent.toLowerCase() : '';
-                const inputValue = input ? input.value.toLowerCase() : '';
-                
-                const isMatch = labelText.includes(searchTerm) || 
-                                inputValue.includes(searchTerm);
-                
-                variable.style.display = isMatch ? 'flex' : 'none';
-            });
-        });
     }
 }
 
