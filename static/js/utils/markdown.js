@@ -18,7 +18,61 @@ const md = window.markdownit({
  */
 export function renderMarkdown(markdown) {
   if (!markdown) return '';
-  return md.render(markdown);
+  
+  // Store the default renderer
+  const defaultRender = md.renderer.rules.fence;
+  
+  // Override the fence renderer to add copy and execute buttons
+  md.renderer.rules.fence = function(tokens, idx, options, env, self) {
+    const token = tokens[idx];
+    const code = token.content.trim();
+    const language = token.info.trim();
+    
+    // Get the rendered HTML for the code block using the default renderer
+    let renderedCode = defaultRender ? defaultRender(tokens, idx, options, env, self) : 
+                     self.renderToken(tokens, idx, options);
+    
+    // Skip adding buttons for empty code blocks
+    if (!code) return renderedCode;
+    
+    // Skip if it's not a shell/bash code block (only add execute for command blocks)
+    const isExecutable = language === 'bash' || 
+                         language === 'shell' || 
+                         language === 'sh' || 
+                         language === 'zsh' || 
+                         language === 'console' || 
+                         language === 'cmd';
+    
+    // Create buttons HTML
+    const copyButtonHtml = `<button class="code-action-btn copy-btn" title="Copy to clipboard">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+      </svg>
+    </button>`;
+    
+    const executeButtonHtml = isExecutable ? 
+      `<button class="code-action-btn execute-btn" title="Execute in terminal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+      </button>` : '';
+    
+    // Combine the buttons into a button group
+    const actionsHtml = `<div class="code-actions">${copyButtonHtml}${executeButtonHtml}</div>`;
+    
+    // Add a wrapper with the buttons
+    return `<div class="code-block-wrapper" data-language="${language}">${actionsHtml}${renderedCode}</div>`;
+  };
+  
+  const html = md.render(markdown);
+  
+  // Reset at the end of rendering
+  md.renderer.rules.fence = md.renderer.rules.fence || function(tokens, idx, options, env, self) {
+    return self.renderToken(tokens, idx, options);
+  };
+  
+  return html;
 }
 
 /**
@@ -90,9 +144,58 @@ export function renderMarkdownWithVars(markdown, variables) {
     const replaced = substituteVars(code, variables);
     return '`' + replaced + '`';
   });
+
+  // Store the default renderer
+  const originalFence = md.renderer.rules.fence;
+  
+  // Override the fence renderer to add copy and execute buttons
+  md.renderer.rules.fence = function(tokens, idx, options, env, self) {
+    const token = tokens[idx];
+    const code = token.content.trim();
+    const language = token.info.trim();
+    
+    // Get the rendered HTML for the code block using the default renderer
+    const renderedCode = originalFence ? originalFence(tokens, idx, options, env, self) : 
+                        self.renderToken(tokens, idx, options);
+    
+    // Skip adding buttons for empty code blocks
+    if (!code) return renderedCode;
+    
+    // Skip if it's not a shell/bash code block (only add execute for command blocks)
+    const isExecutable = language === 'bash' || 
+                        language === 'shell' || 
+                        language === 'sh' || 
+                        language === 'zsh' || 
+                        language === 'console' || 
+                        language === 'cmd';
+    
+    // Create buttons HTML
+    const copyButtonHtml = `<button class="code-action-btn copy-btn" title="Copy to clipboard">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+      </svg>
+    </button>`;
+    
+    const executeButtonHtml = isExecutable ? 
+      `<button class="code-action-btn execute-btn" title="Execute in terminal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+      </button>` : '';
+    
+    // Combine the buttons into a button group
+    const actionsHtml = `<div class="code-actions">${copyButtonHtml}${executeButtonHtml}</div>`;
+    
+    // Add a wrapper with the buttons
+    return `<div class="code-block-wrapper" data-language="${language}">${actionsHtml}${renderedCode}</div>`;
+  };
   
   // Render the markdown to HTML
-  let html = renderMarkdown(markdown);
+  let html = md.render(markdown);
+  
+  // Reset the renderer to its original state
+  md.renderer.rules.fence = originalFence;
   
   // Post-process: replace our markers with highlighted spans
   substitutions.forEach(subst => {

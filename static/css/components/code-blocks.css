@@ -1,0 +1,103 @@
+/* Code block styling with buttons */
+.code-block-wrapper {
+    position: relative;
+    margin: 1em 0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.code-actions {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: flex;
+    gap: 0.4rem;
+    z-index: 10;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+}
+
+.code-block-wrapper:hover .code-actions {
+    opacity: 1;
+}
+
+.code-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 4px;
+    background-color: rgba(30, 30, 46, 0.9);
+    color: #00ff9d;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
+    padding: 0;
+    border: 1px solid #00b36e;
+    box-shadow: 0 0 5px rgba(0, 255, 157, 0.5);
+}
+
+.code-action-btn:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #00ffb3;
+    transform: scale(1.05);
+    box-shadow: 0 0 8px rgba(0, 255, 157, 0.8);
+}
+
+.code-action-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.copy-btn.copied {
+    background-color: rgba(0, 255, 157, 0.3);
+    color: #ffffff;
+}
+
+.execute-btn.executing {
+    animation: pulse 1.5s infinite;
+}
+
+/* Pulse animation for executing button */
+@keyframes pulse {
+    0% {
+        background-color: rgba(0, 0, 0, 0.6);
+    }
+    50% {
+        background-color: rgba(255, 0, 128, 0.6);
+    }
+    100% {
+        background-color: rgba(0, 0, 0, 0.6);
+    }
+}
+
+/* Make sure all code blocks have proper styling */
+.code-block-wrapper pre {
+    margin: 0;
+    padding: 1em;
+    background-color: #1e1e2e;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.5;
+    position: relative;
+}
+
+.code-block-wrapper code {
+    font-family: 'JetBrains Mono', monospace;
+    background: transparent;
+    padding: 0;
+    white-space: pre;
+}
+
+/* Make sure the buttons are properly positioned in the playbook panel */
+.playbook-content .code-block-wrapper {
+    position: relative;
+}
+
+/* Ensure the code blocks have some padding at the top to avoid button overlap */
+.playbook-content .code-block-wrapper pre {
+    padding-top: 2.5rem;
+}

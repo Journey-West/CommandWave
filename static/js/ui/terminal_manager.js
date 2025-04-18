@@ -925,4 +925,52 @@ export default class TerminalManager {
             console.error('Error loading terminal names:', error);
         }
     }
+    
+    /**
+     * Get the active terminal ID/port
+     * @returns {string|null} The port of the active terminal, or null if none is active
+     */
+    getActiveTerminalId() {
+        return this.activeTerminal;
+    }
+    
+    /**
+     * Send a command to a terminal
+     * @param {string} port - The port of the terminal to send the command to
+     * @param {string} command - The command to send
+     * @returns {Promise<boolean>} True if the command was sent successfully
+     */
+    async sendCommandToTerminal(port, command) {
+        // Make sure we have a valid port
+        if (!port) {
+            console.error('Cannot send command: No terminal port specified');
+            return false;
+        }
+        
+        try {
+            console.log(`Sending command to terminal ${port}: ${command}`);
+            
+            // Use the API to send the command - this avoids cross-origin issues
+            const response = await fetch('/api/terminals/send-command', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    port: port,
+                    command: command
+                })
+            });
+            
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || `Failed to send command (${response.status})`);
+            }
+            
+            return true;
+        } catch (error) {
+            console.error('Error sending command to terminal:', error);
+            return false;
+        }
+    }
 }

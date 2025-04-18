@@ -66,6 +66,19 @@ class PlaybookManager {
         if (clearSearchBtn) {
             clearSearchBtn.addEventListener('click', () => this.clearSearch());
         }
+        
+        // Global delegate event listeners for code block buttons
+        document.addEventListener('click', (e) => {
+            // Handle copy button clicks
+            if (e.target.closest('.copy-btn')) {
+                this.handleCopyButtonClick(e);
+            }
+            
+            // Handle execute button clicks
+            if (e.target.closest('.execute-btn')) {
+                this.handleExecuteButtonClick(e);
+            }
+        });
     }
 
     /**
@@ -664,6 +677,142 @@ class PlaybookManager {
             clearTimeout(timeout);
             timeout = setTimeout(() => func.apply(this, args), wait);
         };
+    }
+
+    /**
+     * Handle copy button click
+     * @param {Event} event - Click event
+     */
+    async handleCopyButtonClick(event) {
+        // Get the button element (the clicked element or its parent)
+        const button = event.target.closest('.copy-btn');
+        if (!button) return;
+        
+        // Get the code block wrapper
+        const wrapper = button.closest('.code-block-wrapper');
+        if (!wrapper) return;
+        
+        // Get the code element and extract its text
+        const codeElement = wrapper.querySelector('pre code');
+        if (!codeElement) return;
+        
+        try {
+            // Get the text content (this preserves variable substitutions)
+            let text = codeElement.textContent;
+            
+            // Copy to clipboard
+            await navigator.clipboard.writeText(text);
+            
+            // Visual feedback
+            button.classList.add('copied');
+            
+            // Optional: Show a tooltip or notification
+            if (window.CommandWave && window.CommandWave.notificationManager) {
+                window.CommandWave.notificationManager.show(
+                    'Copied!', 
+                    'Code has been copied to clipboard.', 
+                    'success',
+                    2000
+                );
+            }
+            
+            // Remove copied class after a delay
+            setTimeout(() => {
+                button.classList.remove('copied');
+            }, 2000);
+        } catch (error) {
+            console.error('Failed to copy code:', error);
+            if (window.CommandWave && window.CommandWave.notificationManager) {
+                window.CommandWave.notificationManager.show(
+                    'Error', 
+                    'Failed to copy code to clipboard.', 
+                    'error'
+                );
+            }
+        }
+    }
+    
+    /**
+     * Handle execute button click
+     * @param {Event} event - Click event
+     */
+    async handleExecuteButtonClick(event) {
+        // Get the button element (the clicked element or its parent)
+        const button = event.target.closest('.execute-btn');
+        if (!button) return;
+        
+        // Get the code block wrapper
+        const wrapper = button.closest('.code-block-wrapper');
+        if (!wrapper) return;
+        
+        // Get the code element and extract its text
+        const codeElement = wrapper.querySelector('pre code');
+        if (!codeElement) return;
+        
+        try {
+            // Visual feedback - add executing class
+            button.classList.add('executing');
+            
+            // Get the text content with variable substitutions
+            const commandText = codeElement.textContent.trim();
+            
+            // Split into multiple commands (by line)
+            const commands = commandText.split('\n')
+                .map(line => line.trim())
+                .filter(line => line && !line.startsWith('#'));
+            
+            if (commands.length === 0) {
+                throw new Error('No executable commands found');
+            }
+            
+            // Get the terminal manager
+            if (!window.CommandWave || !window.CommandWave.terminalManager) {
+                throw new Error('Terminal manager not available');
+            }
+            
+            const terminalManager = window.CommandWave.terminalManager;
+            
+            // Get the active terminal ID
+            const activeTerminalId = terminalManager.getActiveTerminalId();
+            if (!activeTerminalId) {
+                throw new Error('No active terminal found');
+            }
+            
+            // Execute each command in sequence
+            for (let i = 0; i < commands.length; i++) {
+                const command = commands[i];
+                
+                // Use the terminal manager to send the command
+                await terminalManager.sendCommandToTerminal(activeTerminalId, command);
+                
+                // Wait a short time between commands
+                if (i < commands.length - 1) {
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                }
+            }
+            
+            // Show success notification
+            if (window.CommandWave && window.CommandWave.notificationManager) {
+                window.CommandWave.notificationManager.show(
+                    'Executed!', 
+                    `${commands.length} command${commands.length > 1 ? 's' : ''} sent to terminal.`, 
+                    'success',
+                    3000
+                );
+            }
+        } catch (error) {
+            console.error('Failed to execute code:', error);
+            if (window.CommandWave && window.CommandWave.notificationManager) {
+                window.CommandWave.notificationManager.show(
+                    'Error', 
+                    `Failed to execute code: ${error.message}`, 
+                    'error'
+                );
+            }
+        } finally {
+            // Remove executing class
+            button.classList.remove('executing');
+        }
     }
 }
 
