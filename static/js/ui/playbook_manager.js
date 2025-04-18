@@ -190,9 +190,38 @@ class PlaybookManager {
                 
                 // Add click event listeners to search results
                 document.querySelectorAll('.search-result-item').forEach(item => {
-                    item.addEventListener('click', () => {
-                        this.loadPlaybookFromSearch(item.dataset.filename);
+                    // Listen for click on the entire result (default action - load playbook)
+                    item.addEventListener('click', (e) => {
+                        // Only trigger if the click was not on a button
+                        if (!e.target.closest('.search-action-btn')) {
+                            this.loadPlaybookFromSearch(item.dataset.filename, item.dataset.playbookId);
+                        }
                     });
+
+                    // Action buttons
+                    const importBtn = item.querySelector('.import-btn');
+                    if (importBtn) {
+                        importBtn.addEventListener('click', (e) => {
+                            e.stopPropagation(); // Prevent triggering the parent click
+                            this.loadPlaybookFromSearch(item.dataset.filename, item.dataset.playbookId);
+                        });
+                    }
+
+                    const copyTextBtn = item.querySelector('.copy-text-btn');
+                    if (copyTextBtn) {
+                        copyTextBtn.addEventListener('click', (e) => {
+                            e.stopPropagation(); // Prevent triggering the parent click
+                            this.copySearchResultText(item);
+                        });
+                    }
+
+                    const executeTextBtn = item.querySelector('.execute-text-btn');
+                    if (executeTextBtn) {
+                        executeTextBtn.addEventListener('click', (e) => {
+                            e.stopPropagation(); // Prevent triggering the parent click
+                            this.executeSearchResultText(item);
+                        });
+                    }
                 });
             } else {
                 searchResults.innerHTML = '<div class="search-result-item">No results found.</div>';
@@ -211,10 +240,25 @@ class PlaybookManager {
      */
     createSearchResultItem(result, query) {
         return `
-            <div class="search-result-item" data-filename="${result.filename}">
+            <div class="search-result-item" 
+                data-filename="${result.filename}" 
+                data-line="${result.line}" 
+                data-line-number="${result.line_number}"
+                data-playbook-id="${result.id || ''}">
                 <div class="result-header">
                     <span class="filename">${result.filename}</span>
                     <span class="line-number">Line ${result.line_number}</span>
+                    <div class="result-actions">
+                        <button class="search-action-btn import-btn" title="Import Playbook">
+                            <i class="fas fa-file-import"></i>
+                        </button>
+                        <button class="search-action-btn copy-text-btn" title="Copy Text">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button class="search-action-btn execute-text-btn" title="Execute Text">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="result-line-box">
                     <span class="result-line">${this.highlightQuery(result.line, query)}</span>
@@ -238,15 +282,64 @@ class PlaybookManager {
     /**
      * Load a playbook from search results
      * @param {string} filename - Filename of the playbook to load
+     * @param {string} playbookId - Optional playbook ID
      */
-    async loadPlaybookFromSearch(filename) {
+    async loadPlaybookFromSearch(filename, playbookId) {
         try {
-            const playbook = await playbookAPI.getPlaybook(filename);
+            console.log(`Attempting to load playbook: ${filename}, ID: ${playbookId || 'Not provided'}`);
+            
+            let playbook;
+            
+            // Try to load by ID first if provided
+            if (playbookId) {
+                try {
+                    playbook = await playbookAPI.getPlaybook(playbookId);
+                    console.log('Successfully loaded playbook by ID');
+                } catch (idError) {
+                    console.warn(`Could not load playbook by ID: ${idError.message}`);
+                    // If ID fails, we'll try by filename below
+                }
+            }
+            
+            // If we don't have a playbook yet, try by filename
+            if (!playbook) {
+                // Try multiple path strategies
+                const pathsToTry = [
+                    filename,                        // As provided in search result
+                    `playbooks/${filename}`,         // In playbooks folder
+                    filename.replace(/^playbooks\//, '') // Without playbooks/ prefix
+                ];
+                
+                let loadError;
+                for (const path of pathsToTry) {
+                    try {
+                        console.log(`Trying to load playbook with path: ${path}`);
+                        playbook = await playbookAPI.getPlaybook(path);
+                        console.log(`Successfully loaded playbook from path: ${path}`);
+                        break; // Exit the loop if successful
+                    } catch (error) {
+                        loadError = error;
+                        console.warn(`Could not load playbook from path ${path}: ${error.message}`);
+                    }
+                }
+                
+                if (!playbook) {
+                    throw loadError || new Error("Could not find playbook");
+                }
+            }
+            
+            // Display the playbook and clear search results
             this.displayPlaybook(playbook);
             this.clearSearch();
         } catch (error) {
             console.error('Error loading playbook from search:', error);
-            this.showNotification('Error', `Failed to load playbook: ${error.message}`, 'error');
+            
+            // More user-friendly error message
+            const errorMsg = error.message === "Playbook not found" 
+                ? `Could not find playbook "${filename}". It may have been moved or deleted.` 
+                : `Failed to load playbook: ${error.message}`;
+                
+            this.showNotification('Error', errorMsg, 'error');
         }
     }
 
@@ -812,6 +905,92 @@ class PlaybookManager {
         } finally {
             // Remove executing class
             button.classList.remove('executing');
+        }
+    }
+
+    /**
+     * Copy search result text to clipboard
+     * @param {HTMLElement} resultItem - The search result item element
+     */
+    async copySearchResultText(resultItem) {
+        try {
+            const lineText = resultItem.dataset.line;
+            if (!lineText) {
+                throw new Error('No text to copy');
+            }
+            
+            // Copy to clipboard
+            await navigator.clipboard.writeText(lineText);
+            
+            // Show notification
+            if (window.CommandWave && window.CommandWave.notificationManager) {
+                window.CommandWave.notificationManager.show(
+                    'Copied!', 
+                    'Text has been copied to clipboard.', 
+                    'success',
+                    2000
+                );
+            }
+        } catch (error) {
+            console.error('Failed to copy text:', error);
+            if (window.CommandWave && window.CommandWave.notificationManager) {
+                window.CommandWave.notificationManager.show(
+                    'Error', 
+                    'Failed to copy text to clipboard.', 
+                    'error'
+                );
+            }
+        }
+    }
+    
+    /**
+     * Execute search result text in the terminal
+     * @param {HTMLElement} resultItem - The search result item element
+     */
+    async executeSearchResultText(resultItem) {
+        try {
+            const commandText = resultItem.dataset.line.trim();
+            if (!commandText) {
+                throw new Error('No text to execute');
+            }
+            
+            // Get the terminal manager
+            if (!window.CommandWave || !window.CommandWave.terminalManager) {
+                throw new Error('Terminal manager not available');
+            }
+            
+            const terminalManager = window.CommandWave.terminalManager;
+            
+            // Get the active terminal ID
+            const activeTerminalId = terminalManager.getActiveTerminalId();
+            if (!activeTerminalId) {
+                throw new Error('No active terminal found');
+            }
+            
+            // Execute the command exactly as is, without validation or filtering
+            await terminalManager.sendCommandToTerminal(activeTerminalId, commandText);
+            
+            // Close search results after execution
+            this.clearSearch();
+            
+            // Show success notification
+            if (window.CommandWave && window.CommandWave.notificationManager) {
+                window.CommandWave.notificationManager.show(
+                    'Executed!', 
+                    'Command sent to terminal.', 
+                    'success',
+                    3000
+                );
+            }
+        } catch (error) {
+            console.error('Failed to execute text:', error);
+            if (window.CommandWave && window.CommandWave.notificationManager) {
+                window.CommandWave.notificationManager.show(
+                    'Error', 
+                    `Failed to execute text: ${error.message}`, 
+                    'error'
+                );
+            }
         }
     }
 }
