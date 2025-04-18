@@ -596,7 +596,24 @@ echo 'Hello, World!'
 
     <!-- Variable Modals -->
     {% include 'partials/_variable_modal.html' %}
-
+    
+    <!-- CDN Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@12.2.0/dist/markdown-it.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/prism.min.js"></script>
+    <!-- Prism language components for common languages -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/components/prism-bash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/components/prism-python.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/components/prism-json.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/components/prism-sql.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/components/prism-ruby.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/components/prism-go.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/components/prism-powershell.min.js"></script>
+    
+    <!-- Main script -->
+    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
     <!-- Notification Toast Container -->
     <div id="notificationContainer" class="notification-container">
         <!-- Notification toasts will be dynamically added here -->
@@ -604,14 +621,5 @@ echo 'Hello, World!'
 
     <!-- Add a hidden API base URL element that JavaScript can reference -->
     <div id="api-base-url" data-url="{{ request.url_root }}" style="display: none;"></div>
-
-    <!-- Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.2/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/components/prism-bash.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/components/prism-python.min.js"></script>
-    
-    <!-- Custom JS -->
-    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

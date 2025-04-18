@@ -8,7 +8,21 @@
 const md = window.markdownit({
   html: false,      // Disallow raw HTML for security
   linkify: true,    // Autolink URLs
-  typographer: true // Smart quotes, dashes, etc.
+  typographer: true, // Smart quotes, dashes, etc.
+  highlight: function(str, lang) {
+    // Use Prism for syntax highlighting if available
+    if (window.Prism && lang && Prism.languages[lang]) {
+      try {
+        const highlighted = Prism.highlight(str, Prism.languages[lang], lang);
+        return highlighted;
+      } catch (e) {
+        console.error('Prism highlighting error:', e);
+      }
+    }
+    
+    // Fallback to no highlighting
+    return '';
+  }
 });
 
 /**
@@ -44,17 +58,19 @@ export function renderMarkdown(markdown) {
                          language === 'cmd';
     
     // Create buttons HTML
-    const copyButtonHtml = `<button class="code-action-btn copy-btn" data-tooltip="Copy">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+    const copyButtonHtml = `<button class="code-action-btn copy-btn">
+      <div class="tooltip">Copy</div>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <rect x="8" y="8" width="14" height="14" rx="2"></rect>
+        <path d="M4 16h-1a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1"></path>
       </svg>
     </button>`;
     
     const executeButtonHtml = isExecutable ? 
-      `<button class="code-action-btn execute-btn" data-tooltip="Execute">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+      `<button class="code-action-btn execute-btn">
+        <div class="tooltip">Execute</div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <polygon points="6 4 20 12 6 20 6 4"></polygon>
         </svg>
       </button>` : '';
     
@@ -74,37 +90,6 @@ export function renderMarkdown(markdown) {
   };
   
   const html = md.render(markdown);
-  
-  // Add line numbers to code blocks (after rendering)
-  setTimeout(() => {
-    document.querySelectorAll('.code-block-wrapper pre code').forEach(codeEl => {
-      // Get code content and split by lines
-      const codeContent = codeEl.textContent;
-      const lines = codeContent.split('\n');
-      
-      // Clear existing content
-      codeEl.innerHTML = '';
-      
-      // Create a line for each line of code
-      lines.forEach((line, index) => {
-        // Skip the last empty line that often appears in code blocks
-        if (index === lines.length - 1 && line === '') return;
-        
-        // Create a span for the line
-        const lineSpan = document.createElement('span');
-        lineSpan.className = 'line';
-        lineSpan.textContent = line;
-        
-        // Add the line to the code element
-        codeEl.appendChild(lineSpan);
-        
-        // Add a line break if it's not the last line
-        if (index < lines.length - 1) {
-          codeEl.appendChild(document.createElement('br'));
-        }
-      });
-    });
-  }, 0);
   
   // Reset at the end of rendering
   md.renderer.rules.fence = md.renderer.rules.fence || function(tokens, idx, options, env, self) {
@@ -209,17 +194,19 @@ export function renderMarkdownWithVars(markdown, variables) {
                         language === 'cmd';
     
     // Create buttons HTML
-    const copyButtonHtml = `<button class="code-action-btn copy-btn" data-tooltip="Copy">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+    const copyButtonHtml = `<button class="code-action-btn copy-btn">
+      <div class="tooltip">Copy</div>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <rect x="8" y="8" width="14" height="14" rx="2"></rect>
+        <path d="M4 16h-1a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1"></path>
       </svg>
     </button>`;
     
     const executeButtonHtml = isExecutable ? 
-      `<button class="code-action-btn execute-btn" data-tooltip="Execute">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+      `<button class="code-action-btn execute-btn">
+        <div class="tooltip">Execute</div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <polygon points="6 4 20 12 6 20 6 4"></polygon>
         </svg>
       </button>` : '';
     
@@ -240,37 +227,6 @@ export function renderMarkdownWithVars(markdown, variables) {
   
   // Render the markdown to HTML
   let html = md.render(markdown);
-  
-  // Add line numbers to code blocks (after rendering)
-  setTimeout(() => {
-    document.querySelectorAll('.code-block-wrapper pre code').forEach(codeEl => {
-      // Get code content and split by lines
-      const codeContent = codeEl.textContent;
-      const lines = codeContent.split('\n');
-      
-      // Clear existing content
-      codeEl.innerHTML = '';
-      
-      // Create a line for each line of code
-      lines.forEach((line, index) => {
-        // Skip the last empty line that often appears in code blocks
-        if (index === lines.length - 1 && line === '') return;
-        
-        // Create a span for the line
-        const lineSpan = document.createElement('span');
-        lineSpan.className = 'line';
-        lineSpan.textContent = line;
-        
-        // Add the line to the code element
-        codeEl.appendChild(lineSpan);
-        
-        // Add a line break if it's not the last line
-        if (index < lines.length - 1) {
-          codeEl.appendChild(document.createElement('br'));
-        }
-      });
-    });
-  }, 0);
   
   // Reset the renderer to its original state
   md.renderer.rules.fence = originalFence;

@@ -68,126 +68,232 @@
 
 /* Button container */
 .code-actions {
+    position: absolute;
+    top: 6px;
+    right: 10px;
     display: flex;
-    gap: 6px;
+    align-items: center;
+    gap: 10px;
     z-index: 10;
-    opacity: 0.7;
-    transition: opacity 0.2s ease;
+    opacity: 0.95;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
 }
 
 .code-block-wrapper:hover .code-actions {
     opacity: 1;
 }
 
-/* Buttons styling */
+/* Futuristic holographic button style */
 .code-action-btn {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+    overflow: visible;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
-    border: none;
-    border-radius: 4px;
-    background-color: rgba(20, 20, 30, 0.8);
-    color: #00ff9d;
-    cursor: pointer;
-    outline: none;
-    transition: all 0.2s ease;
-    position: relative;
-    overflow: hidden;
 }
 
+/* Button frame */
+.code-action-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #080810;
+    border: 1px solid rgba(0, 255, 157, 0.4);
+    transform: skew(-5deg, 0);
+    z-index: -1;
+    transition: all 0.3s ease;
+}
+
+/* Copy button style */
+.copy-btn::before {
+    border-top: 1px solid #00ff9d;
+    border-left: 1px solid #00ff9d;
+    box-shadow: 
+        inset 0 0 8px rgba(0, 255, 157, 0.2),
+        0 0 5px rgba(0, 255, 157, 0.2);
+}
+
+/* Execute button style */
+.execute-btn::before {
+    border-top: 1px solid #ff3c78;
+    border-left: 1px solid #ff3c78; 
+    box-shadow: 
+        inset 0 0 8px rgba(255, 60, 120, 0.2),
+        0 0 5px rgba(255, 60, 120, 0.2);
+}
+
+/* Tech pattern overlay */
 .code-action-btn::after {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(0, 255, 157, 0.15) 0%, rgba(0, 0, 0, 0) 100%);
-    z-index: -1;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(to bottom, 
+            rgba(255, 255, 255, 0.05) 0%, 
+            rgba(255, 255, 255, 0) 100%),
+        repeating-linear-gradient(
+            -45deg, 
+            transparent, 
+            transparent 2px, 
+            rgba(255, 255, 255, 0.03) 2px, 
+            rgba(255, 255, 255, 0.03) 4px
+        );
+    z-index: 1;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
 }
 
-.code-action-btn:hover {
-    background-color: rgba(30, 30, 46, 0.9);
-    transform: translateY(-1px);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6), 0 0 8px rgba(0, 255, 157, 0.4);
-}
-
-.code-action-btn:active {
-    transform: translateY(0);
-    box-shadow: 0 0 5px rgba(0, 255, 157, 0.3);
-}
-
+/* Icon styling */
 .code-action-btn svg {
-    width: 14px;
-    height: 14px;
-    filter: drop-shadow(0 0 2px rgba(0, 255, 157, 0.4));
+    position: relative;
+    width: 28px;
+    height: 28px;
+    z-index: 2;
+    transition: all 0.3s ease;
+    stroke-width: 2.5px; /* Making the icon lines thicker */
 }
 
-/* Tooltip for buttons */
-.code-action-btn::before {
-    content: attr(data-tooltip);
-    position: absolute;
-    top: -28px;
-    right: 50%;
-    transform: translateX(50%);
-    padding: 4px 8px;
-    background-color: rgba(0, 0, 0, 0.8);
-    color: white;
-    font-size: 11px;
-    border-radius: 3px;
-    white-space: nowrap;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
-}
-
-.code-action-btn:hover::before {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Copy button styles */
-.copy-btn.copied {
-    background-color: rgba(0, 180, 100, 0.3);
-    color: #ffffff;
-}
-
-.copy-btn.copied svg {
-    animation: fadeIn 0.5s ease;
-}
-
-@keyframes fadeIn {
-    0% { opacity: 0; transform: scale(0.5); }
-    100% { opacity: 1; transform: scale(1); }
-}
-
-/* Execute button styles */
-.execute-btn {
-    color: #ff5f87;
+.copy-btn svg {
+    color: #00ff9d;
+    filter: drop-shadow(0 0 3px rgba(0, 255, 157, 0.5));
 }
 
 .execute-btn svg {
-    filter: drop-shadow(0 0 2px rgba(255, 95, 135, 0.4));
+    color: #ff3c78;
+    filter: drop-shadow(0 0 3px rgba(255, 60, 120, 0.5));
 }
 
-.execute-btn.executing {
-    animation: pulse 1.5s infinite;
+/* Corner markers - top left and bottom right */
+.copy-btn:before {
+    content: '';
+    box-shadow: 
+        -4px -4px 0 -3px #080810,
+        -4px -4px 0 -2px #00ff9d,
+        4px 4px 0 -3px #080810,
+        4px 4px 0 -2px #00ff9d;
 }
 
-/* Pulse animation for executing button */
-@keyframes pulse {
-    0% {
-        background-color: rgba(30, 30, 46, 0.8);
-    }
-    50% {
-        background-color: rgba(255, 0, 128, 0.3);
-        box-shadow: 0 0 10px rgba(255, 0, 128, 0.4);
-    }
-    100% {
-        background-color: rgba(30, 30, 46, 0.8);
-    }
+.execute-btn:before {
+    content: '';
+    box-shadow: 
+        -4px -4px 0 -3px #080810,
+        -4px -4px 0 -2px #ff3c78,
+        4px 4px 0 -3px #080810,
+        4px 4px 0 -2px #ff3c78;
+}
+
+/* Hover effects */
+.code-action-btn:hover::before {
+    transform: skew(-8deg, 0) scale(1.05);
+}
+
+.copy-btn:hover::before {
+    border-color: #00ff9d;
+    box-shadow: 
+        0 0 12px rgba(0, 255, 157, 0.4),
+        inset 0 0 12px rgba(0, 255, 157, 0.3);
+}
+
+.execute-btn:hover::before {
+    border-color: #ff3c78;
+    box-shadow: 
+        0 0 12px rgba(255, 60, 120, 0.4),
+        inset 0 0 12px rgba(255, 60, 120, 0.3);
+}
+
+.code-action-btn:hover::after {
+    opacity: 1;
+}
+
+.code-action-btn:hover svg {
+    transform: scale(1.15);
+}
+
+.copy-btn:hover svg {
+    filter: drop-shadow(0 0 5px rgba(0, 255, 157, 0.8));
+}
+
+.execute-btn:hover svg {
+    filter: drop-shadow(0 0 5px rgba(255, 60, 120, 0.8));
+}
+
+/* Active state */
+.code-action-btn:active::before {
+    transform: skew(-2deg, 0) scale(0.98);
+}
+
+/* Tooltip redesign */
+.code-action-btn .tooltip {
+    position: absolute;
+    top: -30px;
+    right: 0;
+    background: #080810;
+    padding: 4px 8px;
+    font-size: 10px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(5px);
+    transition: all 0.3s ease;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.copy-btn .tooltip {
+    border-left: 1px solid #00ff9d;
+    color: #00ff9d;
+}
+
+.execute-btn .tooltip {
+    border-left: 1px solid #ff3c78;
+    color: #ff3c78;
+}
+
+.code-action-btn:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Copy animation */
+.copy-btn.copied::before {
+    background-color: rgba(0, 255, 157, 0.15);
+    animation: pulseGlow 1s ease-out;
+}
+
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 5px rgba(0, 255, 157, 0.3), inset 0 0 5px rgba(0, 255, 157, 0.2); }
+    50% { box-shadow: 0 0 15px rgba(0, 255, 157, 0.6), inset 0 0 15px rgba(0, 255, 157, 0.4); }
+    100% { box-shadow: 0 0 5px rgba(0, 255, 157, 0.3), inset 0 0 5px rgba(0, 255, 157, 0.2); }
+}
+
+/* Execute animation */
+.execute-btn.executing::before {
+    animation: executeGlow 1.5s infinite ease-in-out;
+}
+
+@keyframes executeGlow {
+    0% { box-shadow: 0 0 5px rgba(255, 60, 120, 0.3), inset 0 0 5px rgba(255, 60, 120, 0.2); }
+    50% { box-shadow: 0 0 15px rgba(255, 60, 120, 0.6), inset 0 0 15px rgba(255, 60, 120, 0.4); }
+    100% { box-shadow: 0 0 5px rgba(255, 60, 120, 0.3), inset 0 0 5px rgba(255, 60, 120, 0.2); }
 }
 
 /* Make sure all code blocks have proper styling */
@@ -199,14 +305,74 @@
     overflow-x: auto;
     font-family: 'JetBrains Mono', monospace;
     line-height: 1.5;
-    font-size: 0.9em;
 }
 
-.code-block-wrapper code {
+/* Add specific styling for Prism tokens in code blocks */
+.code-block-wrapper pre code {
     font-family: 'JetBrains Mono', monospace;
     background: transparent;
     padding: 0;
-    white-space: pre;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Token colors for syntax highlighting - enhance specific language elements */
+.code-block-wrapper .token.comment {
+    color: #6272a4;
+    font-style: italic;
+}
+
+.code-block-wrapper .token.keyword {
+    color: #ff79c6;
+    font-weight: bold;
+}
+
+.code-block-wrapper .token.string {
+    color: #f1fa8c;
+}
+
+.code-block-wrapper .token.number,
+.code-block-wrapper .token.boolean {
+    color: #bd93f9;
+}
+
+.code-block-wrapper .token.function {
+    color: #50fa7b;
+}
+
+.code-block-wrapper .token.operator {
+    color: #ff79c6;
+}
+
+.code-block-wrapper .token.punctuation {
+    color: #f8f8f2;
+}
+
+/* Special styling for bash commands */
+.language-bash .token.function {
+    color: #8be9fd;
+    font-weight: bold;
+}
+
+.language-bash .token.parameter {
+    color: #f1fa8c;
+}
+
+/* Python specific syntax highlighting */
+.language-python .token.decorator {
+    color: #ff79c6;
+    font-style: italic;
+}
+
+.language-python .token.class-name {
+    color: #8be9fd;
+    font-weight: bold;
+}
+
+/* Highlight specific important terms in command-line examples */
+.code-block-wrapper .important-term {
+    color: #ff5555;
+    font-weight: bold;
+    text-decoration: underline;
 }
 
 /* Add a subtle line number effect */
