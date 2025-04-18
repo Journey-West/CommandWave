@@ -1873,22 +1873,6 @@ body {
     text-shadow: 0 0 5px rgba(252, 238, 9, 0.5);
 }
 
-/* Style markdown headings with ### in search results */
-.search-result-item .content:first-line {
-    color: var(--neon-blue);
-    font-family: 'Orbitron', sans-serif;
-    font-weight: bold;
-    font-size: 1.1em;
-    text-shadow: 0 0 8px rgba(96, 239, 255, 0.6);
-    letter-spacing: 0.5px;
-}
-
-/* Style lines that start with ### specifically */
-.search-result-item .content:has(::first-line:matches("###")) {
-    padding-left: 0.5rem;
-    border-left: 2px solid var(--neon-blue);
-}
-
 /* Enhance search result content styling with cyberpunk theme */
 .search-result-item .content {
     font-family: 'Roboto Mono', monospace;
@@ -1901,30 +1885,6 @@ body {
     border: 1px solid rgba(96, 239, 255, 0.1);
 }
 
-/* Specific styling for markdown headings in search results */
-.search-result-item .content-heading {
-    border-left: 3px solid var(--neon-blue);
-    background-color: rgba(96, 239, 255, 0.05);
-    padding-left: 0.8rem;
-    transition: all 0.3s ease;
-    box-shadow: inset 0 0 10px rgba(96, 239, 255, 0.1);
-}
-
-.search-result-item .content-heading:hover {
-    background-color: rgba(96, 239, 255, 0.1);
-    box-shadow: inset 0 0 20px rgba(96, 239, 255, 0.15);
-}
-
-.search-result-item .heading-text {
-    color: var(--neon-blue);
-    font-family: 'Orbitron', sans-serif;
-    font-weight: bold;
-    font-size: 1.1em;
-    text-shadow: 0 0 8px rgba(96, 239, 255, 0.6);
-    letter-spacing: 0.5px;
-    display: block;
-}
-
 /* Highlight matched text in search results */
 .search-result-item .highlight {
     background-color: rgba(255, 90, 140, 0.2);
@@ -1933,89 +1893,4 @@ body {
     border-radius: 2px;
     font-weight: bold;
     text-shadow: 0 0 5px rgba(255, 90, 140, 0.6);
-}
-
-/* Remove the previously added styles that may not work in all browsers */
-.search-result-item .content:first-line {
-    color: inherit;
-    font-family: inherit;
-    font-weight: inherit;
-    font-size: inherit;
-    text-shadow: inherit;
-    letter-spacing: inherit;
-}
-
-.search-result-item .content strong,
-.search-result-item .content b {
-    color: var(--neon-yellow);
-    text-shadow: 0 0 5px rgba(252, 238, 9, 0.5);
-}
-
-/* Style lines that start with ### specifically - removed unsupported selector */
-.search-result-item .content-heading {
-    border-left: 3px solid var(--neon-blue);
-}
-
-/* Special styling for specific tools/commands to improve readability */
-.playbook-content code span:not([class]):first-child {
-    color: #60efff !important;
-    font-weight: bold;
-    text-shadow: 0 0 5px rgba(96, 239, 255, 0.5);
-}
-
-/* Specific style for common pentest tools */
-.playbook-content code span:not([class]):first-child:is(
-    [data-content="nxc"],
-    [data-content="nmap"],
-    [data-content="netcat"],
-    [data-content="nc"],
-    [data-content="ssh"],
-    [data-content="smbclient"],
-    [data-content="curl"],
-    [data-content="wget"]
-) {
-    color: #60efff !important;
-    font-weight: bold;
-    text-shadow: 0 0 8px rgba(96, 239, 255, 0.7);
-}
-
-/* Enhance readability of commands by increasing contrast */
-.code-container pre {
-    background: linear-gradient(120deg, #060612 60%, #0a0a1a 100%);
-    color: #f0f0ff;
-}
-
-/* Make bright commands stand out against dark background */
-.code-container code {
-    color: #f0f0ff;
-}
-
-/* Override any theme colors for command text */
-.code-container span:not([class]) {
-    color: #f0f0ff !important;
-    text-shadow: 0 0 1px rgba(255, 255, 255, 0.3);
-}
-
-/* Specifically style the nxc tool to fix the issue shown in the image */
-pre code span:first-child:contains('nxc') {
-    color: #60efff !important;
-    font-weight: bold;
-    text-shadow: 0 0 8px rgba(96, 239, 255, 0.8);
-}
-
-/* Style tool arguments with different colors */
-.code-container span.operator + span:not([class]),
-.code-container span.operator ~ span:not([class]) {
-    color: #60efff !important;
-}
-
-/* Specifically target common SMB commands */
-.code-container code:contains('smb') span:not([class]):nth-child(1) {
-    color: #60efff !important;
-    font-weight: bold;
-}
-
-.code-container code:contains('smb') span:not([class]):nth-child(2) {
-    color: #ff5a8c !important;
-    font-weight: bold;
 }

@@ -44,7 +44,7 @@ export function renderMarkdown(markdown) {
                          language === 'cmd';
     
     // Create buttons HTML
-    const copyButtonHtml = `<button class="code-action-btn copy-btn" title="Copy to clipboard">
+    const copyButtonHtml = `<button class="code-action-btn copy-btn" data-tooltip="Copy">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
         <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
@@ -52,7 +52,7 @@ export function renderMarkdown(markdown) {
     </button>`;
     
     const executeButtonHtml = isExecutable ? 
-      `<button class="code-action-btn execute-btn" title="Execute in terminal">
+      `<button class="code-action-btn execute-btn" data-tooltip="Execute">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polygon points="5 3 19 12 5 21 5 3"></polygon>
         </svg>
@@ -60,12 +60,51 @@ export function renderMarkdown(markdown) {
     
     // Combine the buttons into a button group
     const actionsHtml = `<div class="code-actions">${copyButtonHtml}${executeButtonHtml}</div>`;
+
+    // Create language indicator
+    const displayLang = language || 'txt';
+    const langClass = isExecutable ? 'bash' : displayLang;
+    const langIndicator = `<div class="code-language-indicator ${langClass}">${displayLang}</div>`;
     
-    // Add a wrapper with the buttons
-    return `<div class="code-block-wrapper" data-language="${language}">${actionsHtml}${renderedCode}</div>`;
+    // Create header bar
+    const headerHtml = `<div class="code-block-header">${langIndicator}</div>`;
+    
+    // Add a wrapper with the header, language indicator and buttons
+    return `<div class="code-block-wrapper" data-language="${language}">${headerHtml}${actionsHtml}${renderedCode}</div>`;
   };
   
   const html = md.render(markdown);
+  
+  // Add line numbers to code blocks (after rendering)
+  setTimeout(() => {
+    document.querySelectorAll('.code-block-wrapper pre code').forEach(codeEl => {
+      // Get code content and split by lines
+      const codeContent = codeEl.textContent;
+      const lines = codeContent.split('\n');
+      
+      // Clear existing content
+      codeEl.innerHTML = '';
+      
+      // Create a line for each line of code
+      lines.forEach((line, index) => {
+        // Skip the last empty line that often appears in code blocks
+        if (index === lines.length - 1 && line === '') return;
+        
+        // Create a span for the line
+        const lineSpan = document.createElement('span');
+        lineSpan.className = 'line';
+        lineSpan.textContent = line;
+        
+        // Add the line to the code element
+        codeEl.appendChild(lineSpan);
+        
+        // Add a line break if it's not the last line
+        if (index < lines.length - 1) {
+          codeEl.appendChild(document.createElement('br'));
+        }
+      });
+    });
+  }, 0);
   
   // Reset at the end of rendering
   md.renderer.rules.fence = md.renderer.rules.fence || function(tokens, idx, options, env, self) {
@@ -170,7 +209,7 @@ export function renderMarkdownWithVars(markdown, variables) {
                         language === 'cmd';
     
     // Create buttons HTML
-    const copyButtonHtml = `<button class="code-action-btn copy-btn" title="Copy to clipboard">
+    const copyButtonHtml = `<button class="code-action-btn copy-btn" data-tooltip="Copy">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
         <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
@@ -178,7 +217,7 @@ export function renderMarkdownWithVars(markdown, variables) {
     </button>`;
     
     const executeButtonHtml = isExecutable ? 
-      `<button class="code-action-btn execute-btn" title="Execute in terminal">
+      `<button class="code-action-btn execute-btn" data-tooltip="Execute">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polygon points="5 3 19 12 5 21 5 3"></polygon>
         </svg>
@@ -187,12 +226,51 @@ export function renderMarkdownWithVars(markdown, variables) {
     // Combine the buttons into a button group
     const actionsHtml = `<div class="code-actions">${copyButtonHtml}${executeButtonHtml}</div>`;
     
-    // Add a wrapper with the buttons
-    return `<div class="code-block-wrapper" data-language="${language}">${actionsHtml}${renderedCode}</div>`;
+    // Create language indicator
+    const displayLang = language || 'txt';
+    const langClass = isExecutable ? 'bash' : displayLang;
+    const langIndicator = `<div class="code-language-indicator ${langClass}">${displayLang}</div>`;
+    
+    // Create header bar
+    const headerHtml = `<div class="code-block-header">${langIndicator}</div>`;
+    
+    // Add a wrapper with the header, language indicator and buttons
+    return `<div class="code-block-wrapper" data-language="${language}">${headerHtml}${actionsHtml}${renderedCode}</div>`;
   };
   
   // Render the markdown to HTML
   let html = md.render(markdown);
+  
+  // Add line numbers to code blocks (after rendering)
+  setTimeout(() => {
+    document.querySelectorAll('.code-block-wrapper pre code').forEach(codeEl => {
+      // Get code content and split by lines
+      const codeContent = codeEl.textContent;
+      const lines = codeContent.split('\n');
+      
+      // Clear existing content
+      codeEl.innerHTML = '';
+      
+      // Create a line for each line of code
+      lines.forEach((line, index) => {
+        // Skip the last empty line that often appears in code blocks
+        if (index === lines.length - 1 && line === '') return;
+        
+        // Create a span for the line
+        const lineSpan = document.createElement('span');
+        lineSpan.className = 'line';
+        lineSpan.textContent = line;
+        
+        // Add the line to the code element
+        codeEl.appendChild(lineSpan);
+        
+        // Add a line break if it's not the last line
+        if (index < lines.length - 1) {
+          codeEl.appendChild(document.createElement('br'));
+        }
+      });
+    });
+  }, 0);
   
   // Reset the renderer to its original state
   md.renderer.rules.fence = originalFence;

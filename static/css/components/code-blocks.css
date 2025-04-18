@@ -1,19 +1,77 @@
-/* Code block styling with buttons */
+/* Code block styling with buttons - Streamlined version */
 .code-block-wrapper {
     position: relative;
-    margin: 1em 0;
-    border-radius: 4px;
+    margin: 1.5em 0;
+    border-radius: 6px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
     overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.code-actions {
+.code-block-wrapper:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08), 0 0 15px rgba(0, 255, 157, 0.2);
+}
+
+/* Code block header bar with gradient */
+.code-block-header {
     position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 32px;
+    background: linear-gradient(90deg, rgba(30, 30, 46, 0.7) 0%, rgba(40, 40, 60, 0.9) 100%);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 5;
     display: flex;
-    gap: 0.4rem;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Language indicator for code blocks */
+.code-language-indicator {
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: 'JetBrains Mono', monospace;
     z-index: 10;
-    opacity: 1;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.code-language-indicator::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background-color: #00ff9d;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: middle;
+    box-shadow: 0 0 5px rgba(0, 255, 157, 0.7);
+}
+
+.code-language-indicator.bash::before {
+    background-color: #ff5f5f;
+    box-shadow: 0 0 5px rgba(255, 95, 95, 0.7);
+}
+
+.code-language-indicator.python::before {
+    background-color: #5f87ff;
+    box-shadow: 0 0 5px rgba(95, 135, 255, 0.7);
+}
+
+/* Button container */
+.code-actions {
+    display: flex;
+    gap: 6px;
+    z-index: 10;
+    opacity: 0.7;
     transition: opacity 0.2s ease;
 }
 
@@ -21,39 +79,97 @@
     opacity: 1;
 }
 
+/* Buttons styling */
 .code-action-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border: none;
     border-radius: 4px;
-    background-color: rgba(30, 30, 46, 0.9);
+    background-color: rgba(20, 20, 30, 0.8);
     color: #00ff9d;
     cursor: pointer;
     outline: none;
     transition: all 0.2s ease;
-    padding: 0;
-    border: 1px solid #00b36e;
-    box-shadow: 0 0 5px rgba(0, 255, 157, 0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.code-action-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 255, 157, 0.15) 0%, rgba(0, 0, 0, 0) 100%);
+    z-index: -1;
 }
 
 .code-action-btn:hover {
-    background-color: rgba(0, 0, 0, 0.8);
-    color: #00ffb3;
-    transform: scale(1.05);
-    box-shadow: 0 0 8px rgba(0, 255, 157, 0.8);
+    background-color: rgba(30, 30, 46, 0.9);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6), 0 0 8px rgba(0, 255, 157, 0.4);
+}
+
+.code-action-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 0 5px rgba(0, 255, 157, 0.3);
 }
 
 .code-action-btn svg {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
+    filter: drop-shadow(0 0 2px rgba(0, 255, 157, 0.4));
 }
 
+/* Tooltip for buttons */
+.code-action-btn::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: -28px;
+    right: 50%;
+    transform: translateX(50%);
+    padding: 4px 8px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 11px;
+    border-radius: 3px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.code-action-btn:hover::before {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Copy button styles */
 .copy-btn.copied {
-    background-color: rgba(0, 255, 157, 0.3);
+    background-color: rgba(0, 180, 100, 0.3);
     color: #ffffff;
+}
+
+.copy-btn.copied svg {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; transform: scale(0.5); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+/* Execute button styles */
+.execute-btn {
+    color: #ff5f87;
+}
+
+.execute-btn svg {
+    filter: drop-shadow(0 0 2px rgba(255, 95, 135, 0.4));
 }
 
 .execute-btn.executing {
@@ -63,26 +179,27 @@
 /* Pulse animation for executing button */
 @keyframes pulse {
     0% {
-        background-color: rgba(0, 0, 0, 0.6);
+        background-color: rgba(30, 30, 46, 0.8);
     }
     50% {
-        background-color: rgba(255, 0, 128, 0.6);
+        background-color: rgba(255, 0, 128, 0.3);
+        box-shadow: 0 0 10px rgba(255, 0, 128, 0.4);
     }
     100% {
-        background-color: rgba(0, 0, 0, 0.6);
+        background-color: rgba(30, 30, 46, 0.8);
     }
 }
 
 /* Make sure all code blocks have proper styling */
 .code-block-wrapper pre {
     margin: 0;
-    padding: 1em;
-    background-color: #1e1e2e;
-    border-radius: 4px;
+    padding: 3em 1.2em 1.2em;
+    background-color: #151520;
+    border-radius: 6px;
     overflow-x: auto;
     font-family: 'JetBrains Mono', monospace;
     line-height: 1.5;
-    position: relative;
+    font-size: 0.9em;
 }
 
 .code-block-wrapper code {
@@ -92,12 +209,79 @@
     white-space: pre;
 }
 
-/* Make sure the buttons are properly positioned in the playbook panel */
-.playbook-content .code-block-wrapper {
+/* Add a subtle line number effect */
+.code-block-wrapper pre {
+    counter-reset: line;
+}
+
+.code-block-wrapper pre > code {
+    display: block;
+    position: relative;
+    padding-left: 1.5em;
+}
+
+.code-block-wrapper pre > code > span.line {
+    display: inline-block;
+    width: 100%;
     position: relative;
 }
 
-/* Ensure the code blocks have some padding at the top to avoid button overlap */
-.playbook-content .code-block-wrapper pre {
-    padding-top: 2.5rem;
+.code-block-wrapper pre > code > span.line::before {
+    counter-increment: line;
+    content: counter(line);
+    position: absolute;
+    left: -1.5em;
+    width: 1em;
+    color: rgba(255, 255, 255, 0.3);
+    text-align: right;
+    font-size: 0.8em;
+    padding-right: 0.5em;
+}
+
+/* Override any potential syntax highlighting for command prompts and first lines */
+.code-block-wrapper pre > code > span.line {
+    color: inherit !important; /* Force all lines to use the same color */
+}
+
+/* Specifically target common prompt symbols and ensure they match other text */
+.code-block-wrapper pre > code > span.line:first-child,
+.code-block-wrapper pre[class*="language-"] > code > span.line:first-child,
+.code-block-wrapper[data-language="bash"] pre > code > span.line:first-child,
+.code-block-wrapper[data-language="shell"] pre > code > span.line:first-child,
+.code-block-wrapper[data-language="sh"] pre > code > span.line:first-child,
+.code-block-wrapper[data-language="console"] pre > code > span.line:first-child,
+.code-block-wrapper[data-language="cmd"] pre > code > span.line:first-child {
+    color: inherit !important;
+    font-weight: normal !important;
+    background: none !important;
+}
+
+/* Ensure dollar signs and command prompts don't get special styling */
+.code-block-wrapper pre > code > span.line:first-child > span,
+.code-block-wrapper pre > code > span.line > span {
+    color: inherit !important;
+    background: none !important;
+}
+
+/* Light glow effect on hover to indicate active area */
+.code-block-wrapper:hover pre {
+    box-shadow: inset 0 0 40px rgba(0, 255, 157, 0.03);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .code-block-wrapper pre {
+        font-size: 0.85em;
+        padding: 3em 1em 1em;
+    }
+    
+    .code-action-btn {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+/* Ensure the code blocks are properly styled in the playbook panel */
+.playbook-content .code-block-wrapper {
+    position: relative;
 }
