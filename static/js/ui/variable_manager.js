@@ -30,6 +30,9 @@ class VariableManager {
         // Set up variable actions (edit, delete)
         this.setupVariableActions();
         
+        // Set up add variable button
+        this.setupAddVariableButton();
+        
         console.log(`Variable manager initialized with ${Object.keys(this.variables).length} variables`);
     }
     
@@ -44,7 +47,11 @@ class VariableManager {
             const valueElement = item.querySelector('.variable-value');
             
             if (nameElement && valueElement) {
-                const name = nameElement.textContent.trim();
+                let name = nameElement.textContent.trim();
+                // Strip leading $ if present for internal storage
+                if (name.startsWith('$')) {
+                    name = name.slice(1);
+                }
                 const value = valueElement.textContent.trim();
                 
                 if (name) {
@@ -53,6 +60,29 @@ class VariableManager {
                         element: item
                     };
                 }
+            }
+        });
+        
+        // --- Add default variable inputs ---
+        const defaultVars = [
+            { id: 'targetIP', name: 'TargetIP' },
+            { id: 'port', name: 'Port' },
+            { id: 'dcIP', name: 'DCIP' },
+            { id: 'userFile', name: 'UserFile' },
+            { id: 'passFile', name: 'PassFile' },
+            { id: 'wordlist', name: 'Wordlist' },
+            { id: 'controlSocket', name: 'ControlSocket' }
+        ];
+        defaultVars.forEach(({ id, name }) => {
+            const input = document.getElementById(id);
+            if (input) {
+                this.variables[name] = { value: input.value.trim(), element: input };
+                // Keep variable map updated on input change
+                input.addEventListener('input', (e) => {
+                    this.variables[name].value = e.target.value.trim();
+                    // Dispatch event so playbook content can re-render
+                    document.dispatchEvent(new CustomEvent('variableValueChanged'));
+                });
             }
         });
         
@@ -161,6 +191,93 @@ class VariableManager {
     }
     
     /**
+     * Set up add variable button
+     */
+    setupAddVariableButton() {
+        // Connect the "Add Variable" button to the modal
+        const addVariableBtn = document.getElementById('addVariableInput');
+        if (addVariableBtn) {
+            addVariableBtn.addEventListener('click', () => {
+                this.openAddVariableModal();
+            });
+            
+            // Also connect the label that's styled as a button
+            const addVariableLabel = document.querySelector('.add-variable-btn');
+            if (addVariableLabel) {
+                addVariableLabel.addEventListener('click', () => {
+                    this.openAddVariableModal();
+                });
+            }
+        }
+        
+        // Set up the form submission in the modal
+        const addVariableForm = document.getElementById('addVariableForm');
+        const submitBtn = document.getElementById('submitAddVariable');
+        const cancelBtn = document.getElementById('cancelAddVariable');
+        
+        if (submitBtn) {
+            submitBtn.addEventListener('click', () => {
+                if (addVariableForm) {
+                    const nameInput = document.getElementById('variableName');
+                    const valueInput = document.getElementById('variableValue');
+                    
+                    if (nameInput && valueInput) {
+                        const name = nameInput.value.trim();
+                        const value = valueInput.value.trim();
+                        
+                        if (name) {
+                            this.createVariable(name, value);
+                            this.closeModal('addVariableModal');
+                            
+                            // Reset form
+                            nameInput.value = '';
+                            valueInput.value = '';
+                        } else {
+                            this.showError('Variable name cannot be empty');
+                        }
+                    }
+                }
+            });
+        }
+        
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                this.closeModal('addVariableModal');
+            });
+        }
+        
+        // Set up modal close button
+        const closeBtn = document.querySelector('#addVariableModal .modal-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                this.closeModal('addVariableModal');
+            });
+        }
+    }
+    
+    /**
+     * Open the add variable modal
+     */
+    openAddVariableModal() {
+        if (window.modalController) {
+            window.modalController.openModal('addVariableModal');
+        } else {
+            const modal = document.getElementById('addVariableModal');
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+        
+        // Focus on the name input
+        setTimeout(() => {
+            const nameInput = document.getElementById('variableName');
+            if (nameInput) {
+                nameInput.focus();
+            }
+        }, 100);
+    }
+    
+    /**
      * Handle creating a new variable
      * @param {HTMLFormElement} form - The form element
      */
@@ -170,9 +287,12 @@ class VariableManager {
         
         if (!nameInput || !valueInput) return;
         
-        const name = nameInput.value.trim();
+        let name = nameInput.value.trim();
         const value = valueInput.value.trim();
-        
+        // Strip leading $ if present
+        if (name.startsWith('$')) {
+            name = name.slice(1);
+        }
         if (!name) {
             this.showError('Variable name cannot be empty');
             return;
@@ -254,10 +374,12 @@ class VariableManager {
         
         if (!nameInput || !valueInput || !oldNameInput) return;
         
-        const name = nameInput.value.trim();
+        let name = nameInput.value.trim();
         const value = valueInput.value.trim();
-        const oldName = oldNameInput.value.trim();
-        
+        let oldName = oldNameInput.value.trim();
+        // Strip leading $ if present
+        if (name.startsWith('$')) name = name.slice(1);
+        if (oldName.startsWith('$')) oldName = oldName.slice(1);
         if (!name) {
             this.showError('Variable name cannot be empty');
             return;
@@ -378,6 +500,18 @@ class VariableManager {
             console.error(message);
             alert(message);
         }
+    }
+    
+    /**
+     * Get a {varName: value} map of all current variables
+     * @returns {Object}
+     */
+    getVariableMap() {
+        const map = {};
+        for (const [name, obj] of Object.entries(this.variables)) {
+            map[name] = obj.value;
+        }
+        return map;
     }
 }
 

@@ -18,6 +18,7 @@ import VariablesPanel from './ui/variables_panel.js';
 import SearchManager from './ui/search_manager.js';
 import PlaybookManager from './ui/playbook_manager.js';
 import NotificationManager from './ui/notification_manager.js';
+import { renderMarkdown } from './utils/markdown.js';
 import './ui/settings_modal.js';
 
 // Initialize when DOM is ready
@@ -45,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Initialize UI Managers
         const themeManager = new ThemeManager();
         const terminalManager = new TerminalManager(config.hostname);
-        const variableManager = new VariableManager();
+        window.variableManager = new VariableManager();
         const settingsManager = new SettingsManager();
         const notesManager = new NotesManager();
         const variablesPanel = new VariablesPanel();

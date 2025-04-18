@@ -53,9 +53,11 @@ app = Flask(__name__,
 
 # Import route blueprints
 from routes.playbook_routes import playbook_routes
+from routes.variable_routes import variable_routes
 
 # Register blueprints
 app.register_blueprint(playbook_routes)
+app.register_blueprint(variable_routes)
 
 # Store information about running terminals
 terminals = {}

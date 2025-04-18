@@ -246,7 +246,10 @@
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/variable_modal.css') }}">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <!-- Add markdown-it via CDN for frontend markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 </head>
 <body>
     <input type="hidden" id="hostname" value="{{ hostname }}">
@@ -586,6 +589,9 @@ echo 'Hello, World!'
 
     <!-- Settings Modal -->
     {% include 'partials/_settings_modal.html' %}
+
+    <!-- Variable Modals -->
+    {% include 'partials/_variable_modal.html' %}
 
     <!-- Notification Toast Container -->
     <div id="notificationContainer" class="notification-container">

@@ -1,0 +1,54 @@
+<!-- Variable Modal -->
+<div id="addVariableModal" class="modal-container">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Add Variable</h3>
+            <span class="modal-close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="addVariableForm" autocomplete="off">
+                <div class="form-group">
+                    <label for="variableName">Variable Name:</label>
+                    <input type="text" id="variableName" name="variableName" placeholder="e.g. TargetHost" required>
+                    <small class="form-hint">Variable name <b>without $</b> (letters, numbers, underscores)</small>
+                </div>
+                <div class="form-group">
+                    <label for="variableValue">Value:</label>
+                    <input type="text" id="variableValue" name="variableValue" placeholder="Enter value (optional)">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn" id="cancelAddVariable" type="button">Cancel</button>
+            <button class="modal-btn confirm" id="submitAddVariable" type="button">Add Variable</button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Variable Modal -->
+<div id="editVariableModal" class="modal-container">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Edit Variable</h3>
+            <span class="modal-close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="editVariableForm" autocomplete="off">
+                <input type="hidden" id="oldVariableName" name="oldVariableName">
+                <div class="form-group">
+                    <label for="editVariableName">Variable Name:</label>
+                    <input type="text" id="editVariableName" name="editVariableName" placeholder="e.g. TargetHost" required>
+                    <small class="form-hint">Variable name <b>without $</b> (letters, numbers, underscores)</small>
+                </div>
+                <div class="form-group">
+                    <label for="editVariableValue">Value:</label>
+                    <input type="text" id="editVariableValue" name="editVariableValue" placeholder="Enter value (optional)">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn" id="cancelEditVariable" type="button">Cancel</button>
+            <button class="modal-btn confirm" id="submitEditVariable" type="button">Update Variable</button>
+        </div>
+    </div>
+</div>

@@ -131,6 +131,34 @@
     color: var(--text-primary);
 }
 
+/* Ultimate override for variable highlighting - target the exact markup structure */
+.playbook-content pre code span.highlighted-var,
+.playbook-content pre .highlighted-var,
+.playbook-content code .highlighted-var,
+.playbook-content .highlighted-var {
+  /* First reset everything */
+  background: none !important;
+  font-weight: normal !important;
+  box-shadow: none !important;
+  border: none !important;
+  -webkit-text-fill-color: inherit !important;
+  
+  /* Force color to match code */
+  color: var(--text-primary) !important;
+  
+  /* Only apply the underline */
+  text-decoration: underline !important;
+  text-decoration-style: double !important;
+  text-decoration-thickness: 2px !important;
+  text-decoration-color: #e67e22 !important; /* orange underline */
+  text-underline-offset: 3px !important;
+}
+
+/* Special override for the code blocks */
+pre code span.highlighted-var {
+  color: var(--text-primary) !important;
+}
+
 /* Inline code */
 .playbook-content p code {
     background-color: rgba(30, 30, 50, 0.5);

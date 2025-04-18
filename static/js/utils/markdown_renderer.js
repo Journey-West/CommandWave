@@ -3,6 +3,9 @@
  * A lightweight Markdown parser and renderer for CommandWave
  */
 
+// Deprecated: Use markdown-it implementation in markdown.js instead.
+// This file is retained for reference only.
+
 class MarkdownRenderer {
     /**
      * Parse and render Markdown to HTML
@@ -166,4 +169,4 @@ class MarkdownRenderer {
     }
 }
 
-export default MarkdownRenderer;
+export default undefined;

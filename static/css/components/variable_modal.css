@@ -1,0 +1,132 @@
+/* Variable Modal - CommandWave Neon Theme */
+#addVariableModal.modal-container,
+#editVariableModal.modal-container {
+  z-index: 1000;
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.72);
+}
+#addVariableModal.active,
+#editVariableModal.active {
+  display: flex;
+}
+#addVariableModal .modal-content,
+#editVariableModal .modal-content {
+  min-width: 370px;
+  background: linear-gradient(120deg, #18181f 60%, #19192a 100%);
+  border: 2px solid #ffe600;
+  border-radius: 12px;
+  box-shadow: 0 0 18px 2px #ffe60044, 0 0 0 2px #222 inset;
+  padding: 0;
+  font-family: 'Orbitron', 'Roboto', monospace;
+  color: #ffe600;
+}
+#addVariableModal .modal-header,
+#editVariableModal .modal-header {
+  padding: 1.3rem 1.5rem 0.5rem 1.5rem;
+  border-bottom: 1px solid #ffe60066;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffe600;
+  letter-spacing: 1px;
+}
+#addVariableModal .modal-header h3,
+#editVariableModal .modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #ffe600;
+  letter-spacing: 1px;
+  font-family: 'Orbitron', 'Roboto', monospace;
+}
+#addVariableModal .modal-close,
+#editVariableModal .modal-close {
+  float: right;
+  font-size: 1.5rem;
+  color: #ffe600;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+#addVariableModal .modal-close:hover,
+#editVariableModal .modal-close:hover {
+  color: #fff200;
+}
+#addVariableModal .modal-body,
+#editVariableModal .modal-body {
+  padding: 1.2rem 1.5rem 0.5rem 1.5rem;
+  background: transparent;
+}
+#addVariableModal .form-group,
+#editVariableModal .form-group {
+  margin-bottom: 1.2rem;
+}
+#addVariableModal label,
+#editVariableModal label {
+  display: block;
+  font-size: 1rem;
+  font-family: 'Orbitron', 'Roboto', monospace;
+  color: #ffe600;
+  margin-bottom: 0.2rem;
+  letter-spacing: 1px;
+}
+#addVariableModal input[type="text"],
+#editVariableModal input[type="text"] {
+  width: 100%;
+  padding: 0.45rem 0.7rem;
+  border: 1.5px solid #ffe600;
+  border-radius: 6px;
+  background: #18181f;
+  color: #ffe600;
+  font-size: 1rem;
+  font-family: 'Roboto Mono', 'Roboto', monospace;
+  margin-bottom: 0.15rem;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+#addVariableModal input[type="text"]:focus,
+#editVariableModal input[type="text"]:focus {
+  border-color: #fff200;
+  box-shadow: 0 0 6px #ffe60044;
+}
+#addVariableModal .form-hint,
+#editVariableModal .form-hint {
+  font-size: 0.8rem;
+  color: #ffe600bb;
+  font-family: 'Roboto', monospace;
+  margin-top: 0.1rem;
+}
+#addVariableModal .modal-footer,
+#editVariableModal .modal-footer {
+  padding: 1.1rem 1.5rem 1.2rem 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  background: transparent;
+  border-top: 1px solid #ffe60033;
+  gap: 0.7rem;
+}
+#addVariableModal .modal-btn,
+#editVariableModal .modal-btn {
+  background: #18181f;
+  border: 1.5px solid #ffe600;
+  color: #ffe600;
+  font-family: 'Orbitron', 'Roboto', monospace;
+  font-size: 1rem;
+  border-radius: 6px;
+  padding: 0.5rem 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+#addVariableModal .modal-btn.confirm,
+#editVariableModal .modal-btn.confirm {
+  background: #ffe600;
+  color: #18181f;
+  font-weight: 700;
+}
+#addVariableModal .modal-btn:hover,
+#editVariableModal .modal-btn:hover {
+  background: #ffe600;
+  color: #18181f;
+  border-color: #fff200;
+}

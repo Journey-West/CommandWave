@@ -4,13 +4,19 @@
  */
 
 import playbookAPI from '../api/playbook_api.js';
-import MarkdownRenderer from '../utils/markdown_renderer.js';
+import { renderMarkdownWithVars } from '../utils/markdown.js';
+import VariableManager from './variable_manager.js';
 
 class PlaybookManager {
     constructor() {
         this.activePlaybook = null;
         this.modalController = null;
+        this.playbooksById = {}; // Store playbook data by ID
         this.init();
+        
+        // Make this instance globally available for event handlers
+        window.playbookManager = this;
+        console.log('PlaybookManager instance registered as window.playbookManager');
     }
 
     /**
@@ -23,6 +29,10 @@ class PlaybookManager {
         }
         
         this.setupEventListeners();
+        
+        // Initialize any existing playbooks that were loaded from the server
+        this.initializeExistingPlaybooks();
+        
         console.log('PlaybookManager initialized');
     }
 
@@ -256,6 +266,11 @@ class PlaybookManager {
             return;
         }
 
+        // Store playbook data for future updates
+        if (playbook && playbook.id) {
+            this.playbooksById[playbook.id] = playbook;
+        }
+
         // Check if playbook already exists in the DOM
         const existingPlaybook = document.getElementById(`playbook-${this.sanitizeId(playbook.id)}`);
         if (existingPlaybook) {
@@ -268,6 +283,119 @@ class PlaybookManager {
         }
 
         this.activePlaybook = playbook.id;
+    }
+
+    /**
+     * Get playbook data by ID
+     */
+    getPlaybookById(id) {
+        return this.playbooksById[id] || null;
+    }
+
+    /**
+     * Update all rendered playbooks with latest variable values
+     */
+    updateAllRenderedPlaybooks() {
+        console.log('Updating all rendered playbooks with latest variable values');
+        
+        const playbooks = document.querySelectorAll('.playbook');
+        console.log(`Found ${playbooks.length} playbooks to update`);
+        
+        playbooks.forEach(playbookEl => {
+            // Extract playbook ID
+            const playbookId = playbookEl.id.replace('playbook-', '');
+            console.log(`Processing playbook: ${playbookId}`);
+            
+            // Get playbook data
+            const playbookData = this.getPlaybookById(playbookId);
+            
+            if (playbookData) {
+                console.log(`Found data for playbook: ${playbookId}`);
+                
+                // Find content element to update
+                const contentEl = playbookEl.querySelector('.playbook-content');
+                if (contentEl) {
+                    // Re-render content with latest variables
+                    const newContent = this.renderPlaybookContent(playbookData);
+                    contentEl.innerHTML = newContent;
+                    console.log(`Updated content for playbook: ${playbookId}`);
+                } else {
+                    console.warn(`No content element found for playbook: ${playbookId}`);
+                }
+            } else {
+                console.warn(`No data found for playbook: ${playbookId}`);
+            }
+        });
+    }
+
+    /**
+     * Initialize existing playbooks that might already be in the DOM
+     */
+    initializeExistingPlaybooks() {
+        const playbooks = document.querySelectorAll('.playbook');
+        console.log(`Found ${playbooks.length} existing playbooks to initialize`);
+        
+        playbooks.forEach(playbookEl => {
+            // Extract playbook ID from element ID
+            const rawId = playbookEl.id;
+            if (rawId && rawId.startsWith('playbook-')) {
+                const playbookId = rawId.replace('playbook-', '');
+                
+                // Try to find and extract playbook data from the DOM
+                const titleEl = playbookEl.querySelector('.playbook-header h3');
+                const contentEl = playbookEl.querySelector('.playbook-content');
+                
+                if (titleEl && contentEl) {
+                    const title = titleEl.textContent;
+                    const id = playbookId;
+                    const content = this.extractPlaybookContent(contentEl);
+                    
+                    console.log(`Initializing existing playbook: ${id} - ${title}`);
+                    
+                    // Store playbook data
+                    this.playbooksById[id] = {
+                        id: id,
+                        title: title,
+                        content: content
+                    };
+                }
+            }
+        });
+    }
+    
+    /**
+     * Extract playbook content from the rendered HTML
+     * This is a fallback when we don't have the original markdown
+     */
+    extractPlaybookContent(contentEl) {
+        // This is a simplification - the ideal would be to have the original markdown
+        return contentEl.innerHTML;
+    }
+
+    /**
+     * Render the playbook content as HTML, with variable substitution in code blocks
+     * @param {Object} playbook - Playbook data
+     * @returns {string} HTML representation of playbook content
+     */
+    renderPlaybookContent(playbook) {
+        console.log(`Rendering playbook content for: ${playbook.id}`);
+        
+        // Get the playbook content
+        const content = playbook.content || '';
+        
+        // Get current variables for substitution
+        let variables = {};
+        const variableManager = window.variableManager; 
+        
+        if (variableManager && typeof variableManager.getVariableMap === 'function') {
+            variables = variableManager.getVariableMap();
+            console.log('Variables for substitution:', variables);
+        } else {
+            console.warn('VariableManager not available for substitution');
+        }
+        
+        // Render with variable substitution in code blocks
+        return renderMarkdownWithVars(content, variables);
     }
 
     /**
@@ -505,19 +633,6 @@ class PlaybookManager {
     }
 
     /**
-     * Render the playbook content as HTML
-     * @param {Object} playbook - Playbook data
-     * @returns {string} HTML representation of playbook content
-     */
-    renderPlaybookContent(playbook) {
-        // Get the playbook content
-        const content = playbook.content || '';
-        
-        // Use the markdown renderer to convert it to HTML
-        return MarkdownRenderer.render(content);
-    }
-
-    /**
      * Escape HTML special characters
      * @param {string} html - String to escape
      * @returns {string} Escaped string
@@ -551,6 +666,14 @@ class PlaybookManager {
         };
     }
 }
+
+// Listen for variable changes and re-render playbook content
+// Assumes PlaybookManager is a singleton or accessible as 'playbookManager'
+document.addEventListener('variableValueChanged', () => {
+    if (window.playbookManager && typeof window.playbookManager.updateAllRenderedPlaybooks === 'function') {
+        window.playbookManager.updateAllRenderedPlaybooks();
+    }
+});
 
 // Export as singleton
 export default PlaybookManager;
