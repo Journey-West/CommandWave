@@ -1,0 +1,18 @@
+{#
+  _variable_list.html - Renders the list of variables for CommandWave
+  Expects: variables (dict of {name: value})
+#}
+<ul class="variable-list">
+  {% for name, value in variables.items() %}
+    <li class="variable-item">
+      <div class="variable-input">
+        <input type="text" value="{{ name }}" readonly class="variable-name-field" />
+        <span class="variable-value">{{ value }}</span>
+        <button class="edit-variable-btn" title="Edit"><i class="fas fa-edit"></i></button>
+        <button class="delete-variable-btn" title="Delete"><i class="fas fa-trash"></i></button>
+      </div>
+    </li>
+  {% else %}
+    <li class="variable-item empty">No variables defined.</li>
+  {% endfor %}
+</ul>

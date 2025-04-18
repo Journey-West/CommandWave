@@ -3,7 +3,7 @@ routes/variable_routes.py
 Flask Blueprint for variable-related API endpoints.
 """
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, render_template
 import os
 import json
 
@@ -19,12 +19,14 @@ def create_variable():
     value = data.get('value', '')
     if not name:
         return jsonify({'success': False, 'error': 'Variable name cannot be empty'}), 400
-    # Save variable globally (or adapt to per-terminal if needed)
     file_path = os.path.join(VARIABLES_DIR, 'variables_global.json')
     try:
         if os.path.exists(file_path):
-            with open(file_path, 'r', encoding='utf-8') as f:
-                variables = json.load(f)
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    variables = json.load(f)
+            except json.JSONDecodeError:
+                variables = {}
         else:
             variables = {}
         variables[name] = value
@@ -40,10 +42,15 @@ def list_variables():
     file_path = os.path.join(VARIABLES_DIR, 'variables_global.json')
     try:
         if os.path.exists(file_path):
-            with open(file_path, 'r', encoding='utf-8') as f:
-                variables = json.load(f)
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    variables = json.load(f)
+            except json.JSONDecodeError:
+                variables = {}
         else:
             variables = {}
-        return jsonify({'success': True, 'variables': variables})
+        # Render the variable list HTML partial
+        html = render_template('partials/_variable_list.html', variables=variables)
+        return jsonify({'success': True, 'variables': variables, 'html': html})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
