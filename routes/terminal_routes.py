@@ -78,7 +78,7 @@ def create_terminal():
                     'success': True,
                     'port': port,
                     'name': tab_name
-                })
+                }), 200
             else:
                 return jsonify({
                     'success': False,

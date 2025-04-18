@@ -541,10 +541,11 @@ export default class TerminalManager {
             // Call the API to create a new terminal
             const response = await terminalAPI.createTerminal(name);
             
+            // Expect full response with success, port, and name
             if (response.success) {
-                const { port } = response;
+                const port = response.port;
                 // Add the terminal to the UI
-                this.addTerminalToUI(port, name);
+                this.addTerminalToUI(port, response.name || name);
                 this.activePorts.push(port);
                 this.switchTerminal(port);
                 

@@ -47,10 +47,8 @@ class TerminalAPI {
                 throw new Error(data.error || 'Failed to create terminal');
             }
             
-            return {
-                port: data.port,
-                name: data.name
-            };
+            // Return full response to include success flag
+            return data;
         } catch (error) {
             console.error('Error creating terminal:', error);
             throw error;
