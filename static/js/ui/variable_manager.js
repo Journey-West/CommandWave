@@ -8,10 +8,56 @@ class VariableManager {
         this.variables = {};
         this.sectionCollapsed = false;
         this.variableSectionElement = document.getElementById('variableContent');
-        this.variableListElement = document.getElementById('variableList');
+        this.variableInputsContainer = document.getElementById('variableInputsContainer');
+        
+        // Get the API base URL from the hidden element or fallback to window.location
+        const apiBaseUrlElem = document.getElementById('api-base-url');
+        this.apiBaseUrl = apiBaseUrlElem && apiBaseUrlElem.dataset.url 
+            ? apiBaseUrlElem.dataset.url 
+            : window.location.origin + '/';
+        
+        // Ensure API base URL ends with a slash
+        if (!this.apiBaseUrl.endsWith('/')) {
+            this.apiBaseUrl += '/';
+        }
+        
+        // Default variables that should not be deleted (with all possible case variations)
+        this.defaultVariableNames = [
+            'Port', 'port', 'PORT',
+            'Host', 'host', 'HOST',
+            'Username', 'username', 'USERNAME',
+            'Password', 'password', 'PASSWORD',
+            'Domain', 'domain', 'DOMAIN',
+            'Protocol', 'protocol', 'PROTOCOL',
+            'Wordlist', 'wordlist', 'WORDLIST',
+            'TargetIP', 'targetIP', 'TARGETIP',
+            'DCIP', 'dcIP', 'DCIP',
+            'UserFile', 'userFile', 'USERFILE',
+            'PassFile', 'passFile', 'PASSFILE',
+            'ControlSocket', 'controlSocket', 'CONTROLSOCKET'
+        ];
+        
+        console.log('Variable manager initialized with API base URL:', this.apiBaseUrl);
         
         // Initialize manager
         this.init();
+    }
+    
+    /**
+     * Check if a variable is a default/system variable
+     * @param {string} name - Variable name to check
+     * @returns {boolean} - True if it's a default variable
+     */
+    isDefaultVariable(name) {
+        if (!name) return false;
+        
+        // Convert to lowercase for case-insensitive comparison
+        const nameLower = name.toLowerCase();
+        
+        // Check against lowercase versions of default names
+        return this.defaultVariableNames.some(defaultName => 
+            defaultName.toLowerCase() === nameLower
+        );
     }
     
     /**
@@ -27,39 +73,94 @@ class VariableManager {
         // Set up variable forms
         this.setupVariableForms();
         
-        // Set up variable actions (edit, delete)
+        // Set up variable actions (none needed currently)
         this.setupVariableActions();
         
         // Set up add variable button
         this.setupAddVariableButton();
         
+        // Initialize event handlers
+        this.initEventHandlers();
+        
         console.log(`Variable manager initialized with ${Object.keys(this.variables).length} variables`);
+    }
+    
+    /**
+     * Initialize the event handlers for variable-related actions
+     */
+    initEventHandlers() {
+        // Setup for add variable button
+        const addVariableBtn = document.getElementById('addVariableBtn');
+        if (addVariableBtn) {
+            addVariableBtn.addEventListener('click', () => {
+                this.openAddVariableModal();
+            });
+        }
+        
+        // Initialize modal listeners
+        this.initEditModalListeners();
+        this.initAddModalListeners();
+        
+        // Setup variable search
+        this.setupVariableSearch();
+    }
+    
+    /**
+     * Open the add variable modal
+     */
+    openAddVariableModal() {
+        const modal = document.getElementById('addVariableModal');
+        const nameInput = document.getElementById('newVariableName');
+        const refInput = document.getElementById('newVariableReference');
+        const valueInput = document.getElementById('newVariableValue');
+        
+        if (modal && nameInput && valueInput && refInput) {
+            // Reset form
+            nameInput.value = '';
+            refInput.value = '$';
+            valueInput.value = '';
+            
+            // Show the modal
+            if (window.modalController) {
+                window.modalController.openModal('addVariableModal');
+            } else {
+                modal.classList.add('active');
+            }
+            
+            // Focus the name input
+            nameInput.focus();
+        }
     }
     
     /**
      * Load variables from DOM
      */
     loadVariables() {
-        const variableItems = document.querySelectorAll('.variable-item');
+        // Load custom variables from the variable-input elements with custom-variable class
+        const customVariableInputs = document.querySelectorAll('.variable-input.custom-variable');
         
-        variableItems.forEach(item => {
-            const nameElement = item.querySelector('.variable-name');
-            const valueElement = item.querySelector('.variable-value');
+        customVariableInputs.forEach(item => {
+            const input = item.querySelector('.custom-variable-input');
+            const name = input.dataset.variableName;
+            const value = input.value.trim();
             
-            if (nameElement && valueElement) {
-                let name = nameElement.textContent.trim();
-                // Strip leading $ if present for internal storage
-                if (name.startsWith('$')) {
-                    name = name.slice(1);
-                }
-                const value = valueElement.textContent.trim();
+            if (name) {
+                this.variables[name] = {
+                    value: value,
+                    element: input
+                };
                 
-                if (name) {
-                    this.variables[name] = {
-                        value: value,
-                        element: item
-                    };
-                }
+                // Keep variable map updated on input change
+                input.addEventListener('input', (e) => {
+                    this.variables[name].value = e.target.value.trim();
+                    // Dispatch event so playbook content can re-render
+                    document.dispatchEvent(new CustomEvent('variableValueChanged'));
+                });
+                
+                // Add double-click handler for editing
+                input.addEventListener('dblclick', (e) => {
+                    this.openEditVariableModal(name, value);
+                });
             }
         });
         
@@ -82,6 +183,11 @@ class VariableManager {
                     this.variables[name].value = e.target.value.trim();
                     // Dispatch event so playbook content can re-render
                     document.dispatchEvent(new CustomEvent('variableValueChanged'));
+                });
+                
+                // Add double-click handler for editing default variables too
+                input.addEventListener('dblclick', (e) => {
+                    this.openEditVariableModal(name, input.value.trim());
                 });
             }
         });
@@ -150,44 +256,18 @@ class VariableManager {
         if (editForm) {
             editForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                this.handleEditVariable(editForm);
+                this.handleEditVariableSubmit();
             });
         }
     }
     
     /**
-     * Set up edit and delete actions for variables
+     * Set up variable actions
      */
     setupVariableActions() {
-        // Use event delegation for variable actions since items may be added/removed
-        if (this.variableListElement) {
-            this.variableListElement.addEventListener('click', (e) => {
-                const target = e.target;
-                
-                // Edit variable button
-                if (target.closest('.edit-variable-btn')) {
-                    const variableItem = target.closest('.variable-item');
-                    if (variableItem) {
-                        const name = variableItem.querySelector('.variable-name')?.textContent.trim();
-                        const value = variableItem.querySelector('.variable-value')?.textContent.trim();
-                        if (name && value) {
-                            this.openEditVariableModal(name, value);
-                        }
-                    }
-                }
-                
-                // Delete variable button
-                if (target.closest('.delete-variable-btn')) {
-                    const variableItem = target.closest('.variable-item');
-                    if (variableItem) {
-                        const name = variableItem.querySelector('.variable-name')?.textContent.trim();
-                        if (name) {
-                            this.deleteVariable(name);
-                        }
-                    }
-                }
-            });
-        }
+        // No variable actions are needed now that edit/delete buttons are removed
+        // This function is kept as a placeholder for future enhancements
+        console.log("Variable actions setup - custom variables now match default ones");
     }
     
     /**
@@ -256,28 +336,6 @@ class VariableManager {
     }
     
     /**
-     * Open the add variable modal
-     */
-    openAddVariableModal() {
-        if (window.modalController) {
-            window.modalController.openModal('addVariableModal');
-        } else {
-            const modal = document.getElementById('addVariableModal');
-            if (modal) {
-                modal.classList.add('active');
-            }
-        }
-        
-        // Focus on the name input
-        setTimeout(() => {
-            const nameInput = document.getElementById('variableName');
-            if (nameInput) {
-                nameInput.focus();
-            }
-        }, 100);
-    }
-    
-    /**
      * Handle creating a new variable
      * @param {HTMLFormElement} form - The form element
      */
@@ -309,17 +367,26 @@ class VariableManager {
      * @param {HTMLFormElement} form - The form element (for resetting)
      */
     createVariable(name, value, form) {
-        fetch('/api/variables/create', {
+        // Ensure URL doesn't have double slashes
+        const apiUrl = `${this.apiBaseUrl}api/variables/create`.replace(/([^:]\/)\/+/g, '$1');
+        console.log('Creating variable with URL:', apiUrl);
+        
+        fetch(apiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, value })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
-                this.closeModal('createVariableModal');
+                this.closeModal('addVariableModal');
                 
-                // Refresh variable list
+                // Refresh variable list with the new format
                 this.refreshVariableList();
                 
                 // Reset form
@@ -331,6 +398,7 @@ class VariableManager {
             }
         })
         .catch(error => {
+            console.error('API error:', error);
             this.showError('Error creating variable: ' + error.message);
         });
     }
@@ -343,15 +411,55 @@ class VariableManager {
     openEditVariableModal(name, value) {
         const editModal = document.getElementById('editVariableModal');
         const nameInput = document.getElementById('editVariableName');
+        const refInput = document.getElementById('editVariableReference');
         const valueInput = document.getElementById('editVariableValue');
         const oldNameInput = document.getElementById('oldVariableName');
+        const deleteBtn = document.getElementById('deleteVariableBtn');
+        const modalTitle = editModal && editModal.querySelector('.modal-header h3');
         
-        if (editModal && nameInput && valueInput && oldNameInput) {
+        if (editModal && nameInput && valueInput && oldNameInput && refInput) {
+            // Strip $ if present in name
+            if (name.startsWith('$')) {
+                name = name.slice(1);
+            }
+            
+            // Use the isDefaultVariable method for consistency
+            const isDefaultVar = this.isDefaultVariable(name);
+            
+            console.log(`Opening edit modal for variable: ${name}, isDefault: ${isDefaultVar}`);
+            
+            // Update modal title based on variable type
+            if (modalTitle) {
+                modalTitle.textContent = isDefaultVar ? 'Edit System Variable' : 'Edit Variable';
+            }
+            
             nameInput.value = name;
+            refInput.value = `$${name}`; // Set the reference field with $ prefix
             valueInput.value = value;
             oldNameInput.value = name;
             
-            // Use modal controller if available
+            // Set up validation for no spaces in name and reference fields
+            nameInput.oninput = () => {
+                // Remove spaces
+                nameInput.value = nameInput.value.replace(/\s+/g, '');
+                
+                // Update reference field if it still has the default pattern
+                if (refInput.value === `$${oldNameInput.value}` || refInput.value.startsWith('$')) {
+                    refInput.value = `$${nameInput.value}`;
+                }
+            };
+            
+            refInput.oninput = () => {
+                // Remove spaces
+                refInput.value = refInput.value.replace(/\s+/g, '');
+                
+                // Ensure it starts with $
+                if (!refInput.value.startsWith('$') && refInput.value.length > 0) {
+                    refInput.value = `$${refInput.value}`;
+                }
+            };
+            
+            // Show the modal
             if (window.modalController) {
                 window.modalController.openModal('editVariableModal');
             } else {
@@ -360,33 +468,172 @@ class VariableManager {
             
             // Focus the value input
             valueInput.focus();
+            
+            // Handle delete button for default vs custom variables
+            if (deleteBtn) {
+                if (isDefaultVar) {
+                    console.log(`Hiding delete button for default variable: ${name}`);
+                    // Completely hide the delete button for default variables
+                    deleteBtn.style.display = 'none';
+                } else {
+                    console.log(`Showing delete button for custom variable: ${name}`);
+                    // Show delete button for custom variables and set up hold-to-delete
+                    deleteBtn.style.display = 'flex';
+                    this.setupHoldToDeleteButton(deleteBtn, name);
+                }
+            }
         }
     }
     
     /**
-     * Handle editing a variable
-     * @param {HTMLFormElement} form - The form element
+     * Handle the edit variable form submission
      */
-    handleEditVariable(form) {
-        const nameInput = form.querySelector('#editVariableName');
-        const valueInput = form.querySelector('#editVariableValue');
-        const oldNameInput = form.querySelector('#oldVariableName');
+    handleEditVariableSubmit() {
+        const form = document.getElementById('editVariableForm');
+        const nameInput = document.getElementById('editVariableName');
+        const refInput = document.getElementById('editVariableReference');
+        const valueInput = document.getElementById('editVariableValue');
+        const oldNameInput = document.getElementById('oldVariableName');
         
-        if (!nameInput || !valueInput || !oldNameInput) return;
+        if (!form || !nameInput || !valueInput || !oldNameInput || !refInput) {
+            this.showError('Edit form elements not found');
+            return;
+        }
         
-        let name = nameInput.value.trim();
+        const name = nameInput.value.trim();
+        const refValue = refInput.value.trim();
         const value = valueInput.value.trim();
-        let oldName = oldNameInput.value.trim();
-        // Strip leading $ if present
-        if (name.startsWith('$')) name = name.slice(1);
-        if (oldName.startsWith('$')) oldName = oldName.slice(1);
+        const oldName = oldNameInput.value.trim();
+        
+        // Basic validation
         if (!name) {
             this.showError('Variable name cannot be empty');
             return;
         }
         
-        // Edit variable via API
-        this.editVariable(oldName, name, value);
+        // Check for spaces in variable name
+        if (name.includes(' ')) {
+            this.showError('Variable name cannot contain spaces');
+            return;
+        }
+        
+        // Check reference format
+        if (!refValue.startsWith('$')) {
+            this.showError('Variable reference must start with $');
+            return;
+        }
+        
+        // Check for spaces in variable reference
+        if (refValue.includes(' ')) {
+            this.showError('Variable reference cannot contain spaces');
+            return;
+        }
+        
+        // Extract the actual name from the reference (without $)
+        const refName = refValue.startsWith('$') ? refValue.slice(1) : refValue;
+        
+        // Use the reference name if it's different from the input name
+        const finalName = refName !== name ? refName : name;
+        
+        // Edit variable via API or client-side
+        this.editVariable(oldName, finalName, value);
+    }
+    
+    /**
+     * Initialize add modal event listeners
+     */
+    initAddModalListeners() {
+        const addForm = document.getElementById('addVariableForm');
+        const nameInput = document.getElementById('newVariableName');
+        const valueInput = document.getElementById('newVariableValue');
+        const refInput = document.getElementById('newVariableReference');
+        const submitBtn = document.getElementById('submitAddVariable');
+        const cancelBtn = document.getElementById('cancelAddVariable');
+        
+        // Set up validation for no spaces in name and reference fields
+        if (nameInput) {
+            nameInput.oninput = () => {
+                // Remove spaces
+                nameInput.value = nameInput.value.replace(/\s+/g, '');
+                
+                // Update reference field
+                if (refInput) {
+                    refInput.value = `$${nameInput.value}`;
+                }
+            };
+        }
+        
+        if (refInput) {
+            refInput.oninput = () => {
+                // Remove spaces
+                refInput.value = refInput.value.replace(/\s+/g, '');
+                
+                // Ensure it starts with $
+                if (!refInput.value.startsWith('$') && refInput.value.length > 0) {
+                    refInput.value = `$${refInput.value}`;
+                }
+            };
+        }
+        
+        if (submitBtn) {
+            submitBtn.onclick = () => {
+                if (addForm && nameInput && valueInput) {
+                    const name = nameInput.value.trim();
+                    const value = valueInput.value.trim();
+                    
+                    if (!name) {
+                        this.showError('Variable name cannot be empty');
+                        return;
+                    }
+                    
+                    // Check for spaces in variable name
+                    if (name.includes(' ')) {
+                        this.showError('Variable name cannot contain spaces');
+                        return;
+                    }
+                    
+                    this.createVariable(name, value);
+                }
+            };
+        }
+        
+        if (cancelBtn) {
+            cancelBtn.onclick = () => {
+                this.closeModal('addVariableModal');
+                
+                if (addForm) {
+                    addForm.reset();
+                }
+            };
+        }
+        
+        // Set up modal close button
+        const closeBtn = document.querySelector('#addVariableModal .modal-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                this.closeModal('addVariableModal');
+            });
+        }
+    }
+    
+    /**
+     * Initialize edit modal event listeners
+     */
+    initEditModalListeners() {
+        const submitBtn = document.getElementById('submitEditVariable');
+        const cancelBtn = document.getElementById('cancelEditVariable');
+        
+        if (submitBtn) {
+            submitBtn.onclick = () => {
+                this.handleEditVariableSubmit();
+            };
+        }
+        
+        if (cancelBtn) {
+            cancelBtn.onclick = () => {
+                this.closeModal('editVariableModal');
+            };
+        }
     }
     
     /**
@@ -396,25 +643,151 @@ class VariableManager {
      * @param {string} value - New variable value
      */
     editVariable(oldName, newName, value) {
-        fetch('/api/variables/update', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ oldName, newName, value })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
+        console.log(`Client-side update of variable: ${oldName} -> ${newName}`);
+        
+        try {
+            // Find the existing variable in the DOM - try various selectors to handle both default and custom variables
+            let variableElement = null;
+            let variableContainer = null;
+            
+            // First try by data-variable-name
+            variableElement = document.querySelector(`.variable-input input[data-variable-name="${oldName}"]`);
+            
+            // If not found, try by input ID
+            if (!variableElement) {
+                variableElement = document.querySelector(`#var_${oldName}`);
+            }
+            
+            // If still not found, try by input name
+            if (!variableElement) {
+                variableElement = document.querySelector(`input[name="var_${oldName}"]`);
+            }
+            
+            // Try lowercased version for default variables
+            if (!variableElement) {
+                variableElement = document.querySelector(`.variable-input input[data-variable-name="${oldName.toLowerCase()}"]`);
+            }
+            
+            // Last resort: try to find by label text
+            if (!variableElement) {
+                const labels = document.querySelectorAll('.variable-input label');
+                for (const label of labels) {
+                    if (label.textContent.replace(':', '').trim() === oldName) {
+                        variableContainer = label.closest('.variable-input');
+                        if (variableContainer) {
+                            variableElement = variableContainer.querySelector('input');
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // If we found the element but not the container, get the container
+            if (variableElement && !variableContainer) {
+                variableContainer = variableElement.closest('.variable-input');
+            }
+            
+            // Log what we found for debugging
+            console.log('Variable element found:', variableElement);
+            console.log('Variable container found:', variableContainer);
+            
+            if (variableElement && variableContainer) {
+                const label = variableContainer.querySelector('label');
+                
+                // Update the label if name changed
+                if (oldName !== newName && label) {
+                    // Update the display label (capitalized for consistency)
+                    const displayName = newName.charAt(0).toUpperCase() + newName.slice(1);
+                    label.textContent = `${displayName}:`;
+                }
+                
+                // Update the input field
+                variableElement.value = value;
+                variableElement.dataset.variableName = newName;
+                variableElement.id = `var_${newName}`;
+                variableElement.name = `var_${newName}`;
+                variableElement.placeholder = `$${newName}`;
+                
+                // Update our internal variables collection
+                if (this.variables[oldName]) {
+                    // If name changed, remove old entry and create new one
+                    if (oldName !== newName) {
+                        delete this.variables[oldName];
+                    }
+                    
+                    // Add/update entry with new name
+                    this.variables[newName] = {
+                        value: value,
+                        element: variableElement
+                    };
+                }
+                
+                // Close the modal
                 this.closeModal('editVariableModal');
                 
-                // Refresh variable list
-                this.refreshVariableList();
+                console.log(`Successfully updated variable ${oldName} -> ${newName} (client-side only)`);
+                
+                // Dispatch event for other components that might be listening
+                document.dispatchEvent(new CustomEvent('variablesUpdated', {
+                    detail: { 
+                        oldName, 
+                        newName, 
+                        value,
+                        variables: this.variables
+                    }
+                }));
             } else {
-                this.showError(data.error || 'Failed to update variable');
+                // Before giving up, let's log the DOM structure for debugging
+                console.log('Variable inputs in DOM:', document.querySelectorAll('.variable-input'));
+                console.log('All inputs:', document.querySelectorAll('input'));
+                
+                // For default variables, try a more radical approach - find anything that looks close
+                const allInputs = document.querySelectorAll('input');
+                for (const input of allInputs) {
+                    const inputId = input.id || '';
+                    const inputName = input.name || '';
+                    const inputPlaceholder = input.placeholder || '';
+                    
+                    if (inputId.includes(oldName) || 
+                        inputName.includes(oldName) || 
+                        inputPlaceholder.includes(oldName) ||
+                        input.value === value) {
+                        
+                        console.log('Found a potential match by partial matching:', input);
+                        
+                        // Update this input
+                        input.value = value;
+                        
+                        if (oldName !== newName) {
+                            // Try to update its attributes
+                            if (inputId) input.id = inputId.replace(oldName, newName);
+                            if (inputName) input.name = inputName.replace(oldName, newName);
+                            if (inputPlaceholder) input.placeholder = inputPlaceholder.replace(oldName, newName);
+                            
+                            // Try to update any associated label
+                            const container = input.closest('.variable-input');
+                            if (container) {
+                                const label = container.querySelector('label');
+                                if (label) {
+                                    const displayName = newName.charAt(0).toUpperCase() + newName.slice(1);
+                                    label.textContent = `${displayName}:`;
+                                }
+                            }
+                        }
+                        
+                        // Close modal and exit
+                        this.closeModal('editVariableModal');
+                        console.log(`Updated variable by partial matching: ${oldName} -> ${newName}`);
+                        return;
+                    }
+                }
+                
+                this.showError(`Could not find variable "${oldName}" in the DOM`);
             }
-        })
-        .catch(error => {
+        } catch (error) {
+            console.error('Error in client-side variable update:', error);
             this.showError('Error updating variable: ' + error.message);
-        });
+        }
     }
     
     /**
@@ -422,39 +795,71 @@ class VariableManager {
      * @param {string} name - Variable name to delete
      */
     deleteVariable(name) {
-        if (!confirm(`Are you sure you want to delete variable "${name}"?`)) {
+        // Check if this is a default variable (which shouldn't be deleted)
+        if (this.isDefaultVariable(name)) {
+            console.log(`Attempted to delete default variable: ${name}`);
+            this.showError(`Cannot delete system variable "${name}"`);
             return;
         }
         
-        fetch('/api/variables/delete', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Refresh variable list
-                this.refreshVariableList();
+        // Client-side implementation - just remove the variable from the DOM
+        console.log(`Client-side deletion of variable: ${name}`);
+        
+        try {
+            // Find and remove the variable from the DOM
+            const variableElement = document.querySelector(`.variable-input input[data-variable-name="${name}"]`);
+            if (variableElement && variableElement.closest('.variable-input')) {
+                variableElement.closest('.variable-input').remove();
+                
+                // Remove from our internal variables list
+                if (this.variables[name]) {
+                    delete this.variables[name];
+                }
+                
+                // Close the modal if it's open
+                this.closeModal('editVariableModal');
+                
+                console.log(`Successfully deleted variable ${name} (client-side only)`);
             } else {
-                this.showError(data.error || 'Failed to delete variable');
+                this.showError(`Could not find variable "${name}" in the DOM`);
             }
-        })
-        .catch(error => {
+        } catch (error) {
+            console.error('Error in client-side variable deletion:', error);
             this.showError('Error deleting variable: ' + error.message);
-        });
+        }
     }
     
     /**
      * Refresh the variable list from the server
      */
     refreshVariableList() {
-        fetch('/api/variables/list')
-        .then(response => response.json())
+        // Using direct endpoint to bypass routing issues
+        const apiUrl = `${this.apiBaseUrl}api/variables/list-direct`.replace(/([^:]\/)\/+/g, '$1');
+        console.log('Refreshing variables with URL:', apiUrl);
+        
+        fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success && data.html) {
-                if (this.variableListElement) {
-                    this.variableListElement.innerHTML = data.html;
+                // Append to the variable-inputs container
+                if (this.variableInputsContainer) {
+                    // First, remove existing custom variables
+                    const existingCustomVars = this.variableInputsContainer.querySelectorAll('.variable-input.custom-variable');
+                    existingCustomVars.forEach(item => item.remove());
+                    
+                    // Add the new HTML to the grid container
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = data.html;
+                    
+                    // Append each custom variable to the container
+                    while (tempDiv.firstChild) {
+                        this.variableInputsContainer.appendChild(tempDiv.firstChild);
+                    }
                     
                     // Re-load variables from DOM
                     this.loadVariables();
@@ -512,6 +917,176 @@ class VariableManager {
             map[name] = obj.value;
         }
         return map;
+    }
+    
+    /**
+     * Setup the hold-to-delete functionality for the delete variable button
+     * @param {HTMLElement} deleteBtn - The delete button element
+     * @param {string} variableName - The name of the variable to delete
+     */
+    setupHoldToDeleteButton(deleteBtn, variableName) {
+        const HOLD_TIME = 3000; // 3 seconds in milliseconds
+        
+        if (!deleteBtn) return;
+        
+        const progressBar = deleteBtn.querySelector('.delete-progress');
+        const countdownEl = deleteBtn.querySelector('.delete-countdown');
+        
+        // Clear any existing event listeners
+        deleteBtn.replaceWith(deleteBtn.cloneNode(true));
+        const newDeleteBtn = document.getElementById('deleteVariableBtn');
+        
+        if (!newDeleteBtn || !progressBar || !countdownEl) return;
+        
+        let holdStartTime = 0;
+        let holdTimer = null;
+        let animationFrameId = null;
+        
+        // Handle mouse down - start hold timer
+        newDeleteBtn.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            
+            // Prevent accidental double-clicks
+            if (holdTimer !== null) return;
+            
+            holdStartTime = Date.now();
+            newDeleteBtn.classList.add('delete-active');
+            
+            // Start the progress animation
+            this.updateDeleteProgress(progressBar, countdownEl, 0, HOLD_TIME);
+            
+            // Update the progress continuously
+            const updateProgress = () => {
+                const elapsed = Date.now() - holdStartTime;
+                const percentage = Math.min(100, (elapsed / HOLD_TIME) * 100);
+                
+                this.updateDeleteProgress(progressBar, countdownEl, percentage, HOLD_TIME);
+                
+                if (percentage < 100) {
+                    animationFrameId = requestAnimationFrame(updateProgress);
+                }
+            };
+            
+            animationFrameId = requestAnimationFrame(updateProgress);
+            
+            // Set timeout for the delete action
+            holdTimer = setTimeout(() => {
+                console.log('Delete variable button held for required time');
+                this.deleteVariable(variableName);
+                this.closeModal('editVariableModal');
+                this.resetDeleteButton(newDeleteBtn, progressBar, countdownEl);
+            }, HOLD_TIME);
+        });
+        
+        // Handle mouse up - cancel if released too early
+        const cancelDelete = () => {
+            if (holdTimer !== null) {
+                clearTimeout(holdTimer);
+                holdTimer = null;
+                
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
+                
+                this.resetDeleteButton(newDeleteBtn, progressBar, countdownEl);
+            }
+        };
+        
+        newDeleteBtn.addEventListener('mouseup', cancelDelete);
+        newDeleteBtn.addEventListener('mouseleave', cancelDelete);
+        
+        // Touch events for mobile support
+        newDeleteBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            
+            // Prevent accidental double-touches
+            if (holdTimer !== null) return;
+            
+            holdStartTime = Date.now();
+            newDeleteBtn.classList.add('delete-active');
+            
+            // Update the progress continuously
+            const updateProgress = () => {
+                const elapsed = Date.now() - holdStartTime;
+                const percentage = Math.min(100, (elapsed / HOLD_TIME) * 100);
+                
+                this.updateDeleteProgress(progressBar, countdownEl, percentage, HOLD_TIME);
+                
+                if (percentage < 100) {
+                    animationFrameId = requestAnimationFrame(updateProgress);
+                }
+            };
+            
+            animationFrameId = requestAnimationFrame(updateProgress);
+            
+            // Set timeout for the delete action
+            holdTimer = setTimeout(() => {
+                console.log('Delete variable button held for required time');
+                this.deleteVariable(variableName);
+                this.closeModal('editVariableModal');
+                this.resetDeleteButton(newDeleteBtn, progressBar, countdownEl);
+            }, HOLD_TIME);
+        });
+        
+        newDeleteBtn.addEventListener('touchend', cancelDelete);
+        newDeleteBtn.addEventListener('touchcancel', cancelDelete);
+    }
+    
+    /**
+     * Update the delete button progress and countdown
+     * @param {HTMLElement} progressBar - Progress bar element
+     * @param {HTMLElement} countdownEl - Countdown text element
+     * @param {number} percentage - Current percentage (0-100)
+     * @param {number} totalTime - Total hold time in ms
+     */
+    updateDeleteProgress(progressBar, countdownEl, percentage, totalTime) {
+        if (!progressBar || !countdownEl) return;
+        
+        // Update progress bar width
+        progressBar.style.width = `${percentage}%`;
+        
+        // Update countdown text
+        const remaining = Math.ceil((totalTime - (percentage * totalTime / 100)) / 1000);
+        countdownEl.textContent = remaining <= 0 ? 'Deleting...' : `Hold ${remaining}s to delete...`;
+    }
+    
+    /**
+     * Reset the delete button state
+     * @param {HTMLElement} button - Delete button element
+     * @param {HTMLElement} progressBar - Progress bar element
+     * @param {HTMLElement} countdownEl - Countdown text element
+     */
+    resetDeleteButton(button, progressBar, countdownEl) {
+        if (button) button.classList.remove('delete-active');
+        if (progressBar) progressBar.style.width = '0%';
+        if (countdownEl) countdownEl.textContent = 'Hold to delete...';
+    }
+    
+    /**
+     * Setup variable search functionality
+     */
+    setupVariableSearch() {
+        const searchInput = document.getElementById('variableSearch');
+        
+        if (!searchInput) return;
+        
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            const variables = document.querySelectorAll('.variable-input');
+            
+            variables.forEach(variable => {
+                const label = variable.querySelector('label');
+                const input = variable.querySelector('input');
+                const labelText = label ? label.textContent.toLowerCase() : '';
+                const inputValue = input ? input.value.toLowerCase() : '';
+                
+                const isMatch = labelText.includes(searchTerm) || 
+                                inputValue.includes(searchTerm);
+                
+                variable.style.display = isMatch ? 'flex' : 'none';
+            });
+        });
     }
 }
 

@@ -59,6 +59,36 @@ from routes.variable_routes import variable_routes
 app.register_blueprint(playbook_routes)
 app.register_blueprint(variable_routes)
 
+# Diagnostic endpoint for testing API routes
+@app.route('/api/test', methods=['GET'])
+def api_test():
+    """Simple test endpoint to verify API routing."""
+    return jsonify({
+        'success': True,
+        'message': 'API routes are working',
+        'blueprints': [
+            {'name': 'playbook_routes', 'url_prefix': getattr(playbook_routes, 'url_prefix', None)},
+            {'name': 'variable_routes', 'url_prefix': getattr(variable_routes, 'url_prefix', None)}
+        ],
+        'variable_routes': [str(rule) for rule in app.url_map.iter_rules() 
+                            if 'variable' in str(rule)]
+    })
+
+# Direct variable API routes for emergency bypass
+@app.route('/api/variables/delete-direct', methods=['POST'])
+def direct_delete_variable():
+    """Emergency direct variable deletion endpoint that bypasses the blueprint system."""
+    from routes.variable_routes import delete_variable as blueprint_delete_variable
+    logger.info(f"Direct variable delete endpoint called")
+    return blueprint_delete_variable()
+
+@app.route('/api/variables/list-direct', methods=['GET'])
+def direct_list_variables():
+    """Emergency direct variable listing endpoint that bypasses the blueprint system."""
+    from routes.variable_routes import list_variables as blueprint_list_variables
+    logger.info(f"Direct variable list endpoint called")
+    return blueprint_list_variables()
+
 # Store information about running terminals
 terminals = {}
 process_lock = threading.Lock()

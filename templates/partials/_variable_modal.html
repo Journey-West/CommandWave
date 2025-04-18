@@ -2,7 +2,7 @@
 <div id="addVariableModal" class="modal-container">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>Add Variable</h3>
+            <h3>Add New Variable</h3>
             <span class="modal-close">&times;</span>
         </div>
         <div class="modal-body">
@@ -10,7 +10,12 @@
                 <div class="form-group">
                     <label for="newVariableName">Variable Name:</label>
                     <input type="text" id="newVariableName" name="newVariableName" placeholder="e.g. TargetHost" required>
-                    <small class="form-hint">Variable name <b>without $</b> (letters, numbers, underscores)</small>
+                    <small class="form-hint">Variable name <b>without $</b> (letters, numbers, underscores, no spaces allowed)</small>
+                </div>
+                <div class="form-group">
+                    <label for="newVariableReference">Variable Reference:</label>
+                    <input type="text" id="newVariableReference" name="newVariableReference" placeholder="$TargetHost" readonly>
+                    <small class="form-hint">Reference to use in commands (automatically generated, no spaces allowed)</small>
                 </div>
                 <div class="form-group">
                     <label for="newVariableValue">Value:</label>
@@ -38,7 +43,12 @@
                 <div class="form-group">
                     <label for="editVariableName">Variable Name:</label>
                     <input type="text" id="editVariableName" name="editVariableName" placeholder="e.g. TargetHost" required>
-                    <small class="form-hint">Variable name <b>without $</b> (letters, numbers, underscores)</small>
+                    <small class="form-hint">Variable name <b>without $</b> (no spaces allowed)</small>
+                </div>
+                <div class="form-group">
+                    <label for="editVariableReference">Variable Reference:</label>
+                    <input type="text" id="editVariableReference" name="editVariableReference" placeholder="$TargetHost">
+                    <small class="form-hint">Reference to use in commands (no spaces allowed)</small>
                 </div>
                 <div class="form-group">
                     <label for="editVariableValue">Value:</label>
@@ -47,6 +57,12 @@
             </form>
         </div>
         <div class="modal-footer">
+            <button class="modal-btn delete" id="deleteVariableBtn" type="button">
+                <span class="button-text">Delete Variable</span>
+                <div class="delete-progress"></div>
+                <div class="delete-countdown">Hold to delete...</div>
+            </button>
+            <div class="spacer"></div>
             <button class="modal-btn" id="cancelEditVariable" type="button">Cancel</button>
             <button class="modal-btn confirm" id="submitEditVariable" type="button">Update Variable</button>
         </div>

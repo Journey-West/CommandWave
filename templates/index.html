@@ -303,9 +303,7 @@
                             <label for="controlSocket">Control Socket:</label>
                             <input type="text" id="controlSocket" name="controlSocket" placeholder="$ControlSocket">
                         </div>
-                    </div>
-                    <div id="variableList">
-                        <!-- The variable list will be injected here by JS -->
+                        <!-- Custom variables will be inserted here by JavaScript -->
                     </div>
                     <div class="variable-controls">
                         <label for="addVariableInput" class="add-variable-btn">+ Add Variable</label>
@@ -600,6 +598,9 @@ echo 'Hello, World!'
     <div id="notificationContainer" class="notification-container">
         <!-- Notification toasts will be dynamically added here -->
     </div>
+
+    <!-- Add a hidden API base URL element that JavaScript can reference -->
+    <div id="api-base-url" data-url="{{ request.url_root }}" style="display: none;"></div>
 
     <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.2/marked.min.js"></script>

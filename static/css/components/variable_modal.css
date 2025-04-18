@@ -106,6 +106,12 @@
   border-top: 1px solid #ffe60033;
   gap: 0.7rem;
 }
+
+/* Add spacer to push buttons to opposite sides */
+#editVariableModal .modal-footer .spacer {
+  flex-grow: 1;
+}
+
 #addVariableModal .modal-btn,
 #editVariableModal .modal-btn {
   background: #18181f;
@@ -118,12 +124,27 @@
   cursor: pointer;
   transition: background 0.2s, color 0.2s, border 0.2s;
 }
+
 #addVariableModal .modal-btn.confirm,
 #editVariableModal .modal-btn.confirm {
   background: #ffe600;
   color: #18181f;
   font-weight: 700;
 }
+
+/* Style for delete button */
+#editVariableModal .modal-btn.delete {
+  background: rgba(180, 30, 30, 0.2);
+  border: 1.5px solid #ff4545;
+  color: #ff4545;
+}
+
+#editVariableModal .modal-btn.delete:hover {
+  background: rgba(180, 30, 30, 0.4);
+  color: #fff;
+  box-shadow: 0 0 8px rgba(255, 69, 69, 0.5);
+}
+
 #addVariableModal .modal-btn:hover,
 #editVariableModal .modal-btn:hover {
   background: #ffe600;

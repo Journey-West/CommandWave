@@ -889,9 +889,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Create new variable input
+        // Create new variable input with same structure as default variables
         const varInput = document.createElement('div');
-        varInput.className = 'variable-input custom-variable';
+        varInput.className = 'variable-input';
         varInput.id = `var-${varKey}`;
         
         varInput.innerHTML = `
