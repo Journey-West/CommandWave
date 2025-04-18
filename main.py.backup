@@ -307,6 +307,9 @@ app.register_blueprint(sync_routes)
 socketio = init_socketio(app)
 init_socketio_events(socketio)
 
+# Make terminal management functions available to Flask app
+app.start_ttyd_process = start_ttyd_process
+app.kill_terminal = kill_terminal
 
 # Basic routes
 @app.route('/')
@@ -959,10 +962,6 @@ def list_all_variables():
     except Exception as e:
         logger.error(f"Error listing variables: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
-
-# Make terminal management functions available to Flask app
-app.start_ttyd_process = start_ttyd_process
-app.kill_terminal = kill_terminal
 
 # Main entry point
 if __name__ == '__main__':

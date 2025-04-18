@@ -12,6 +12,9 @@ export default class SettingsManager {
             theme: document.getElementById('themeMenuItem'),
             about: document.getElementById('aboutMenuItem')
         };
+        
+        // Initialize settings storage
+        this.settings = this.loadSettings();
     }
     
     /**
@@ -26,6 +29,61 @@ export default class SettingsManager {
         } catch (error) {
             console.error('Error initializing settings manager:', error);
         }
+    }
+    
+    /**
+     * Load settings from localStorage
+     * @returns {Object} Settings object
+     */
+    loadSettings() {
+        try {
+            const savedSettings = localStorage.getItem('commandwave_settings');
+            return savedSettings ? JSON.parse(savedSettings) : {
+                // Default settings
+                theme: 'dark',
+                username: 'User_' + Math.floor(Math.random() * 1000),
+                notifications: true,
+                autoSave: true
+            };
+        } catch (error) {
+            console.error('Error loading settings:', error);
+            return {
+                theme: 'dark',
+                username: 'User',
+                notifications: true,
+                autoSave: true
+            };
+        }
+    }
+    
+    /**
+     * Save settings to localStorage
+     */
+    saveSettings() {
+        try {
+            localStorage.setItem('commandwave_settings', JSON.stringify(this.settings));
+        } catch (error) {
+            console.error('Error saving settings:', error);
+        }
+    }
+    
+    /**
+     * Get a setting value
+     * @param {string} key - Setting key
+     * @returns {any} Setting value, or null if not found
+     */
+    getSetting(key) {
+        return this.settings[key] !== undefined ? this.settings[key] : null;
+    }
+    
+    /**
+     * Set a setting value
+     * @param {string} key - Setting key
+     * @param {any} value - Setting value
+     */
+    setSetting(key, value) {
+        this.settings[key] = value;
+        this.saveSettings();
     }
     
     /**

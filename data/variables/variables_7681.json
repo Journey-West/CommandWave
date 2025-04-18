@@ -2,7 +2,7 @@
   "TargetIP": {
     "display_name": "TargetIP",
     "reference": "TargetIP",
-    "value": "asda"
+    "value": "1.1.1.1"
   },
   "Port": {
     "display_name": "Port",

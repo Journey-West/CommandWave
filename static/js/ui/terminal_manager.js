@@ -535,27 +535,36 @@ export default class TerminalManager {
      * @param {string} name - The name for the new terminal
      */
     async createNewTerminal(name = 'Terminal') {
-        // Show loading indicator
-        this.showTerminalLoading(true);
-        
         try {
-            // Request new terminal from server using the API module
-            const newTerminal = await terminalAPI.createTerminal(name);
+            this.showTerminalLoading(true);
             
-            // Add the new terminal to the UI without page reload
-            this.addTerminalToUI(newTerminal.port, newTerminal.name);
+            // Call the API to create a new terminal
+            const response = await terminalAPI.createTerminal(name);
             
-            // Update active ports list
-            this.activePorts.push(newTerminal.port.toString());
-            
-            // Switch to the new terminal
-            this.switchTerminal(newTerminal.port.toString());
-            
-            // Hide loading indicator
-            this.showTerminalLoading(false);
+            if (response.success) {
+                const { port } = response;
+                // Add the terminal to the UI
+                this.addTerminalToUI(port, name);
+                this.activePorts.push(port);
+                this.switchTerminal(port);
+                
+                // Save terminal names
+                this.saveTerminalNames();
+                
+                // Notify other clients about the new terminal via SyncManager
+                if (window.CommandWave && window.CommandWave.syncManager) {
+                    window.CommandWave.syncManager.syncTerminalCreated(port, name);
+                }
+                
+                return port;
+            } else {
+                throw new Error(response.error || 'Failed to create terminal');
+            }
         } catch (error) {
+            console.error('Error creating new terminal:', error);
+            this.showError(`Failed to create terminal: ${error.message}`);
+        } finally {
             this.showTerminalLoading(false);
-            this.showError('Error creating terminal: ' + error.message);
         }
     }
     
@@ -803,6 +812,11 @@ export default class TerminalManager {
             // Update local storage
             this.saveTerminalNames();
             
+            // Notify other clients about the terminal closure via SyncManager
+            if (window.CommandWave && window.CommandWave.syncManager) {
+                window.CommandWave.syncManager.syncTerminalClosed(port);
+            }
+            
             console.log(`Terminal ${port} deleted successfully`);
         } catch (error) {
             console.error('Error deleting terminal:', error);
@@ -845,7 +859,7 @@ export default class TerminalManager {
                 // Store the name in a data attribute for persistence
                 tab.setAttribute('data-name', newName);
                 
-                // Optionally, store tab names in localStorage for persistence across page reloads
+                // Save to localStorage
                 this.saveTerminalNames();
             } else {
                 console.error(`Terminal tab with port ${port} not found`);
@@ -857,6 +871,12 @@ export default class TerminalManager {
             if (!serverRenameResult) {
                 console.log(`Terminal server rename failed or not implemented - continuing with UI rename`);
             }
+
+            // Notify other clients about the renamed terminal via SyncManager
+            if (window.CommandWave && window.CommandWave.syncManager) {
+                window.CommandWave.syncManager.syncTerminalRenamed(port, newName);
+            }
+            
         } catch (error) {
             console.error('Error renaming terminal:', error);
             this.showError(`Failed to rename terminal: ${error.message}`);

@@ -19,6 +19,9 @@ import SearchManager from './ui/search_manager.js';
 import PlaybookManager from './ui/playbook_manager.js';
 import NotificationManager from './ui/notification_manager.js';
 import { renderMarkdown } from './utils/markdown.js';
+import WebSocketHandler from './sync/websocket_handler.js';
+import SyncManager from './sync/sync_manager.js';
+import PresenceManager from './ui/presence_manager.js';
 import './ui/settings_modal.js';
 
 // Initialize when DOM is ready
@@ -52,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const variablesPanel = new VariablesPanel();
         const searchManager = new SearchManager();
         const playbookManager = new PlaybookManager();
+        const presenceManager = new PresenceManager();
         
         // Make modules available globally for debugging
         window.CommandWave = {
@@ -63,11 +67,14 @@ document.addEventListener('DOMContentLoaded', () => {
             themeManager,
             api: API,
             errorHandler: ErrorHandler,
-            version: '0.2.0', // Modular architecture version
+            version: '0.2.1', // Updated version with real-time sync
             searchManager,
             variablesPanel,
             playbookManager,
-            notificationManager: NotificationManager
+            notificationManager: NotificationManager,
+            webSocketHandler: WebSocketHandler,
+            syncManager: SyncManager,
+            presenceManager
         };
         
         // Initialize modules
@@ -77,9 +84,30 @@ document.addEventListener('DOMContentLoaded', () => {
         settingsManager.init();
         notesManager.init();
         variablesPanel.init();
+        presenceManager.init();
         // searchManager does not have an init method, it self-initializes in the constructor
         // playbookManager initialized in its constructor
         // notificationManager is a singleton that doesn't need initialization
+        
+        // Initialize Sync Manager with references to other modules
+        SyncManager.init({
+            terminalManager,
+            variableManager,
+            playbookManager,
+            notesManager,
+            presenceManager
+        });
+        
+        // Start WebSocket connection for real-time synchronization
+        // Get username from settings or use a default
+        try {
+            // Make sure we use a default value if getSetting returns null
+            const username = settingsManager.getSetting('username') || 'User_' + Math.floor(Math.random() * 1000); 
+            SyncManager.connect(username);
+        } catch (error) {
+            console.warn('Failed to establish WebSocket connection:', error.message);
+            // We'll continue without real-time features
+        }
         
         // Register additional modal events after making the components globally available
         // This ensures proper event handling between components

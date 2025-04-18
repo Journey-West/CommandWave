@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components/markdown.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components/playbook_scroll_fix.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components/notifications.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/presence.css') }}">
     
     <!-- Code blocks styling with copy and execute buttons -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components/code-blocks.css') }}">
@@ -261,6 +262,18 @@
         <div class="header-controls">
             <button class="header-notes-btn" id="globalNotesBtn">Global Notes</button>
             <button class="header-notes-btn" id="tabNotesBtn">Tab Notes</button>
+            <!-- Presence Indicator - Added for real-time collaboration -->
+            <div class="presence-indicator">
+                <button class="presence-btn" title="Connected Users">
+                    <i class="fas fa-users"></i> <span class="presence-count">0</span>
+                </button>
+                <div class="presence-dropdown">
+                    <div class="presence-header">Connected Users</div>
+                    <div class="presence-list">
+                        <div class="presence-empty">No users connected</div>
+                    </div>
+                </div>
+            </div>
             <button class="settings-btn" id="settingsBtn" title="Settings">
                 <i class="fas fa-cog"></i> Settings
             </button>
@@ -599,6 +612,7 @@ echo 'Hello, World!'
     
     <!-- CDN Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@12.2.0/dist/markdown-it.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.2/dist/socket.io.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/prism.min.js"></script>
     <!-- Prism language components for common languages -->
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/components/prism-bash.min.js"></script>
@@ -621,5 +635,6 @@ echo 'Hello, World!'
 
     <!-- Add a hidden API base URL element that JavaScript can reference -->
     <div id="api-base-url" data-url="{{ request.url_root }}" style="display: none;"></div>
+    <div id="notificationContainer" class="notification-container"></div>
 </body>
 </html>

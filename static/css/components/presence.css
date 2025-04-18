@@ -1,0 +1,194 @@
+/**
+ * presence.css
+ * Styles for presence awareness UI components
+ */
+
+/* Presence indicator in header */
+.presence-indicator {
+    position: relative;
+    margin-right: 15px;
+}
+
+.presence-btn {
+    background: rgba(30, 30, 50, 0.5);
+    border: 1px solid rgba(96, 239, 255, 0.5);
+    color: #60efff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.presence-btn:hover {
+    background: rgba(40, 40, 70, 0.7);
+    border-color: #60efff;
+    box-shadow: 0 0 8px rgba(96, 239, 255, 0.5);
+}
+
+.presence-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(96, 239, 255, 0.2);
+    color: #60efff;
+    border-radius: 10px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Presence dropdown */
+.presence-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 280px;
+    background: rgba(10, 10, 25, 0.95);
+    border: 1px solid rgba(96, 239, 255, 0.5);
+    border-radius: 4px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: none;
+    overflow: hidden;
+    margin-top: 5px;
+}
+
+.presence-indicator.active .presence-dropdown {
+    display: block;
+    animation: fadeIn 0.2s ease;
+}
+
+.presence-header {
+    padding: 10px 15px;
+    background: rgba(30, 30, 60, 0.8);
+    color: #60efff;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(96, 239, 255, 0.3);
+}
+
+.presence-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.presence-item {
+    padding: 8px 15px;
+    border-bottom: 1px solid rgba(96, 239, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.presence-item:last-child {
+    border-bottom: none;
+}
+
+.presence-item.current-user {
+    background: rgba(96, 239, 255, 0.05);
+}
+
+.presence-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.presence-status {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #0fff50;
+    box-shadow: 0 0 5px #0fff50;
+}
+
+.presence-name {
+    color: #e0e0fc;
+    font-weight: bold;
+}
+
+.presence-location {
+    font-size: 12px;
+    color: #9e9ecd;
+    margin-left: 16px;
+}
+
+.presence-terminal {
+    font-style: italic;
+}
+
+.presence-empty {
+    padding: 15px;
+    text-align: center;
+    color: #9e9ecd;
+    font-style: italic;
+}
+
+/* Tab presence badge */
+.tab-presence-badge {
+    position: absolute;
+    top: -5px;
+    right: 20px;
+    background: rgba(96, 239, 255, 0.8);
+    color: #080817;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    box-shadow: 0 0 5px rgba(96, 239, 255, 0.5);
+}
+
+/* Resource editing lock indicators */
+.resource-lock-indicator {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: rgba(255, 90, 90, 0.15);
+    color: #ff5a8c;
+    padding: 5px 10px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border-radius: 0 0 0 5px;
+    z-index: 10;
+}
+
+.resource-locked textarea,
+.resource-locked input {
+    border-color: rgba(255, 90, 90, 0.5) !important;
+    box-shadow: 0 0 5px rgba(255, 90, 90, 0.3) !important;
+}
+
+.resource-locked .edit-btn.disabled,
+.resource-locked .save-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Visual notification for updated content */
+.content-updated {
+    animation: highlightUpdate 1.5s ease;
+}
+
+@keyframes highlightUpdate {
+    0% { background-color: rgba(15, 255, 80, 0); }
+    30% { background-color: rgba(15, 255, 80, 0.15); }
+    100% { background-color: rgba(15, 255, 80, 0); }
+}
