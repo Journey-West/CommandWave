@@ -38,6 +38,22 @@
     min-height: 44px;
 }
 
+/* Add a more prominent separator between tabs and terminal content */
+.terminal-tabs::after {
+    content: '';
+    position: absolute;
+    bottom: -1.5px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        rgba(96,239,255,0.7) 0%, 
+        rgba(15,255,80,0.3) 50%, 
+        rgba(11,11,23,0.5) 100%);
+    box-shadow: 0 0 8px rgba(96,239,255,0.5), 0 0 3px rgba(15,255,80,0.3);
+    z-index: 2;
+}
+
 .terminal-title {
     font-family: 'Orbitron', sans-serif;
     color: var(--neon-green);
