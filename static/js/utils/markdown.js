@@ -119,35 +119,76 @@ export function renderMarkdownWithVars(markdown, variables) {
    * @returns {string} Code with variables substituted
    */
   function substituteVars(code, variables) {
-    console.log('Substituting variables in code block:', code.substring(0, 50) + (code.length > 50 ? '...' : ''));
+    console.log('Substituting variables in code block:', code);
     console.log('Available variables:', Object.keys(variables));
     
+    // Keep track of substitutions for later highlighting
+    const substitutions = [];
+    
     // ${Var} syntax
-    code = code.replace(/\$\{([A-Za-z_][A-Za-z0-9_]*)\}/g, (m, varName) => {
-      const hasVar = variables[varName] !== undefined && variables[varName] !== "";
-      if (hasVar) {
-        console.log(`Substituting ${varName} with "${variables[varName]}"`);
-        // Add to our substitutions list with a unique marker
-        const marker = `__VAR_SUBST_${substitutions.length}__`;
-        substitutions.push({
-          marker: marker,
-          value: variables[varName]
-        });
-        return marker;
+    code = code.replace(/\${([A-Za-z_][A-Za-z0-9_]*)}/g, (m, varName) => {
+      // Check if we have this variable
+      if (variables[varName] !== undefined) {
+        // Check if it's the new format (object with reference)
+        let value = '';
+        if (typeof variables[varName] === 'object' && variables[varName].value !== undefined) {
+          value = variables[varName].value;
+        } else {
+          // Old format or direct value
+          value = variables[varName];
+        }
+        
+        if (value !== "") {
+          console.log(`Substituting ${varName} with "${value}"`);
+          // Add to our substitutions list with a unique marker
+          const marker = `__VAR_SUBST_${substitutions.length}__`;
+          substitutions.push({
+            marker: marker,
+            value: value
+          });
+          return marker;
+        }
       }
       return m;
     });
     
     // $Var syntax (not followed by {)
     code = code.replace(/\$([A-Za-z_][A-Za-z0-9_]*)\b/g, (m, varName) => {
-      const hasVar = variables[varName] !== undefined && variables[varName] !== "";
+      // Check if we have this variable
+      let hasVar = false;
+      let value = '';
+      
+      // Try exact match first
+      if (variables[varName] !== undefined) {
+        // Check if it's the new format (object with reference)
+        if (typeof variables[varName] === 'object' && variables[varName].value !== undefined) {
+          value = variables[varName].value;
+          hasVar = value !== "";
+        } else {
+          // Old format or direct value
+          value = variables[varName];
+          hasVar = value !== undefined && value !== "";
+        }
+      } else {
+        // Try matching by reference (for variables with spaces)
+        for (const key in variables) {
+          if (typeof variables[key] === 'object' && 
+              variables[key].reference === varName &&
+              variables[key].value !== "") {
+            value = variables[key].value;
+            hasVar = true;
+            break;
+          }
+        }
+      }
+      
       if (hasVar) {
-        console.log(`Substituting ${varName} with "${variables[varName]}"`);
+        console.log(`Substituting ${varName} with "${value}"`);
         // Add to our substitutions list with a unique marker
         const marker = `__VAR_SUBST_${substitutions.length}__`;
         substitutions.push({
           marker: marker,
-          value: variables[varName]
+          value: value
         });
         return marker;
       }

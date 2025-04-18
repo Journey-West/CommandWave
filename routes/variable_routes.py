@@ -27,9 +27,18 @@ def create_variable():
         return jsonify({'success': False, 'error': 'Variable name cannot be empty'}), 400
     
     try:
-        # Store variable in memory only
-        session_variables[name] = value
-        return jsonify({'success': True, 'variable': {name: value}})
+        # Create a sanitized version of the name for the reference (no spaces)
+        reference_name = name.replace(' ', '')
+        
+        # Store both the display name and reference in memory
+        variable_data = {
+            'display_name': name,  # Original name with spaces preserved
+            'reference': reference_name,  # Name without spaces for command substitution
+            'value': value
+        }
+        
+        session_variables[name] = variable_data
+        return jsonify({'success': True, 'variable': {name: variable_data}})
     except Exception as e:
         logger.error(f"Error creating variable: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -50,7 +59,11 @@ def update_variable():
         if old_name in session_variables:
             if old_name != new_name:
                 session_variables.pop(old_name)
-            session_variables[new_name] = value
+            session_variables[new_name] = {
+                'display_name': new_name,  
+                'reference': new_name.replace(' ', ''),  
+                'value': value
+            }
             return jsonify({'success': True})
         else:
             return jsonify({'success': False, 'error': f'Variable {old_name} not found'}), 404
@@ -88,14 +101,16 @@ def list_variables():
         
         # Generate HTML for variables in the same format as default variables
         html = ""
-        for name, value in variables.items():
-            # Format name for label with proper capitalization
-            label_name = name.capitalize() if not name.isupper() else name
+        for name, variable_data in variables.items():
+            # Keep original name case exactly as entered by user
+            label_name = variable_data['display_name']
+            # Create a reference-friendly name for placeholder (no spaces)
+            reference_name = variable_data['reference']
             html += f'''
             <div class="variable-input custom-variable">
                 <label for="var_{name}">{label_name}:</label>
-                <input type="text" id="var_{name}" name="var_{name}" value="{value}" 
-                       class="custom-variable-input" data-variable-name="{name}" placeholder="${name}">
+                <input type="text" id="var_{name}" name="var_{name}" value="{variable_data['value']}" 
+                       class="custom-variable-input" data-variable-name="{name}" placeholder="${reference_name}">
             </div>
             '''
         
