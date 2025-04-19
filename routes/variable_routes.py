@@ -206,42 +206,6 @@ def list_variables_direct(tab_id):
     """Direct endpoint for listing variables for a specific tab to avoid routing issues"""
     return list_variables(tab_id)
 
-@variable_routes.route('/sync/<tab_id>', methods=['POST'])
-def sync_variables(tab_id):
-    """Sync all variables for a specific tab"""
-    logger.info(f"Sync variables endpoint called for tab {tab_id}")
-    
-    if not tab_id:
-        return jsonify({'success': False, 'error': 'Tab ID is required'}), 400
-    
-    try:
-        data = request.get_json()
-        variables_data = data.get('variables', {})
-        
-        # Get current variables for this tab
-        tab_vars = get_tab_variables(tab_id)
-        
-        # Update variables with the synced values
-        for name, value in variables_data.items():
-            if name in tab_vars:
-                # Update existing variable
-                tab_vars[name]['value'] = value
-            else:
-                # Create new variable entry
-                tab_vars[name] = {
-                    'display_name': name,
-                    'reference': name.replace(' ', ''),
-                    'value': value
-                }
-        
-        # Save to disk
-        save_tab_variables(tab_id, tab_vars)
-        
-        return jsonify({'success': True, 'variables': tab_vars})
-    except Exception as e:
-        logger.error(f"Error syncing variables for tab {tab_id}: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
 @variable_routes.route('/load/<tab_id>', methods=['GET'])
 def load_variables(tab_id):
     """Load variables for a specific tab"""

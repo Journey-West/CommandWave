@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CommandWave - Terminal Management with Playbooks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CommandWave - Cyberpunk/Neon Aesthetic CSS */
+        :root {
+            /* Cyberpunk color palette - Updated to match the application */
+            --background-dark: #0a0a1a;
+            --background-medium: #0f0f23;
+            --text-primary: #e0e0fc;
+            --text-secondary: #8a8aa5;
+            --neon-blue: #00e5ff;
+            --neon-purple: #c264fe;
+            --neon-pink: #ff5a8c;
+            --neon-yellow: #fcee09;
+            --neon-green: #0fff50;
+            --accent: #ff5a8c;
+            --border-light: rgba(0, 229, 255, 0.2);
+            --shadow-blue: 0 0 10px rgba(0, 229, 255, 0.5);
+            --shadow-pink: 0 0 10px rgba(255, 90, 140, 0.5);
+            --shadow-purple: 0 0 10px rgba(194, 100, 254, 0.5);
+            --shadow-yellow: 0 0 10px rgba(252, 238, 9, 0.5);
+            --shadow-green: 0 0 10px rgba(15, 255, 80, 0.5);
+        }
+
+        /* Light Theme Variables - Neon White (matches app) */
+        [data-theme="light"] {
+            --background-dark: #fafdff;
+            --background-medium: #eaf6ff;
+            --text-primary: #23234a;
+            --text-secondary: #3a3a6a;
+            --border-light: #b2eaff;
+            --neon-blue: #00e5ff;
+            --neon-purple: #c264fe;
+            --neon-pink: #ff5a8c;
+            --neon-yellow: #fcee09;
+            --neon-green: #0fff50;
+            --accent: #00e5ff;
+            --shadow-blue: 0 0 18px #00e5ff80;
+            --shadow-purple: 0 0 18px #c264fe60;
+            --shadow-pink: 0 0 18px #ff5a8c60;
+            --shadow-yellow: 0 0 18px #fcee0960;
+            --shadow-green: 0 0 18px #0fff5060;
+        }
+
+        [data-theme="light"] body {
+            background-color: var(--background-dark);
+            color: var(--text-primary);
+            background-image:
+                radial-gradient(circle at 10% 20%, #00e5ff22 0%, transparent 25%),
+                radial-gradient(circle at 90% 80%, #c264fe22 0%, transparent 25%),
+                radial-gradient(circle at 50% 50%, #ff5a8c22 0%, transparent 45%);
+            animation: neon-bg 18s linear infinite alternate;
+        }
+
+        [data-theme="light"] .section {
+            background: rgba(250,253,255,0.93);
+            border: 1.5px solid var(--border-light);
+            box-shadow: 0 0 24px var(--neon-blue);
+            backdrop-filter: blur(6px);
+            border-radius: 12px;
+        }
+
+        [data-theme="light"] .section-title {
+            color: var(--neon-blue);
+            text-shadow: 0 0 6px var(--neon-blue), 0 0 2px #fff;
+            border-bottom: 1.5px solid var(--border-light);
+            letter-spacing: 1.5px;
+        }
+
+        [data-theme="light"] .feature-card {
+            background: rgba(255,255,255,0.92);
+            border: 1.5px solid var(--border-light);
+            box-shadow: 0 0 18px #00e5ff30;
+            backdrop-filter: blur(3px);
+            border-radius: 10px;
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+        [data-theme="light"] .feature-card:hover {
+            box-shadow: 0 0 32px var(--neon-blue), 0 0 8px #fff;
+            transform: translateY(-5px) scale(1.03);
+        }
+        [data-theme="light"] .feature-title {
+            color: #2a2a4a;
+            text-shadow: 0 0 8px var(--neon-yellow), 0 0 2px #fff;
+        }
+        [data-theme="light"] .feature-desc {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        [data-theme="light"] .feature-icon {
+            color: var(--neon-blue);
+            text-shadow: 0 0 8px var(--neon-blue), 0 0 2px #fff;
+        }
+        [data-theme="light"] .feature-list li {
+            color: var(--text-primary);
+        }
+
+        [data-theme="light"] .header-btn {
+            background: rgba(250,253,255,0.97);
+            border: 1.5px solid var(--neon-blue);
+            color: var(--neon-blue);
+            box-shadow: 0 0 10px var(--neon-blue);
+            font-weight: 600;
+            text-shadow: 0 0 4px var(--neon-blue), 0 0 1px #fff;
+        }
+        [data-theme="light"] .header-btn.pink {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            box-shadow: 0 0 10px var(--neon-pink);
+            text-shadow: 0 0 4px var(--neon-pink), 0 0 1px #fff;
+        }
+        [data-theme="light"] .header-btn:hover {
+            background: rgba(0,229,255,0.08);
+            box-shadow: 0 0 18px var(--neon-blue), 0 0 8px #fff;
+        }
+        [data-theme="light"] .header-btn.pink:hover {
+            background: rgba(255,90,140,0.08);
+            box-shadow: 0 0 18px var(--neon-pink), 0 0 8px #fff;
+        }
+
+        [data-theme="light"] .theme-toggle {
+            background: rgba(250,253,255,0.92);
+            border: 1.5px solid var(--neon-purple);
+            color: var(--neon-purple);
+            box-shadow: 0 0 10px var(--neon-purple);
+        }
+        [data-theme="light"] .theme-toggle:hover {
+            background: rgba(194,100,254,0.09);
+            transform: translateY(-2px) scale(1.07);
+        }
+
+        [data-theme="light"] .screenshot {
+            border: 2px solid var(--neon-pink);
+            border-radius: 8px;
+            max-width: 100%;
+            height: auto;
+            margin: 2rem 0;
+            box-shadow: var(--shadow-pink);
+            transition: box-shadow 0.3s, transform 0.35s;
+            cursor: pointer;
+            z-index: 1;
+        }
+        [data-theme="light"] .screenshot:hover {
+            transform: scale(1.16) perspective(1000px) translateY(-12px) rotateX(2deg) rotateZ(-1deg);
+            box-shadow: 0 0 64px 8px var(--neon-pink), 0 0 28px 2px var(--neon-blue), 0 0 6px #fff;
+            z-index: 10;
+        }
+        [data-theme="light"] code {
+            background: #eaf6ff;
+            border: 1.5px solid var(--border-light);
+            color: #23234a;
+            font-weight: 600;
+            border-radius: 4px;
+            box-shadow: 0 0 8px var(--neon-yellow);
+        }
+
+        [data-theme="light"] .step {
+            border-left: 2.5px solid var(--neon-green);
+            background: rgba(250,253,255,0.97);
+        }
+        [data-theme="light"] .step-number {
+            color: #2a2a4a;
+            text-shadow: 0 0 8px var(--neon-green), 0 0 2px #fff;
+        }
+        [data-theme="light"] .highlight {
+            color: var(--neon-blue);
+            text-shadow: 0 0 8px var(--neon-blue), 0 0 2px #fff;
+            font-weight: 600;
+        }
+        [data-theme="light"] .usage-grid {
+            background: none;
+        }
+        [data-theme="light"] .usage-item {
+            background: rgba(255,255,255,0.93);
+            border: 1.5px solid var(--border-light);
+            border-radius: 10px;
+            box-shadow: 0 0 10px var(--neon-blue);
+            color: var(--text-primary);
+        }
+        [data-theme="light"] .usage-title {
+            color: var(--neon-pink);
+            text-shadow: 0 0 8px var(--neon-pink), 0 0 2px #fff;
+        }
+        [data-theme="light"] .usage-desc {
+            color: var(--text-secondary);
+        }
+        [data-theme="light"] .usage-desc ul li::before {
+            color: var(--neon-blue);
+        }
+        [data-theme="light"] .footer-link {
+            color: var(--neon-blue);
+            text-shadow: 0 0 6px var(--neon-blue);
+        }
+        [data-theme="light"] .social-icon {
+            color: var(--neon-purple);
+            text-shadow: 0 0 6px var(--neon-purple);
+        }
+        [data-theme="light"] footer {
+            background: rgba(234,246,255,0.97);
+            border-top: 2px solid var(--border-light);
+            box-shadow: 0 0 16px var(--neon-blue);
+            color: var(--text-secondary);
+        }
+
+        /* --- Neon White Theme Enhancements --- */
+        [data-theme="light"] .feature-card,
+        [data-theme="light"] .usage-item,
+        [data-theme="light"] .section {
+            box-shadow: 0 0 32px 4px #00e5ff44, 0 0 8px #c264fe22, 0 0 1px #fff;
+            border: 1.8px solid var(--border-light);
+            position: relative;
+        }
+        [data-theme="light"] .feature-card:hover,
+        [data-theme="light"] .usage-item:hover {
+            box-shadow: 0 0 48px 8px #00e5ff88, 0 0 18px #ff5a8c44, 0 0 2px #fff;
+            z-index: 2;
+        }
+        [data-theme="light"] .feature-title,
+        [data-theme="light"] .section-title,
+        [data-theme="light"] .usage-title {
+            text-shadow: 0 0 12px var(--neon-blue), 0 0 6px #fff, 0 0 1px #00e5ff;
+        }
+        [data-theme="light"] .feature-icon,
+        [data-theme="light"] .usage-title i {
+            text-shadow: 0 0 16px var(--neon-blue), 0 0 4px #fff;
+        }
+        [data-theme="light"] .header-btn,
+        [data-theme="light"] .footer-link {
+            transition: box-shadow 0.3s, text-shadow 0.3s, filter 0.3s;
+        }
+        [data-theme="light"] .header-btn:hover,
+        [data-theme="light"] .footer-link:hover {
+            box-shadow: 0 0 24px var(--neon-blue), 0 0 8px #fff;
+            text-shadow: 0 0 16px var(--neon-blue), 0 0 4px #fff;
+            filter: brightness(1.2);
+            animation: neon-pulse 1.5s infinite alternate;
+        }
+        [data-theme="light"] .header-btn.pink:hover {
+            box-shadow: 0 0 24px var(--neon-pink), 0 0 8px #fff;
+            text-shadow: 0 0 16px var(--neon-pink), 0 0 4px #fff;
+        }
+        @keyframes neon-pulse {
+            0% { filter: brightness(1.1); }
+            100% { filter: brightness(1.35) drop-shadow(0 0 12px var(--neon-blue)); }
+        }
+        [data-theme="light"] .step {
+            border-left: 2.5px solid var(--neon-green);
+            box-shadow: 0 0 10px 2px #0fff5040;
+            background: rgba(250,253,255,0.97);
+            margin-bottom: 1.2rem;
+        }
+        [data-theme="light"] .step-number {
+            color: #2a2a4a;
+            text-shadow: 0 0 8px var(--neon-green), 0 0 2px #fff, 0 0 4px #0fff50;
+        }
+        [data-theme="light"] .usage-item {
+            box-shadow: 0 0 18px 2px #ff5a8c44, 0 0 6px #00e5ff44;
+            border: 1.5px solid var(--border-light);
+            background: rgba(255,255,255,0.97);
+            margin-bottom: 1.2rem;
+        }
+        [data-theme="light"] .usage-title {
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink), 0 0 2px #fff;
+        }
+        [data-theme="light"] .usage-desc {
+            color: var(--text-secondary);
+        }
+        [data-theme="light"] .usage-desc ul li::before {
+            color: var(--neon-blue);
+        }
+        [data-theme="light"] .footer {
+            border-top: 2.5px solid var(--border-light);
+            box-shadow: 0 0 20px 4px #00e5ff44;
+            background: rgba(234,246,255,0.99);
+        }
+        [data-theme="light"] .social-icon {
+            color: var(--neon-purple);
+            text-shadow: 0 0 12px var(--neon-purple), 0 0 3px #fff;
+        }
+        [data-theme="light"] a {
+            transition: text-shadow 0.3s, color 0.3s;
+        }
+        [data-theme="light"] a:hover {
+            color: var(--neon-blue);
+            text-shadow: 0 0 8px var(--neon-blue), 0 0 2px #fff;
+            text-decoration: underline wavy var(--neon-blue);
+        }
+        [data-theme="light"] :focus {
+            outline: 2.5px solid var(--neon-blue);
+            box-shadow: 0 0 10px 2px var(--neon-blue);
+        }
+        [data-theme="light"] body {
+            background-color: var(--background-dark);
+            color: var(--text-primary);
+            background-image:
+                radial-gradient(circle at 10% 20%, #00e5ff22 0%, transparent 25%),
+                radial-gradient(circle at 90% 80%, #c264fe22 0%, transparent 25%),
+                radial-gradient(circle at 50% 50%, #ff5a8c22 0%, transparent 45%);
+            animation: neon-bg 18s linear infinite alternate;
+        }
+        @keyframes neon-bg {
+            0% { background-position: 0% 0%, 100% 100%, 50% 50%; }
+            100% { background-position: 100% 100%, 0% 0%, 50% 60%; }
+        }
+
+        /* Witch Hazel Theme Variables */
+        [data-theme="witchhazel"] {
+            --background-dark: #282634;
+            --background-medium: #332e41;
+            --text-primary: #f8f8f2;
+            --text-secondary: #c5b5e0;
+            --neon-blue: #81ffff;
+            --neon-purple: #b45bcf;
+            --neon-pink: #ff79c6;
+            --neon-yellow: #f4d554;
+            --neon-green: #8bff80;
+            --accent: #ff79c6;
+            --border-light: rgba(129, 255, 255, 0.2);
+            --shadow-blue: 0 0 10px rgba(129, 255, 255, 0.5);
+            --shadow-pink: 0 0 10px rgba(255, 121, 198, 0.5);
+            --shadow-purple: 0 0 10px rgba(180, 91, 207, 0.5);
+            --shadow-yellow: 0 0 10px rgba(244, 213, 84, 0.5);
+            --shadow-green: 0 0 10px rgba(139, 255, 128, 0.5);
+        }
+        
+        /* Witch Hazel Theme Overrides */
+        [data-theme="witchhazel"] body {
+            background-color: var(--background-dark);
+            color: var(--text-primary);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(180, 91, 207, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 121, 198, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 50% 50%, rgba(129, 255, 255, 0.05) 0%, transparent 40%);
+        }
+
+        [data-theme="witchhazel"] header {
+            background-color: rgba(40, 38, 52, 0.9);
+            border-bottom: 1px solid rgba(180, 91, 207, 0.2);
+        }
+
+        [data-theme="witchhazel"] .section {
+            background-color: rgba(51, 46, 65, 0.8);
+            border: 1px solid rgba(180, 91, 207, 0.2);
+        }
+
+        [data-theme="witchhazel"] .section-title {
+            color: #ff79c6;
+            text-shadow: 0 0 5px rgba(255, 121, 198, 0.5);
+        }
+
+        [data-theme="witchhazel"] .header-btn {
+            background-color: rgba(40, 38, 52, 0.8);
+            border: 1px solid #81ffff;
+            color: #81ffff;
+            box-shadow: 0 0 10px rgba(129, 255, 255, 0.3);
+        }
+
+        [data-theme="witchhazel"] .header-btn:hover {
+            background-color: rgba(129, 255, 255, 0.1);
+            box-shadow: 0 0 10px rgba(129, 255, 255, 0.5);
+        }
+
+        [data-theme="witchhazel"] .header-btn.pink {
+            border-color: #ff79c6;
+            color: #ff79c6;
+            box-shadow: 0 0 10px rgba(255, 121, 198, 0.3);
+        }
+
+        [data-theme="witchhazel"] .header-btn.pink:hover {
+            background-color: rgba(255, 121, 198, 0.1);
+            box-shadow: 0 0 10px rgba(255, 121, 198, 0.5);
+        }
+
+        [data-theme="witchhazel"] .feature-card {
+            background: rgba(51, 46, 65, 0.82);
+            border: 1.5px solid #a884ff77;
+            box-shadow: 0 0 14px 2px #a884ff33, 0 0 4px #fff1;
+            border-radius: 11px;
+            transition: box-shadow 0.25s, transform 0.25s;
+            position: relative;
+            z-index: 1;
+        }
+
+        [data-theme="witchhazel"] .feature-card:hover {
+            box-shadow: 0 0 24px 4px #a884ff66, 0 0 8px #fff2;
+            transform: scale(1.025) translateY(-2px);
+            z-index: 2;
+        }
+
+        [data-theme="witchhazel"] .feature-title {
+            color: #e9e4ff;
+            text-shadow: 0 0 6px #a884ff99, 0 0 2px #fff;
+        }
+
+        [data-theme="witchhazel"] .feature-icon {
+            color: #a884ff;
+            text-shadow: 0 0 8px #e9baff77, 0 0 2px #fff;
+        }
+
+        [data-theme="witchhazel"] .step-number {
+            color: #8bff80;
+            text-shadow: 0 0 5px rgba(139, 255, 128, 0.5);
+        }
+
+        [data-theme="witchhazel"] code {
+            background-color: #2a2440;
+            border: 1px solid rgba(180, 91, 207, 0.2);
+            color: #f8f8f2;
+        }
+
+        [data-theme="witchhazel"] .highlight {
+            color: #81ffff;
+            text-shadow: 0 0 5px rgba(129, 255, 255, 0.5);
+        }
+
+        [data-theme="witchhazel"] .usage-title {
+            color: #e9e4ff;
+            text-shadow: 0 0 6px #a884ff99, 0 0 2px #fff;
+        }
+
+        [data-theme="witchhazel"] footer {
+            background-color: rgba(40, 38, 52, 0.8);
+            border-top: 1px solid rgba(180, 91, 207, 0.2);
+        }
+
+        [data-theme="witchhazel"] .footer-link {
+            color: #81ffff;
+        }
+
+        [data-theme="witchhazel"] .social-icon {
+            color: #b45bcf;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 229, 255, 0.03) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(194, 100, 254, 0.03) 0%, transparent 20%),
+                radial-gradient(circle at 50% 50%, rgba(255, 90, 140, 0.03) 0%, transparent 40%);
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 1.5rem 0;
+            text-align: center;
+            border-bottom: 1px solid var(--border-light);
+            background-color: rgba(10, 10, 26, 0.9);
+            backdrop-filter: blur(5px);
+            position: relative;
+        }
+
+        [data-theme="light"] header {
+            background: linear-gradient(180deg, #fafdff 80%, #eaf6ff 100%);
+            border-bottom: 2.5px solid var(--border-light);
+            box-shadow: 0 2px 24px 0 #00e5ff33;
+            padding: 2.2rem 0 1.5rem 0;
+        }
+
+        .main-title {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-primary);
+            text-shadow: 0 0 10px rgba(224, 224, 252, 0.3);
+            margin-bottom: 1rem;
+        }
+
+        [data-theme="light"] .main-title {
+            color: #0a2a3a;
+            background: none;
+            text-shadow: 0 2px 12px #00e5ff, 0 0 2px #fff, 0 0 0 #000;
+        }
+
+        .wave-text {
+            background: linear-gradient(90deg, var(--neon-blue), #60efff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: var(--shadow-blue);
+        }
+
+        [data-theme="light"] .wave-text {
+            color: #00e5ff;
+            background: none;
+            text-shadow: 0 2px 18px #00e5ff, 0 0 2px #fff, 0 0 0 #000;
+            font-weight: 900;
+        }
+
+        .tagline {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        [data-theme="light"] .tagline {
+            color: #3a3a6a;
+            text-shadow: 0 0 6px #00e5ff33;
+        }
+
+        .header-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .header-btn {
+            background-color: rgba(10, 10, 26, 0.8);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-blue);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        [data-theme="light"] .header-btn {
+            background: #fafdff;
+            border: 2px solid var(--neon-blue);
+            color: var(--neon-blue);
+            box-shadow: 0 0 12px var(--neon-blue);
+            font-weight: 700;
+            text-shadow: 0 0 6px var(--neon-blue), 0 0 1px #fff;
+            margin: 0 0.5rem;
+        }
+
+        .header-btn:hover {
+            background-color: rgba(0, 229, 255, 0.1);
+            box-shadow: var(--shadow-blue);
+            transform: translateY(-2px);
+        }
+
+        .header-btn.pink {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            box-shadow: var(--shadow-pink);
+        }
+
+        .header-btn.pink:hover {
+            background-color: rgba(255, 90, 140, 0.1);
+            box-shadow: var(--shadow-pink);
+        }
+
+        [data-theme="light"] .header-btn.pink {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            box-shadow: 0 0 12px var(--neon-pink);
+            text-shadow: 0 0 8px var(--neon-pink), 0 0 1px #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background-color: rgba(15, 15, 35, 0.6);
+            padding: 2rem;
+            box-shadow: var(--shadow-blue);
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-blue);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            text-shadow: var(--shadow-blue);
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 0.5rem;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 1.5rem;
+            background-color: rgba(10, 10, 26, 0.7);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-blue);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--neon-blue);
+            text-shadow: var(--shadow-blue);
+        }
+
+        .feature-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-yellow);
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            text-shadow: var(--shadow-yellow);
+        }
+
+        .feature-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .screenshot {
+            border: 2px solid var(--neon-pink);
+            border-radius: 8px;
+            max-width: 100%;
+            height: auto;
+            margin: 2rem 0;
+            box-shadow: var(--shadow-pink);
+            transition: box-shadow 0.3s, transform 0.35s cubic-bezier(.19,1,.22,1), z-index 0.3s;
+            cursor: pointer;
+            z-index: 1;
+        }
+        .screenshot:hover {
+            transform: scale(1.16) perspective(1000px) translateY(-12px) rotateX(2deg) rotateZ(-1deg);
+            box-shadow: 0 0 64px 8px var(--neon-pink), 0 0 28px 2px var(--neon-blue), 0 0 6px #fff;
+            z-index: 10;
+        }
+
+        .install-steps {
+            margin-top: 1.5rem;
+        }
+
+        .step {
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 2px solid var(--neon-green);
+        }
+
+        .step-number {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-green);
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            text-shadow: var(--shadow-green);
+        }
+
+        .step-desc {
+            color: var(--text-secondary);
+        }
+
+        code {
+            font-family: 'Roboto Mono', monospace;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            background-color: rgba(10, 10, 26, 0.8);
+            border: 1px solid var(--border-light);
+            border-radius: 4px;
+            color: var(--neon-yellow);
+            display: block;
+            overflow-x: auto;
+        }
+
+        .usage-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .usage-item {
+            background-color: rgba(10, 10, 26, 0.7);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            border-radius: 8px;
+            padding: 1.5rem 1.8rem;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .usage-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-pink);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            text-shadow: var(--shadow-pink);
+        }
+
+        .usage-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-left: 0.5rem;
+        }
+
+        .usage-desc ul {
+            padding-left: 1.2rem;
+            list-style-type: none;
+        }
+
+        .usage-desc ul li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.2rem;
+            position: relative;
+        }
+
+        .usage-desc ul li::before {
+            content: ">";
+            position: absolute;
+            left: 0;
+            color: var(--neon-blue);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid var(--border-light);
+            background-color: rgba(10, 10, 26, 0.9);
+            backdrop-filter: blur(5px);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .footer-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .footer-link:hover {
+            color: var(--neon-blue);
+            text-shadow: var(--shadow-blue);
+        }
+
+        .copyright {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .social-icon {
+            margin: 0 0.5rem;
+            font-size: 1.5rem;
+            color: var(--neon-purple);
+            transition: all 0.3s ease;
+        }
+
+        .social-icon:hover {
+            color: var(--neon-pink);
+            transform: translateY(-3px);
+            text-shadow: var(--shadow-pink);
+        }
+
+        /* Add a terminal-like section to better match the application */
+        .demo-terminal {
+            margin-top: 2rem;
+            border: 1px solid var(--neon-blue);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            display: flex;
+            background-color: rgba(10, 10, 26, 0.9);
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .terminal-tab {
+            background-color: rgba(0, 229, 255, 0.1);
+            color: var(--neon-blue);
+            border: 1px solid var(--neon-blue);
+            border-radius: 4px;
+            padding: 0.3rem 0.8rem;
+            margin-right: 0.5rem;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .terminal-tab.active {
+            background-color: rgba(0, 229, 255, 0.2);
+            box-shadow: var(--shadow-blue);
+        }
+
+        .terminal-content {
+            background-color: rgba(10, 10, 26, 0.95);
+            padding: 1rem;
+            min-height: 150px;
+            color: var(--text-primary);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .command-line {
+            display: flex;
+            margin-bottom: 0.5rem;
+        }
+
+        .prompt {
+            color: var(--neon-green);
+            margin-right: 0.5rem;
+        }
+
+        .command {
+            color: var(--text-primary);
+        }
+
+        .output {
+            color: var(--text-secondary);
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Theme toggle button */
+        .theme-toggle {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: rgba(10, 10, 26, 0.8);
+            border: 1px solid var(--neon-purple);
+            color: var(--neon-purple);
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-purple);
+        }
+
+        [data-theme="light"] .theme-toggle {
+            background: #fafdff;
+            border: 2px solid var(--neon-purple);
+            color: var(--neon-purple);
+            box-shadow: 0 0 10px var(--neon-purple);
+        }
+
+        .theme-toggle:hover {
+            background-color: rgba(194, 100, 254, 0.1);
+            transform: translateY(-2px);
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            background: #eaf6ff;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .main-title {
+                font-size: 2.2rem;
+            }
+        }
+
+        [data-theme="witchhazel"] .usage-item {
+            background: rgba(51, 46, 65, 0.82);
+            border: 1.5px solid #a884ff77;
+            box-shadow: 0 0 14px 2px #a884ff33, 0 0 4px #fff1;
+            border-radius: 11px;
+            margin-bottom: 1.2rem;
+            padding: 1.1rem 1.2rem;
+            transition: box-shadow 0.25s, transform 0.25s;
+            color: #e6dbf7;
+        }
+        [data-theme="witchhazel"] .usage-item:hover {
+            box-shadow: 0 0 24px 4px #a884ff66, 0 0 8px #fff2;
+            transform: scale(1.025) translateY(-2px);
+        }
+        [data-theme="witchhazel"] .usage-title {
+            color: #e9e4ff;
+            text-shadow: 0 0 6px #a884ff99, 0 0 2px #fff;
+            font-weight: 700;
+        }
+        [data-theme="witchhazel"] .usage-title i {
+            color: #a884ff;
+            text-shadow: 0 0 8px #e9baff77, 0 0 2px #fff;
+        }
+        [data-theme="witchhazel"] .usage-desc {
+            color: #c8bce0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="main-title">Command<span class="wave-text">Wave</span></h1>
+        <p class="tagline">A cyberpunk-themed web interface for managing terminal sessions alongside executable Markdown playbooks.</p>
+        <div class="header-buttons">
+            <a href="https://github.com/Journey-West/CommandWave" class="header-btn">
+                <i class="fab fa-github"></i> GitHub Repository
+            </a>
+            <a href="https://github.com/Journey-West/CommandWave#installation" class="header-btn pink">
+                <i class="fas fa-download"></i> Installation Guide
+            </a>
+        </div>
+        <button class="theme-toggle"><i class="fas fa-moon"></i></button>
+    </header>
+
+    <div class="container">
+        <section class="section">
+            <h2 class="section-title">Overview</h2>
+            <p>CommandWave provides a streamlined, web-based environment for managing multiple terminal sessions powered by <span class="highlight">tmux</span> and <span class="highlight">ttyd</span>. It features a distinct cyberpunk/neon aesthetic and allows users to work with Markdown-based "playbooks" containing executable code blocks. Define variables, search through local playbooks, and execute commands directly into your active terminal session, enhancing command-line workflows.</p>
+            <img src="images/screenshot.png" alt="CommandWave Screenshot" class="screenshot">
+            <!-- Add a terminal demo to better match the application's look -->
+            <div class="demo-terminal">
+                <div class="terminal-header">
+                    <div class="terminal-tab active">Main</div>
+                    <div class="terminal-tab">Scanning</div>
+                    <div class="terminal-tab">+</div>
+                </div>
+                <div class="terminal-content">
+                    <div class="command-line">
+                        <span class="prompt">root@kali:~$</span>
+                        <span class="command">sudo nmap -sS $TargetIP -p $Port</span>
+                    </div>
+                    <div class="output">
+                        Starting Nmap 7.93 ( https://nmap.org ) at 2025-04-12 13:15 EDT<br>
+                        Nmap scan report for target.local (192.168.1.100)<br>
+                        Host is up (0.063s latency).
+                    </div>
+                    <div class="command-line">
+                        <span class="prompt">root@kali:~$</span>
+                        <span class="command">_</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Key Features</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-terminal"></i></div>
+                    <h3 class="feature-title">Terminal Management</h3>
+                    <p class="feature-desc">Create, switch between, rename, and close multiple terminal sessions backed by tmux and ttyd.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-book-open"></i></div>
+                    <h3 class="feature-title">Playbook Integration</h3>
+                    <p class="feature-desc">
+                        Upload Markdown files as playbooks, which are parsed to separate text blocks from code blocks.
+                        Create cross-references between playbooks to build an interconnected knowledge base.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-code"></i></div>
+                    <h3 class="feature-title">Variable Substitution</h3>
+                    <p class="feature-desc">Create custom variables and reference them in code blocks. All variables are auto-substituted, synchronized, and updated in real time across sessions.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-play"></i></div>
+                    <h3 class="feature-title">Command Execution</h3>
+                    <p class="feature-desc">Execute commands directly from playbooks to the active terminal.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-sticky-note"></i></div>
+                    <h3 class="feature-title">Notes System</h3>
+                    <p class="feature-desc">Global and per-tab notes for keeping track of your work.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-search"></i></div>
+                    <h3 class="feature-title">Playbook Search</h3>
+                    <p class="feature-desc">Quickly search across all loaded and local playbooks for specific commands or text, with smart highlighting and filtering.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-palette"></i></div>
+                    <h3 class="feature-title">Cyberpunk UI</h3>
+                    <p class="feature-desc">Beautiful neon-inspired interface with consistent theming.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-sliders-h"></i></div>
+                    <h3 class="feature-title">Custom tmux Theming</h3>
+                    <p class="feature-desc">Included configuration for matching terminal aesthetics.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-keyboard"></i></div>
+                    <h3 class="feature-title">Executable Code Blocks</h3>
+                    <p class="feature-desc">Execute shell command blocks from playbooks directly into the active terminal session with a single click.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-moon"></i></div>
+                    <h3 class="feature-title">Dark/Light Theme Toggle</h3>
+                    <p class="feature-desc">Switch between cyberpunk dark and neon light themes with persistent preferences and optimized terminal readability.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-exchange-alt"></i></div>
+                    <h3 class="feature-title">Full Synchronization</h3>
+                    <p class="feature-desc">All application data synchronized across clients.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Installation</h2>
+            <p>Getting started with CommandWave is quick and straightforward:</p>
+            <div class="install-steps">
+                <div class="step">
+                    <h3 class="step-number">Step 1: Install System Dependencies</h3>
+                    <p class="step-desc">Ensure <span class="highlight">ttyd</span> and <span class="highlight">tmux</span> are installed and accessible in your system's PATH.</p>
+                    <p class="step-desc">For <span class="highlight">ttyd</span>, download binaries or build from source via the <a href="https://github.com/tsl0922/ttyd" style="color: var(--neon-blue); text-decoration: none;">official ttyd GitHub repository</a>.</p>
+                    <p class="step-desc">For <span class="highlight">tmux</span>, install using your system's package manager:</p>
+                    <code>sudo apt install tmux   # For Debian/Ubuntu<br>brew install tmux       # For macOS</code>
+                </div>
+                <div class="step">
+                    <h3 class="step-number">Step 2: Clone the Repository</h3>
+                    <code>git clone https://github.com/Journey-West/CommandWave<br>cd CommandWave</code>
+                </div>
+                <div class="step">
+                    <h3 class="step-number">Step 3: Install Python Dependencies</h3>
+                    <code>pip install -r requirements.txt</code>
+                </div>
+                <div class="step">
+                    <h3 class="step-number">Step 4: Run CommandWave</h3>
+                    <code>python main.py --use-default-tmux-config</code>
+                    <p class="step-desc">Open your web browser and navigate to <code>http://localhost:5000</code></p>
+                    <p class="step-desc">Additional command line options:</p>
+                    <code>--hostname HOSTNAME  # Specify hostname for terminal connections (default: localhost)<br>--remote            # Enable remote access by binding to all interfaces<br>--port PORT        # Specify web server port (default: 5000)</code>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Usage Guide</h2>
+            <div class="usage-grid">
+                <div class="usage-item">
+                    <h3 class="usage-title">Terminals</h3>
+                    <ul class="usage-desc">
+                        <li>Click the + button to add a new terminal session</li>
+                        <li>Double-click a tab to rename it</li>
+                        <li>Click the x to close a terminal session</li>
+                    </ul>
+                </div>
+                <div class="usage-item">
+                    <h3 class="usage-title">Theme Settings</h3>
+                    <ul class="usage-desc">
+                        <li>Click the gear icon in the top right corner</li>
+                        <li>Select "Theme Settings" to toggle between themes</li>
+                        <li>Choose between Cyberpunk Dark (default) and Neon Light</li>
+                    </ul>
+                </div>
+                <div class="usage-item">
+                    <h3 class="usage-title">Variables</h3>
+                    <ul class="usage-desc">
+                        <li>Use the "Variables" section to define variables for your playbooks</li>
+                        <li>Click "+ Add Variable" to create custom variables</li>
+                        <li>Each variable has two parts:
+                            <ul style="margin-top: 0.5rem;">
+                                <li style="margin-bottom: 0.4rem;">Variable Title: User-friendly display name (can include spaces)</li>
+                                <li>Variable Reference: Actual reference used in code (no spaces allowed)</li>
+                            </ul>
+                        </li>
+                        <li>Variables will be substituted when you click "Execute" on a code block</li>
+                    </ul>
+                </div>
+                <div class="usage-item">
+                    <h3 class="usage-title">Playbooks</h3>
+                    <ul class="usage-desc">
+                        <li>Upload .md files or create new playbooks within the app</li>
+                        <li>Code blocks can be executed directly in the active terminal</li>
+                        <li>External links open in new tabs with proper security attributes</li>
+                        <li>Click "Execute" to send code to the active terminal tab</li>
+                        <li>Create cross-references between playbooks using syntax</li>
+                    </ul>
+                </div>
+                <div class="usage-item">
+                    <h3 class="usage-title">Search</h3>
+                    <ul class="usage-desc">
+                        <li>Use the search bar to find content within playbooks</li>
+                        <li>Results show filename, line number, and content</li>
+                        <li>Click on a result to open that playbook</li>
+                    </ul>
+                </div>
+                <div class="usage-item">
+                    <h3 class="usage-title">Error Handling</h3>
+                    <ul class="usage-desc">
+                        <li>The application displays dedicated error modals with clear messages</li>
+                        <li>Error messages include guidance on how to resolve common issues</li>
+                        <li>Validation prevents common errors in variable names and playbook formatting</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="footer-links">
+            <a href="https://github.com/Journey-West/CommandWave" class="footer-link">GitHub Repository</a>
+            <a href="https://github.com/Journey-West/CommandWave/issues" class="footer-link">Report Issues</a>
+            <a href="https://github.com/Journey-West/CommandWave#contributing" class="footer-link">Contribute</a>
+            <a href="https://github.com/Journey-West/CommandWave/blob/main/LICENSE" class="footer-link">License</a>
+        </div>
+        <div>
+            <a href="https://github.com/Journey-West" class="social-icon"><i class="fab fa-github"></i></a>
+        </div>
+        <p class="copyright"> 2025 CommandWave. Built with the cyberpunk spirit.</p>
+    </footer>
+
+    <script>
+        // Theme Toggle Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme toggle button
+            const themeToggle = document.querySelector('.theme-toggle');
+            const themeIcon = themeToggle.querySelector('i');
+            
+            // Initialize theme
+            initializeTheme();
+            
+            // Toggle theme when button is clicked
+            themeToggle.addEventListener('click', function() {
+                cycleTheme();
+            });
+            
+            // Initialize theme based on saved preference or system preference
+            function initializeTheme() {
+                const savedTheme = localStorage.getItem('commandwave-docs-theme');
+                
+                if (savedTheme) {
+                    applyTheme(savedTheme);
+                } else {
+                    // Default to dark theme for consistency with main app
+                    applyTheme('dark');
+                }
+            }
+            
+            // Apply theme to document
+            function applyTheme(theme) {
+                // Remove existing theme attribute
+                document.documentElement.removeAttribute('data-theme');
+                
+                // Apply new theme if not dark (dark is default)
+                if (theme === 'light' || theme === 'witchhazel') {
+                    document.documentElement.setAttribute('data-theme', theme);
+                }
+                
+                // Update toggle icon based on theme
+                updateToggleIcon(theme);
+                
+                // Save preference
+                localStorage.setItem('commandwave-docs-theme', theme);
+            }
+            
+            // Update the toggle icon based on theme
+            function updateToggleIcon(theme) {
+                // Reset classes
+                themeIcon.className = '';
+                
+                // Set appropriate icon
+                if (theme === 'dark') {
+                    themeIcon.className = 'fas fa-sun';
+                } else if (theme === 'light') {
+                    themeIcon.className = 'fas fa-moon';
+                } else if (theme === 'witchhazel') {
+                    themeIcon.className = 'fas fa-hat-wizard';
+                }
+            }
+            
+            // Cycle between themes: dark -> light -> witchhazel -> dark
+            function cycleTheme() {
+                const currentTheme = localStorage.getItem('commandwave-docs-theme') || 'dark';
+                
+                let newTheme;
+                if (currentTheme === 'dark') {
+                    newTheme = 'light';
+                } else if (currentTheme === 'light') {
+                    newTheme = 'witchhazel';
+                } else {
+                    newTheme = 'dark';
+                }
+                
+                applyTheme(newTheme);
+            }
+        });
+    </script>
+</body>
+</html>

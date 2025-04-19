@@ -12,6 +12,7 @@ class WebSocketHandler {
         this.reconnectAttempts = 0;
         this.maxReconnectAttempts = 5;
         this.reconnectDelay = 2000; // Start with 2 seconds
+        this.lastServerContactTime = null;
         this.eventListeners = {};
         
         // Get the hostname from DOM if available
@@ -34,6 +35,7 @@ class WebSocketHandler {
     init(username = 'Anonymous User') {
         this.username = username;
         this.connect();
+        this.startKeepAlive();
         
         // Register global error handler for socket errors
         window.addEventListener('offline', () => {
@@ -103,6 +105,7 @@ class WebSocketHandler {
             this.reconnectAttempts = 0;
             this.reconnectDelay = 2000;
             this.clientId = this.socket.id;
+            this.lastServerContactTime = Date.now();
             
             // Dispatch connection event
             this.dispatchEvent('connection_established', {
@@ -157,9 +160,9 @@ class WebSocketHandler {
             this.dispatchEvent('terminal_presence_update', data);
         });
         
-        // Variable events
-        this.socket.on('variable_changed', (data) => {
-            this.dispatchEvent('variable_changed', data);
+        // Synchronization events: remote variable updates
+        this.socket.on('remote_variable_update', (data) => {
+            this.dispatchEvent('remote_variable_update', data);
         });
         
         // Playbook events
@@ -192,6 +195,13 @@ class WebSocketHandler {
         // Client presence events
         this.socket.on('clients_updated', (data) => {
             this.dispatchEvent('clients_updated', data);
+        });
+        
+        // Keep-alive ping response
+        this.socket.on('server_pong', (data) => {
+            console.log('Received server_pong:', data);
+            this.lastServerContactTime = Date.now();
+            this.dispatchEvent('server_pong', data);
         });
     }
 
@@ -291,7 +301,7 @@ class WebSocketHandler {
         console.log(`Broadcasting terminal creation event: port=${terminalPort}, name=${name}`);
         
         this.socket.emit('terminal_created', {
-            terminal_id: this.clientId + '_' + terminalPort, // Use clientId to make terminal_id unique
+            terminal_id: terminalPort, // Use the port as the terminal_id for consistency across clients
             port: terminalPort,
             name: name,
             sender_id: this.clientId
@@ -352,7 +362,7 @@ class WebSocketHandler {
         }
         
         console.log(`Notifying variable ${action}: ${terminalId} - ${name}`);
-        this.socket.emit('variable_updated', {
+        this.socket.emit('variable_update_request', {
             terminal_id: terminalId,
             name: name,
             value: value,
@@ -516,6 +526,21 @@ class WebSocketHandler {
      */
     getClientId() {
         return this.clientId;
+    }
+
+    /**
+     * Start periodic keepalive pings
+     * @param {number} intervalMs - Interval in ms
+     */
+    startKeepAlive(intervalMs = 15000) {
+        setInterval(() => {
+            if (this.connected && this.socket) {
+                console.log('Sending client_ping');
+                this.socket.emit('client_ping');
+            } else {
+                console.warn('Skipping client_ping - not connected');
+            }
+        }, intervalMs);
     }
 }
 

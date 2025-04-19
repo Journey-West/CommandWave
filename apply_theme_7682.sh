@@ -1,3 +1,3 @@
 #!/bin/sh
 tmux source-file "/home/kali/Tools/CommandWave/commandwave_theme.tmux.conf"
-tmux attach-session -t commandwave-7683
+tmux attach-session -t commandwave-7682

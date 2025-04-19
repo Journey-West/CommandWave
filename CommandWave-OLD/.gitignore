@@ -1,0 +1,65 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+.env
+commandwave_venv/
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+tests/test_data/*.json
+test_reports/
+
+# CommandWave specific
+notes_data/*.json
+notes_data/*.txt
+playbooks/*.md
+!playbooks/example_*.md
+scripted_tabs/*
+!scripted_tabs/.gitkeep
+PROJECT_TASKS.md
+user_preferences.json  # Local user theme and other preferences
+commandwave.log  # Application log file - should not be in version control
+static/css/combined.css  # Generated combined CSS file
+static/css/*.bak  # Backup CSS files
+apply_theme_*.sh  # Temporary terminal theme scripts
+playbooks_state.json  # Runtime state file
+variables_data/*.json  # Saved variables
+
+# Logs
+logs/
+*.log
+
+# OS specific
+.DS_Store
+Thumbs.db

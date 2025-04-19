@@ -3,6 +3,8 @@
  * Handles variable operations, UI interactions, and state management
  */
 
+import WebSocketHandler from '../sync/websocket_handler.js';
+
 class VariableManager {
     constructor() {
         // Change from single variables object to a map of tab IDs to variable sets
@@ -22,6 +24,18 @@ class VariableManager {
         if (!this.apiBaseUrl.endsWith('/')) {
             this.apiBaseUrl += '/';
         }
+        
+        // Default variable ID-to-name mapping
+        this.defaultVarConfigs = [
+            { id: 'targetIP', name: 'TargetIP' },
+            { id: 'port', name: 'Port' },
+            { id: 'dcIP', name: 'DCIP' },
+            { id: 'userFile', name: 'UserFile' },
+            { id: 'passFile', name: 'PassFile' },
+            { id: 'wordlist', name: 'Wordlist' },
+            { id: 'controlSocket', name: 'ControlSocket' }
+        ];
+        this.defaultVarConfigMap = this.defaultVarConfigs.reduce((map, {id, name}) => (map[id] = name, map), {});
         
         // Default variables that should not be deleted (with all possible case variations)
         this.defaultVariableNames = [
@@ -79,8 +93,13 @@ class VariableManager {
         // Find the initial active tab
         this.detectActiveTab();
         
-        // Load variables from DOM
-        this.loadVariables();
+        // Join terminal room on connection establishment
+        WebSocketHandler.addEventListener('connection_established', () => {
+            WebSocketHandler.joinTerminal(this.activeTabId);
+        });
+        
+        // Load variables from server (source of truth)
+        this.loadVariablesFromServer(this.activeTabId);
         
         // Set up section toggle
         this.setupSectionToggle();
@@ -94,8 +113,9 @@ class VariableManager {
         // Set up add variable button
         this.setupAddVariableButton();
         
-        // Initialize event handlers
-        this.initEventHandlers();
+        // Setup variable change and remote update handlers
+        this.variableSectionElement.addEventListener('change', this.handleInputChange.bind(this));
+        WebSocketHandler.addEventListener('remote_variable_update', this.handleRemoteVariableUpdate.bind(this));
         
         console.log(`Variable manager initialized with active tab ID: ${this.activeTabId}`);
     }
@@ -134,12 +154,16 @@ class VariableManager {
      * @param {string} tabId - The ID of the newly active tab
      */
     handleTabChange(tabId) {
+        const previousTab = this.activeTabId;
         console.log(`Tab changed to: ${tabId}`);
         
         if (!tabId) {
             console.error('Tab change event received but no tabId provided');
             return;
         }
+        
+        // Ensure tabId is a string
+        tabId = tabId.toString();
         
         // Save previous tab's variables
         if (this.activeTabId) {
@@ -160,24 +184,46 @@ class VariableManager {
             
             // Try to load variables from server for this tab
             try {
-                this.loadVariablesFromServer(this.activeTabId);
+                this.loadVariablesFromServer(this.activeTabId)
+                  .then(() => {
+                    console.log(`Variables loaded from server for tab ${this.activeTabId}`);
+                    this.updateVariableUI();
+                  })
+                  .catch(error => {
+                    console.error(`Error loading variables for tab ${this.activeTabId}:`, error);
+                  });
             } catch (error) {
                 console.error(`Error loading variables from server for tab ${this.activeTabId}:`, error);
             }
         } else {
             console.log(`Using existing variable set for tab ${this.activeTabId} with ${Object.keys(this.variableSets[this.activeTabId]).length} variables`);
-        }
-        
-        // Update UI with the variables for this tab
-        try {
-            this.updateVariableUI();
-        } catch (error) {
-            console.error(`Error updating variable UI for tab ${this.activeTabId}:`, error);
-            // If there's an error, make sure the tab has an initialized variable set
-            if (!this.variableSets[this.activeTabId]) {
-                this.variableSets[this.activeTabId] = {};
+            // Update UI immediately for existing variable sets
+            try {
+                this.updateVariableUI();
+            } catch (error) {
+                console.error(`Error updating variable UI for tab ${this.activeTabId}:`, error);
+                if (!this.variableSets[this.activeTabId]) {
+                    this.variableSets[this.activeTabId] = {};
+                }
             }
         }
+        
+        // Switch WebSocket room subscription
+        if (previousTab) {
+            WebSocketHandler.leaveTerminal(previousTab);
+        }
+        WebSocketHandler.joinTerminal(tabId);
+        
+        // Always refresh variables from server for the newly active tab, 
+        // regardless of whether we already have them in memory or not
+        this.loadVariablesFromServer(tabId)
+          .then(() => {
+            console.log(`Variables refreshed from server for tab ${tabId}`);
+            this.updateVariableUI();
+          })
+          .catch(error => {
+            console.error(`Error refreshing variables for tab ${tabId}:`, error);
+          });
     }
     
     /**
@@ -190,33 +236,16 @@ class VariableManager {
             return;
         }
         
+        // Ensure tabId is a string
+        tabId = tabId.toString();
+        
         console.log(`Initializing variables for new tab: ${tabId}`);
         
-        // Create a fresh empty variable set for the new tab
-        // Don't inherit from any existing tabs or localStorage
+        // Initialize variable set and load persisted variables
         this.variableSets[tabId] = {};
-        
-        // Initialize default variables with empty values
-        const defaultVars = [
-            { name: 'Host' },
-            { name: 'Port' },
-            { name: 'Username' },
-            { name: 'Password' },
-            { name: 'Domain' },
-            { name: 'Protocol' },
-            { name: 'TargetIP' },
-            { name: 'DCIP' },
-            { name: 'UserFile' },
-            { name: 'PassFile' },
-            { name: 'Wordlist' },
-            { name: 'ControlSocket' }
-        ];
-        
-        for (const { name } of defaultVars) {
-            this.variableSets[tabId][name] = { value: '', element: null };
-        }
-        
-        console.log(`Created empty variable set for new tab ${tabId} with ${Object.keys(this.variableSets[tabId]).length} variables`);
+        this.loadVariablesFromServer(tabId).catch(error => {
+            console.error(`Error loading variables for new tab ${tabId}:`, error);
+        });
     }
     
     /**
@@ -266,48 +295,28 @@ class VariableManager {
      */
     updateVariableUI() {
         if (!this.activeTabId || !this.variableSets[this.activeTabId]) return;
-        
         const tabVariables = this.variableSets[this.activeTabId];
-        
-        // Update custom variable inputs
-        document.querySelectorAll('.variable-input.custom-variable').forEach(item => {
-            const input = item.querySelector('.custom-variable-input');
-            if (input && input.dataset.variableName) {
-                const name = input.dataset.variableName;
-                if (tabVariables[name]) {
-                    input.value = tabVariables[name].value;
-                } else {
-                    input.value = ''; // Clear if no value exists for this tab
-                }
+
+        // Remove and re-render custom variable inputs for this tab (preserve default inputs)
+        this.variableInputsContainer.querySelectorAll('.variable-input.custom-variable').forEach(el => el.remove());
+        const defaultNames = this.defaultVarConfigs.map(cfg => cfg.name);
+        Object.entries(tabVariables).forEach(([name, obj]) => {
+            if (!defaultNames.includes(name)) {
+                const html = `
+                <div class="variable-input custom-variable">
+                    <label>${name}:</label>
+                    <input type="text" class="custom-variable-input" data-variable-name="${name}" value="${obj.value || ''}">
+                </div>`;
+                this.variableInputsContainer.insertAdjacentHTML('beforeend', html);
             }
         });
-        
         // Update default variable inputs
-        const defaultVars = [
-            { id: 'targetIP', name: 'TargetIP' },
-            { id: 'port', name: 'Port' },
-            { id: 'dcIP', name: 'DCIP' },
-            { id: 'userFile', name: 'UserFile' },
-            { id: 'passFile', name: 'PassFile' },
-            { id: 'wordlist', name: 'Wordlist' },
-            { id: 'controlSocket', name: 'ControlSocket' }
-        ];
-        
-        defaultVars.forEach(({ id, name }) => {
+        this.defaultVarConfigs.forEach(({ id, name }) => {
             const input = document.getElementById(id);
             if (input) {
-                if (tabVariables[name]) {
-                    input.value = tabVariables[name].value;
-                } else {
-                    input.value = ''; // Clear if no value exists for this tab
-                }
+                input.value = tabVariables[name]?.value || '';
             }
         });
-        
-        // Dispatch event to notify other components
-        document.dispatchEvent(new CustomEvent('variablesUpdated', {
-            detail: { tabId: this.activeTabId, variables: tabVariables }
-        }));
     }
     
     /**
@@ -316,6 +325,9 @@ class VariableManager {
      */
     async loadVariablesFromServer(tabId) {
         try {
+            // Ensure tabId is a string
+            tabId = tabId.toString();
+            
             // Build URL with tab ID
             const apiUrl = `${this.apiBaseUrl}api/variables/load/${tabId}`.replace(/([^:]\/)\/+/g, '$1');
             console.log(`Loading variables for tab ${tabId} from: ${apiUrl}`);
@@ -327,7 +339,7 @@ class VariableManager {
             
             const data = await response.json();
             if (data.success && data.variables) {
-                // Store the variables in our tab-specific set
+                // Initialize variables object before processing loaded variables
                 const variables = {};
                 
                 // Process the loaded variables
@@ -337,12 +349,10 @@ class VariableManager {
                 
                 this.variableSets[tabId] = variables;
                 
-                // Update UI if this is the active tab
+                console.log(`Loaded ${Object.keys(variables).length} variables for tab ${tabId}`);
                 if (tabId === this.activeTabId) {
                     this.updateVariableUI();
                 }
-                
-                console.log(`Loaded ${Object.keys(variables).length} variables for tab ${tabId}`);
             }
         } catch (error) {
             console.error(`Error loading variables for tab ${tabId}:`, error);
@@ -374,8 +384,8 @@ class VariableManager {
                     element: input
                 };
                 
-                // Keep variable map updated on input change
-                input.addEventListener('input', (e) => {
+                // Keep variable map updated on change
+                input.addEventListener('change', (e) => {
                     if (!this.variableSets[this.activeTabId]) {
                         this.variableSets[this.activeTabId] = {};
                     }
@@ -387,9 +397,9 @@ class VariableManager {
                         };
                     }
                     
-                    this.variableSets[this.activeTabId][name].value = e.target.value.trim();
-                    // Dispatch event so playbook content can re-render
-                    document.dispatchEvent(new CustomEvent('variableValueChanged'));
+                    const newValue = e.target.value.trim();
+                    this.variableSets[this.activeTabId][name].value = newValue;
+                    WebSocketHandler.notifyVariableUpdate(this.activeTabId, name, newValue);
                 });
                 
                 // Add double-click handler for editing
@@ -416,8 +426,8 @@ class VariableManager {
                     this.variableSets[this.activeTabId] = {};
                 }
                 this.variableSets[this.activeTabId][name] = { value: input.value.trim(), element: input };
-                // Keep variable map updated on input change
-                input.addEventListener('input', (e) => {
+                // Keep variable map updated on change
+                input.addEventListener('change', (e) => {
                     if (!this.variableSets[this.activeTabId]) {
                         this.variableSets[this.activeTabId] = {};
                     }
@@ -429,9 +439,9 @@ class VariableManager {
                         };
                     }
                     
-                    this.variableSets[this.activeTabId][name].value = e.target.value.trim();
-                    // Dispatch event so playbook content can re-render
-                    document.dispatchEvent(new CustomEvent('variableValueChanged'));
+                    const newValue = e.target.value.trim();
+                    this.variableSets[this.activeTabId][name].value = newValue;
+                    WebSocketHandler.notifyVariableUpdate(this.activeTabId, name, newValue);
                 });
                 
                 // Add double-click handler for editing default variables too
@@ -872,10 +882,6 @@ class VariableManager {
         if (cancelBtn) {
             cancelBtn.onclick = () => {
                 this.closeModal('addVariableModal');
-                
-                if (addForm) {
-                    addForm.reset();
-                }
             };
         }
         
@@ -952,11 +958,6 @@ class VariableManager {
                         }
                     }
                 }
-            }
-            
-            // If we found the element but not the container, get the container
-            if (variableElement && !variableContainer) {
-                variableContainer = variableElement.closest('.variable-input');
             }
             
             // Log what we found for debugging
@@ -1207,101 +1208,6 @@ class VariableManager {
     }
     
     /**
-     * Initialize the event handlers for variable-related actions
-     */
-    initEventHandlers() {
-        // Setup for add variable button
-        const addVariableBtn = document.getElementById('addVariableBtn');
-        if (addVariableBtn) {
-            addVariableBtn.addEventListener('click', () => {
-                this.openAddVariableModal();
-            });
-        }
-        
-        // Initialize modal listeners
-        this.initEditModalListeners();
-        this.initAddModalListeners();
-        
-        // Setup variable search
-        this.setupVariableSearch();
-        
-        // Add event listener for variable value changes to trigger synchronization
-        document.addEventListener('variableValueChanged', () => {
-            // Save the changes to the current tab's variables
-            this.saveCurrentVariables();
-            
-            // Sync with server
-            this.syncVariablesToServer();
-        });
-    }
-    
-    /**
-     * Sync the current tab's variables to the server
-     */
-    async syncVariablesToServer() {
-        if (!this.activeTabId) return;
-        
-        try {
-            // Create a simpler object with just the variable values
-            const variables = {};
-            for (const [name, obj] of Object.entries(this.variableSets[this.activeTabId])) {
-                variables[name] = obj.value;
-            }
-            
-            // Build URL with tab ID
-            const apiUrl = `${this.apiBaseUrl}api/variables/sync/${this.activeTabId}`.replace(/([^:]\/)\/+/g, '$1');
-            console.log(`Syncing variables for tab ${this.activeTabId} to server: ${apiUrl}`);
-            
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ variables })
-            });
-            
-            if (!response.ok) {
-                throw new Error(`Server responded with ${response.status}`);
-            }
-            
-            const data = await response.json();
-            if (data.success) {
-                console.log(`Successfully synced ${Object.keys(variables).length} variables for tab ${this.activeTabId}`);
-            } else {
-                console.error(`Failed to sync variables: ${data.error || 'Unknown error'}`);
-            }
-        } catch (error) {
-            console.error(`Error syncing variables for tab ${this.activeTabId}:`, error);
-        }
-    }
-    
-    /**
-     * Setup variable search functionality
-     */
-    setupVariableSearch() {
-        const searchInput = document.getElementById('variableSearch');
-        
-        if (!searchInput) return;
-        
-        searchInput.addEventListener('input', () => {
-            const searchTerm = searchInput.value.toLowerCase();
-            const variables = document.querySelectorAll('.variable-input');
-            
-            variables.forEach(variable => {
-                const label = variable.querySelector('label');
-                const input = variable.querySelector('input');
-                const labelText = label ? label.textContent.toLowerCase() : '';
-                const inputValue = input ? input.value.toLowerCase() : '';
-                
-                const isMatch = labelText.includes(searchTerm) || 
-                                inputValue.includes(searchTerm);
-                
-                variable.style.display = isMatch ? 'flex' : 'none';
-            });
-        });
-    }
-    
-    /**
      * Notify SyncManager about variable changes for real-time sync
      * @param {string} action - The action performed (create, update, delete)
      * @param {string} name - Variable name/reference
@@ -1324,7 +1230,50 @@ class VariableManager {
             // Non-critical error, don't show to user as the variable operation succeeded
         }
     }
-
+    
+    /**
+     * Handle input changes in the variable section
+     * @param {Event} event - The input change event
+     */
+    handleInputChange(event) {
+        const input = event.target;
+        let name = input.dataset.variableName || this.defaultVarConfigMap[input.id];
+        if (!name) return;
+        const value = input.value.trim();
+        if (!this.variableSets[this.activeTabId]) this.variableSets[this.activeTabId] = {};
+        this.variableSets[this.activeTabId][name] = { value, element: input };
+        WebSocketHandler.notifyVariableUpdate(this.activeTabId, name, value);
+    }
+    
+    /**
+     * Handle remote variable updates
+     * @param {object} data - The update info
+     */
+    handleRemoteVariableUpdate(data) {
+        const { terminal_id, name, value, action } = data;
+        
+        if (terminal_id !== this.activeTabId) return;
+        
+        if (action === 'create') {
+            const html = `
+                <div class="variable-input custom-variable">
+                    <label>${name}:</label>
+                    <input type="text" class="custom-variable-input" data-variable-name="${name}" value="${value}">
+                </div>`;
+            
+            this.variableInputsContainer.insertAdjacentHTML('beforeend', html);
+            
+            const el = this.variableInputsContainer.querySelector(`[data-variable-name="${name}"]`);
+            this.variableSets[this.activeTabId][name] = { value, element: el };
+        } else if (action === 'update') {
+            const el = this.variableInputsContainer.querySelector(`[data-variable-name="${name}"]`);
+            if (el) { el.value = value; this.variableSets[this.activeTabId][name].value = value; }
+        } else if (action === 'delete') {
+            const el = this.variableInputsContainer.querySelector(`[data-variable-name="${name}"]`);
+            if (el) el.closest('.variable-input').remove(), delete this.variableSets[this.activeTabId][name];
+        }
+    }
+    
     /**
      * Setup the hold-to-delete functionality for the delete variable button
      * @param {HTMLElement} deleteBtn - The delete button element

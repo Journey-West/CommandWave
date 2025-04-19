@@ -1002,4 +1002,26 @@ export default class TerminalManager {
             return false;
         }
     }
+    
+    /**
+     * Add a remote terminal tab for terminals created by other users
+     * @param {string} terminalId - Terminal ID
+     * @param {string|number} port - Terminal port
+     * @param {string} name - Display name for the terminal
+     */
+    addRemoteTerminal(terminalId, port, name = 'Terminal') {
+        // Ensure port is a string
+        port = port.toString();
+        // Avoid duplicates
+        if (this.activePorts.includes(port)) return;
+        // Track this port
+        this.activePorts.push(port);
+        // Add UI elements
+        this.addTerminalToUI(port, name);
+        // Inform other components (e.g., VariableManager)
+        document.dispatchEvent(new CustomEvent('terminal-tab-created', {
+            detail: { port }
+        }));
+        console.log(`Remote terminal added: ${port}`);
+    }
 }

@@ -1,0 +1,76 @@
+/* Connection Status Modal - CommandWave theme */
+#connectionStatusModal.modal-container {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.72);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+#connectionStatusModal.modal-container.active {
+  display: flex;
+}
+#connectionStatusModal .modal-content {
+  min-width: 360px;
+  background: linear-gradient(120deg, #18181f 60%, #19192a 100%);
+  border: 2px solid #ffe600;
+  border-radius: 12px;
+  box-shadow: 0 0 18px 2px #ffe60044, 0 0 0 2px #222 inset;
+  padding: 0;
+  font-family: 'Orbitron', 'Roboto', monospace;
+  color: #ffe600;
+}
+#connectionStatusModal .modal-header {
+  padding: 1.3rem 1.5rem 0.5rem 1.5rem;
+  border-bottom: 1px solid #ffe60066;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+#connectionStatusModal .modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+#connectionStatusModal .modal-close {
+  float: right;
+  font-size: 1.5rem;
+  color: #ffe600;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+#connectionStatusModal .modal-close:hover {
+  color: #fff200;
+}
+#connectionStatusModal .modal-body {
+  padding: 1.2rem 1.5rem 0.5rem 1.5rem;
+}
+#connectionStatusModal .modal-body p {
+  font-size: 1rem;
+  margin: 0.5rem 0;
+}
+#connectionStatusModal .modal-footer {
+  padding: 1.1rem 1.5rem 1.2rem 1.5rem;
+  border-top: 1px solid #ffe60033;
+  display: flex;
+  justify-content: flex-end;
+}
+#connectionStatusModal .modal-btn {
+  background: #18181f;
+  border: 1.5px solid #ffe600;
+  color: #ffe600;
+  font-family: 'Orbitron', 'Roboto', monospace;
+  font-size: 1rem;
+  border-radius: 6px;
+  padding: 0.5rem 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+#connectionStatusModal .modal-btn:hover {
+  background: #ffe600;
+  color: #18181f;
+  border-color: #fff200;
+}

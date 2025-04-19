@@ -11,6 +11,7 @@ from flask import Blueprint, request, session
 from flask_socketio import emit, join_room, leave_room, disconnect
 
 from core.sync_utils import client_tracker, broadcast_to_terminal, broadcast_global
+from routes.variable_routes import get_tab_variables, save_tab_variables
 
 # Configure logging
 logger = logging.getLogger('commandwave')
@@ -46,7 +47,8 @@ def init_socketio_events(socketio):
             'client_id': client_id,
             'username': username,
             'timestamp': time.time(),
-            'client_count': len(client_tracker.clients)
+            'client_count': len(client_tracker.clients),
+            'sync_status': 'active'
         })
 
     @socketio.on('disconnect')
@@ -213,30 +215,6 @@ def init_socketio_events(socketio):
         
         logger.info(f"Terminal closed broadcast: {terminal_id}")
     
-    @socketio.on('variable_updated')
-    def handle_variable_updated(data):
-        """Handle notification that a variable was updated."""
-        client_id = request.sid
-        terminal_id = data.get('terminal_id')
-        variable_name = data.get('name')
-        variable_value = data.get('value')
-        action = data.get('action', 'update')  # create, update, delete
-        
-        if not terminal_id or not variable_name:
-            logger.warning(f"Invalid variable data from {client_id}")
-            return
-        
-        # Broadcast to clients in the same terminal
-        broadcast_to_terminal(terminal_id, 'variable_changed', {
-            'terminal_id': terminal_id,
-            'name': variable_name,
-            'value': variable_value,
-            'action': action,
-            'timestamp': time.time()
-        })
-        
-        logger.info(f"Variable {action} broadcast: {terminal_id} - {variable_name}")
-    
     @socketio.on('playbook_updated')
     def handle_playbook_updated(data):
         """Handle notification that a playbook was updated."""
@@ -394,6 +372,45 @@ def init_socketio_events(socketio):
             'resource_id': resource_id,
             'success': True
         })
+
+    @socketio.on('client_ping')
+    def handle_client_ping():
+        """Respond to client_ping with server_pong."""
+        client_id = request.sid
+        logger.debug(f"Received client_ping from {client_id}")
+        emit('server_pong', {'timestamp': time.time()}, room=client_id)
+
+    @socketio.on('variable_update_request')
+    def handle_variable_update_request(data):
+        """Handle variable update request from client."""
+        client_id = request.sid
+        terminal_id = data.get('terminal_id')
+        name = data.get('name')
+        value = data.get('value')
+        action = data.get('action', 'update')
+
+        if not terminal_id or not name:
+            logger.warning(f"Invalid variable update request from {client_id}")
+            return
+
+        try:
+            variables = get_tab_variables(terminal_id)
+            # Update or create variable
+            variables[name] = {'display_name': name, 'reference': name.replace(' ',''), 'value': value}
+            save_success = save_tab_variables(terminal_id, variables)
+            if not save_success:
+                logger.error(f"Failed to persist variable update for {terminal_id} - {name}")
+            # Broadcast update to other clients in the terminal
+            broadcast_to_terminal(terminal_id, 'remote_variable_update', {
+                'terminal_id': terminal_id,
+                'name': name,
+                'value': value,
+                'action': action,
+                'timestamp': time.time()
+            }, include_sender=False)
+            logger.info(f"Broadcast remote_variable_update for {terminal_id} - {name}")
+        except Exception as e:
+            logger.error(f"Error handling variable update request: {e}")
 
     logger.info("Initialized SocketIO event handlers")
 

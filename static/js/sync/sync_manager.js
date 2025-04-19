@@ -79,7 +79,7 @@ class SyncManager {
         });
         
         // Variable events
-        WebSocketHandler.addEventListener('variable_changed', (data) => {
+        WebSocketHandler.addEventListener('remote_variable_update', (data) => {
             this.handleVariableChanged(data);
         });
         
@@ -111,6 +111,26 @@ class SyncManager {
                 );
             } catch (error) {
                 console.warn('Error showing connection notification:', error);
+            }
+        });
+        
+        // Fetch existing terminals on initial connect to populate after refresh
+        WebSocketHandler.addEventListener('connection_established', async (data) => {
+            try {
+                const resp = await fetch('/api/terminals/list');
+                if (!resp.ok) {
+                    console.error('Failed to fetch initial terminals list:', resp.statusText);
+                    return;
+                }
+                const result = await resp.json();
+                if (result.success && Array.isArray(result.terminals)) {
+                    result.terminals.forEach(term => {
+                        // Use port as terminal_id for state indexing
+                        this.handleTerminalCreated({ terminal_id: String(term.port), port: term.port, name: term.name });
+                    });
+                }
+            } catch (err) {
+                console.error('Error fetching initial terminals:', err);
             }
         });
         
@@ -154,10 +174,9 @@ class SyncManager {
      */
     initLocalEventListeners() {
         // Terminal events
-        document.addEventListener('terminal-created', (event) => {
-            const terminalId = event.detail.terminalId || `terminal-${event.detail.port}`;
-            const name = event.detail.name || 'New Terminal';
+        document.addEventListener('terminal-tab-created', (event) => {
             const port = event.detail.port;
+            const name = event.detail.name || 'New Terminal';
             
             // Notify other clients
             this.syncTerminalCreated(port, name);
@@ -312,10 +331,22 @@ class SyncManager {
         
         // Let the terminal manager handle the UI update if available
         if (this.terminalManager && typeof this.terminalManager.addRemoteTerminal === 'function') {
+            // Use new method to integrate remote tab fully
             this.terminalManager.addRemoteTerminal(data.terminal_id, data.port, data.name);
         } else {
-            // Fallback: Create the UI elements manually
+            // Legacy fallback
             this.createTerminalTab(data.terminal_id, data.port, data.name);
+            // Dispatch creation event for variable init
+            document.dispatchEvent(new CustomEvent('terminal-tab-created', { detail: { port: data.port.toString() } }));
+        }
+        
+        // Initialize variables for the new terminal tab (load persisted variables)
+        if (this.variableManager && typeof this.variableManager.handleNewTab === 'function') {
+            const portId = data.port.toString();
+            this.variableManager.handleNewTab(portId);
+            
+            // Explicitly join the terminal room to ensure we receive updates
+            WebSocketHandler.joinTerminal(portId);
         }
         
         // Show notification
@@ -492,7 +523,7 @@ class SyncManager {
         
         // Normalize terminal ID format - we need the port number
         const terminalId = data.terminal_id;
-        const portMatch = terminalId.match(/\d+$/);
+        const portMatch = terminalId.toString().match(/\d+$/);
         const port = portMatch ? portMatch[0] : terminalId;
         
         console.log(`Remote variable ${data.action}: terminal=${terminalId}, port=${port}, name=${data.name}, value=${data.value}`);
@@ -546,8 +577,53 @@ class SyncManager {
                     delete this.variableManager.variableSets[port][data.name];
                 }
                 
+                // Save the variable to the server to ensure persistence across all clients
+                // This helps when switching tabs later, as the variable will be loaded from the server
+                if (data.action === 'create' || data.action === 'update') {
+                    try {
+                        // Different endpoints require different parameter formats
+                        const endpoint = data.action === 'create' 
+                            ? `${this.variableManager.apiBaseUrl}api/variables/create/${port}`
+                            : `${this.variableManager.apiBaseUrl}api/variables/update/${port}`;
+                            
+                        const body = data.action === 'create' 
+                            ? { name: data.name, value: data.value }
+                            : { oldName: data.name, newName: data.name, value: data.value };
+                            
+                        fetch(endpoint, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(body)
+                        }).then(response => {
+                            if (!response.ok) {
+                                console.error(`Error persisting variable ${data.name} to server:`, response.statusText);
+                            } else {
+                                console.log(`Variable ${data.name} persisted to server for tab ${port}`);
+                            }
+                        });
+                    } catch (error) {
+                        console.error('Error saving variable to server:', error);
+                    }
+                } else if (data.action === 'delete') {
+                    try {
+                        fetch(`${this.variableManager.apiBaseUrl}api/variables/delete/${port}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                name: data.name
+                            })
+                        });
+                    } catch (error) {
+                        console.error('Error deleting variable from server:', error);
+                    }
+                }
+                
                 // Only update UI if this is the active terminal
-                if (this.variableManager.activeTabId === port) {
+                if (this.variableManager.activeTabId.toString() === port.toString()) {
                     this.variableManager.updateVariableUI();
                     
                     // Show notification
@@ -563,6 +639,8 @@ class SyncManager {
                     } catch (error) {
                         console.warn('Error showing variable update notification:', error);
                     }
+                } else {
+                    console.log(`Skipping UI update for tab ${port} since it's not the active tab (${this.variableManager.activeTabId})`);
                 }
             }
         } catch (error) {

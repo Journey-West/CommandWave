@@ -163,6 +163,35 @@ document.addEventListener('DOMContentLoaded', () => {
             return line.replace(regex, '<span class="search-highlight">$1</span>');
         }
         
+        // Connection Status Modal wiring
+        const connStatusBtn = document.getElementById('connectionStatusBtn');
+        let statusInterval;
+        function updateConnectionModal() {
+            const statusElem = document.getElementById('connectionStatusText');
+            const lastElem = document.getElementById('lastContactText');
+            const connected = WebSocketHandler.isConnected();
+            statusElem.innerHTML = `Status: <strong>${connected ? 'Connected' : 'Disconnected'}</strong>`;
+            const lastTime = WebSocketHandler.lastServerContactTime;
+            const diff = lastTime ? Math.floor((Date.now() - lastTime)/1000) : null;
+            lastElem.innerHTML = `Last server contact: <strong>${diff !== null ? diff + 's' : '--'} ago</strong>`;
+        }
+        if (connStatusBtn) {
+            connStatusBtn.addEventListener('click', () => {
+                modalController.openModal('connectionStatusModal');
+                updateConnectionModal();
+                statusInterval = setInterval(updateConnectionModal, 1000);
+            });
+        }
+        document.addEventListener('modalClosed', (e) => {
+            if (e.detail.modalId === 'connectionStatusModal' && statusInterval) {
+                clearInterval(statusInterval);
+                statusInterval = null;
+            }
+        });
+        WebSocketHandler.addEventListener('server_pong', updateConnectionModal);
+        WebSocketHandler.addEventListener('connection_established', updateConnectionModal);
+        WebSocketHandler.addEventListener('connection_lost', updateConnectionModal);
+        
         // Setup global error handling for uncaught exceptions
         window.addEventListener('error', (event) => {
             ErrorHandler.handleError(event.error || new Error(event.message), 

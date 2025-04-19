@@ -6,35 +6,6 @@
     <title>CommandWave - Terminal Management Interface</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/terminal_area.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/theme_selector.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/terminal.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/notes_panel.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/modal.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/settings_dropdown.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/settings_modal.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/connection_status_modal.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/header.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/playbook_panel.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/variables_panel.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/search.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/theme_controls.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/markdown.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/playbook_scroll_fix.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/notifications.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/presence.css') }}">
-    
-    <!-- Code blocks styling with copy and execute buttons -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/code-blocks.css') }}">
-    
-    <!-- Theme CSS files -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/themes/digital-rain.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/themes/outrun-sunset.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/themes/corporate-dystopia.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/themes/holographic.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/themes/tokyo-night.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/themes/amber-interface.css') }}">
-    
     <!-- Custom dark theme for Prism instead of prism-tomorrow -->
     <style>
     /* Custom Dark Cyberpunk theme for Prism.js */
@@ -191,70 +162,8 @@
         margin: 1rem 0;
     }
     </style>
-    
-    <style>
-        /* Styles for delete button with hold-to-confirm functionality */
-        .modal-btn.delete {
-            background-color: rgba(180, 20, 20, 0.6);
-            border: 1px solid rgba(255, 50, 50, 0.8);
-            color: #fff;
-            position: relative;
-            overflow: hidden;
-            transition: background-color 0.3s;
-        }
-        
-        .modal-btn.delete:hover {
-            background-color: rgba(200, 30, 30, 0.7);
-        }
-        
-        .modal-btn.delete:active {
-            background-color: rgba(220, 40, 40, 0.8);
-        }
-        
-        .delete-progress {
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            height: 4px;
-            width: 0%;
-            background: linear-gradient(90deg, #ff3030, #ff5050);
-            box-shadow: 0 0 8px #ff3030;
-            transition: width 0.1s linear;
-        }
-        
-        .delete-countdown {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.8);
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        
-        .delete-active .delete-countdown {
-            opacity: 1;
-        }
-        
-        /* Hide the original button text when countdown is active */
-        .modal-btn.delete .button-text {
-            transition: opacity 0.2s;
-        }
-        
-        .modal-btn.delete.delete-active .button-text {
-            opacity: 0;
-        }
-    </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/variable_modal.css') }}">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <!-- Add markdown-it via CDN for frontend markdown rendering -->
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 </head>
 <body>
     <input type="hidden" id="hostname" value="{{ hostname }}">
@@ -263,24 +172,14 @@
         <div class="header-controls">
             <button class="header-notes-btn" id="globalNotesBtn">Global Notes</button>
             <button class="header-notes-btn" id="tabNotesBtn">Tab Notes</button>
-            <!-- Presence Indicator - Added for real-time collaboration -->
-            <div class="presence-indicator">
-                <button class="presence-btn" title="Connected Users">
-                    <i class="fas fa-users"></i> <span class="presence-count">0</span>
-                </button>
-                <div class="presence-dropdown">
-                    <div class="presence-header">Connected Users</div>
-                    <div class="presence-list">
-                        <div class="presence-empty">No users connected</div>
-                    </div>
+            <div class="settings-dropdown">
+                <button class="header-notes-btn" id="settingsBtn">Settings</button>
+                <div class="settings-dropdown-content" id="settingsDropdown">
+                    <a href="#" id="tutorialsMenuItem">Tutorials</a>
+                    <a href="#" id="themeMenuItem">Theme</a>
+                    <a href="#" id="aboutMenuItem">About</a>
                 </div>
             </div>
-            <button class="settings-btn" id="connectionStatusBtn" title="Connection Status" data-modal-target="connectionStatusModal">
-                <i class="fas fa-signal"></i>
-            </button>
-            <button class="settings-btn" id="settingsBtn" title="Settings">
-                <i class="fas fa-cog"></i> Settings
-            </button>
         </div>
     </header>
 
@@ -288,7 +187,7 @@
         <div class="content-area">
             <section class="variable-section">
                 <div class="variable-header">
-                    <h2>$Variables</h2>
+                    <h2>Variables</h2>
                     <button class="toggle-variables-btn" id="toggleVariablesBtn">
                         <span class="toggle-text">[ <span class="toggle-arrow"><i class="fas fa-angle-down" id="variablesCollapseIcon"></i></span> ]</span>
                     </button>
@@ -323,7 +222,6 @@
                             <label for="controlSocket">Control Socket:</label>
                             <input type="text" id="controlSocket" name="controlSocket" placeholder="$ControlSocket">
                         </div>
-                        <!-- Custom variables will be inserted here by JavaScript -->
                     </div>
                     <div class="variable-controls">
                         <label for="addVariableInput" class="add-variable-btn">+ Add Variable</label>
@@ -333,23 +231,17 @@
             </section>
 
             <section class="playbook-section">
-                <div class="playbook-header-row">
-                    <h2><i class="fas fa-book-open"></i> Playbooks</h2>
-                    <div class="playbook-controls-inline">
-                        <div class="action-buttons">
-                            <button id="createPlaybookBtn" class="create-playbook-btn" title="Create New Playbook">
-                                <i class="fas fa-plus-circle"></i>
-                            </button>
-                            <label for="uploadPlaybook" class="upload-btn" title="Upload Playbook">
-                                <i class="fas fa-upload"></i>
-                            </label>
-                            <input type="file" id="uploadPlaybook" accept=".md" style="display: none;">
-                        </div>
-                        <div class="search-container">
-                            <input type="text" id="searchInput" placeholder="Search local playbooks...">
-                            <button id="clearSearchBtn" class="clear-search-btn">&times;</button>
-                            <div id="searchResults" class="search-results"></div>
-                        </div>
+                <h2>Playbooks</h2>
+                <div class="playbook-controls">
+                    <div class="action-buttons">
+                        <button id="createPlaybookBtn" class="create-playbook-btn">Create New Playbook</button>
+                        <label for="uploadPlaybook" class="upload-btn">Upload Playbook</label>
+                        <input type="file" id="uploadPlaybook" accept=".md" style="display: none;">
+                    </div>
+                    <div class="search-container">
+                        <input type="text" id="searchInput" placeholder="Search local playbooks...">
+                        <button id="clearSearchBtn" class="clear-search-btn">&times;</button>
+                        <div id="searchResults" class="search-results"></div>
                     </div>
                 </div>
                 <div id="playbooks" class="playbooks-container">
@@ -362,7 +254,7 @@
             <div class="terminal-tabs">
                 <button class="tab-btn active" data-port="{{ default_terminal_port }}">Main</button>
                 <button class="tab-btn add-tab" id="addTabBtn">+</button>
-                <span class="terminal-title"><i class="fas fa-layer-group"></i> <span class="terminal-title-text">Terminal</span></span>
+                <span class="terminal-title">tmux</span>
             </div>
             <div class="terminal-container">
                 <iframe src="http://{{ hostname }}:{{ default_terminal_port }}" class="terminal-iframe active" id="terminal-{{ default_terminal_port }}" data-port="{{ default_terminal_port }}"></iframe>
@@ -422,11 +314,11 @@ echo 'Hello, World!'
     </div>
     
     <!-- Modal for creating new terminal tabs -->
-    <div id="newTerminalModal" class="modal-container">
+    <div id="newTerminalModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Create New Terminal</h3>
-                <button class="modal-close">&times;</button>
+                <button class="close-modal-btn">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -469,32 +361,6 @@ echo 'Hello, World!'
         </div>
     </div>
 
-    <!-- Modal for renaming terminal tabs -->
-    <div id="renameTerminalModal" class="modal-container">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Modify Terminal</h3>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="renameTerminalName">Terminal Name:</label>
-                    <input type="text" id="renameTerminalName" placeholder="Enter terminal name" class="modal-input">
-                    <input type="hidden" id="renameTerminalPort">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button id="deleteTerminalBtn" class="modal-btn delete">
-                    <span class="button-text">Delete Terminal</span>
-                    <div class="delete-progress"></div>
-                    <div class="delete-countdown">Hold to delete...</div>
-                </button>
-                <button id="cancelRenameBtn" class="modal-btn cancel">Cancel</button>
-                <button id="renameTerminalSubmitBtn" class="modal-btn submit">Rename</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Modal containers -->
     <div id="themeModal" class="modal-container">
         <div class="modal-content">
@@ -517,30 +383,6 @@ echo 'Hello, World!'
                     <div class="theme-option" data-theme="witchhazel">
                         <div class="theme-preview witchhazel"></div>
                         <div class="theme-name">Witch Hazel</div>
-                    </div>
-                    <div class="theme-option" data-theme="digital-rain">
-                        <div class="theme-preview digital-rain"></div>
-                        <div class="theme-name">Digital Rain</div>
-                    </div>
-                    <div class="theme-option" data-theme="outrun-sunset">
-                        <div class="theme-preview outrun-sunset"></div>
-                        <div class="theme-name">Outrun Sunset</div>
-                    </div>
-                    <div class="theme-option" data-theme="corporate-dystopia">
-                        <div class="theme-preview corporate-dystopia"></div>
-                        <div class="theme-name">Corporate Dystopia</div>
-                    </div>
-                    <div class="theme-option" data-theme="holographic">
-                        <div class="theme-preview holographic"></div>
-                        <div class="theme-name">Holographic</div>
-                    </div>
-                    <div class="theme-option" data-theme="tokyo-night">
-                        <div class="theme-preview tokyo-night"></div>
-                        <div class="theme-name">Tokyo Night</div>
-                    </div>
-                    <div class="theme-option" data-theme="amber-interface">
-                        <div class="theme-preview amber-interface"></div>
-                        <div class="theme-name">Amber Interface</div>
                     </div>
                 </div>
             </div>
@@ -566,40 +408,6 @@ echo 'Hello, World!'
         </div>
     </div>
     
-    <!-- Confirmation Modal -->
-    <div id="confirmModal" class="modal-container">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="confirmTitle">Confirm Action</h3>
-                <span class="modal-close">&times;</span>
-            </div>
-            <div class="modal-body">
-                <p id="confirmMessage">Are you sure you want to proceed?</p>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-btn" id="confirmCancel">Cancel</button>
-                <button class="modal-btn confirm" id="confirmAction">Confirm</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Connection Status Modal -->
-    <div id="connectionStatusModal" class="modal-container">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Connection Status</h3>
-                <span class="modal-close" data-target="connectionStatusModal">&times;</span>
-            </div>
-            <div class="modal-body">
-                <p id="connectionStatusText">Status: <strong>Unknown</strong></p>
-                <p id="lastContactText">Last server contact: <strong>--</strong> ago</p>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-btn" data-target="connectionStatusModal">Close</button>
-            </div>
-        </div>
-    </div>
-
     <div id="aboutModal" class="modal-container">
         <div class="modal-content">
             <div class="modal-header">
@@ -625,37 +433,13 @@ echo 'Hello, World!'
         </div>
     </div>
 
-    <!-- Settings Modal -->
-    {% include 'partials/_settings_modal.html' %}
-
-    <!-- Variable Modals -->
-    {% include 'partials/_variable_modal.html' %}
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.2/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/components/prism-python.min.js"></script>
     
-    <!-- CDN Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it@12.2.0/dist/markdown-it.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.2/dist/socket.io.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/prism.min.js"></script>
-    <!-- Prism language components for common languages -->
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/components/prism-bash.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/components/prism-python.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/components/prism-javascript.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/components/prism-yaml.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/components/prism-json.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/components/prism-sql.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/components/prism-ruby.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/components/prism-go.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/components/prism-powershell.min.js"></script>
-    
-    <!-- Main script -->
-    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
-    
-    <!-- Notification Toast Container -->
-    <div id="notificationContainer" class="notification-container">
-        <!-- Notification toasts will be dynamically added here -->
-    </div>
-
-    <!-- Add a hidden API base URL element that JavaScript can reference -->
-    <div id="api-base-url" data-url="{{ request.url_root }}" style="display: none;"></div>
-    <div id="notificationContainer" class="notification-container"></div>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
