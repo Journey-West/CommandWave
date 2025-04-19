@@ -632,7 +632,7 @@ class VariableManager {
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+                throw new Error(`Server responded with ${response.status}`);
             }
             return response.json();
         })
@@ -647,6 +647,9 @@ class VariableManager {
                 if (form) {
                     form.reset();
                 }
+                
+                // Notify other clients about the variable change
+                this.notifySyncManager('create', name, value);
             } else {
                 this.showError(data.error || 'Failed to create variable');
             }
@@ -1005,6 +1008,9 @@ class VariableManager {
                         variables: this.variableSets[this.activeTabId]
                     }
                 }));
+                
+                // Notify SyncManager about the variable change
+                this.notifySyncManager('update', newName, value);
             } else {
                 // Before giving up, let's log the DOM structure for debugging
                 console.log('Variable inputs in DOM:', document.querySelectorAll('.variable-input'));
@@ -1089,6 +1095,9 @@ class VariableManager {
                 this.closeModal('editVariableModal');
                 
                 console.log(`Successfully deleted variable ${name} (client-side only)`);
+                
+                // Notify SyncManager about the variable change
+                this.notifySyncManager('delete', name, '');
             } else {
                 this.showError(`Could not find variable "${name}" in the DOM`);
             }
@@ -1114,7 +1123,7 @@ class VariableManager {
         fetch(apiUrl)
         .then(response => {
             if (!response.ok) {
-                throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+                throw new Error(`Server responded with ${response.status}`);
             }
             return response.json();
         })
@@ -1292,6 +1301,30 @@ class VariableManager {
         });
     }
     
+    /**
+     * Notify SyncManager about variable changes for real-time sync
+     * @param {string} action - The action performed (create, update, delete)
+     * @param {string} name - Variable name/reference
+     * @param {string} value - Variable value
+     */
+    notifySyncManager(action, name, value) {
+        try {
+            // Use the SyncManager from the global CommandWave object
+            if (window.CommandWave && window.CommandWave.syncManager) {
+                console.log(`Syncing variable change: ${action} ${name}=${value}`);
+                window.CommandWave.syncManager.syncVariableChange(
+                    this.activeTabId,
+                    name,
+                    value,
+                    action
+                );
+            }
+        } catch (error) {
+            console.error('Error notifying sync manager:', error);
+            // Non-critical error, don't show to user as the variable operation succeeded
+        }
+    }
+
     /**
      * Setup the hold-to-delete functionality for the delete variable button
      * @param {HTMLElement} deleteBtn - The delete button element

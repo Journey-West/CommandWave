@@ -339,26 +339,19 @@ class SyncManager {
      */
     createTerminalTab(terminalId, port, name) {
         // Don't create if it already exists
-        if (document.querySelector(`.tab-btn[data-terminal-id="${terminalId}"]`)) {
+        if (document.querySelector(`.tab-btn[data-port="${port}"]`)) {
             return;
         }
         
         // Find the tab container
-        const tabContainer = document.querySelector('.tab-buttons');
+        const tabContainer = document.querySelector('.terminal-tabs');
         if (!tabContainer) return;
         
         // Create new tab button
         const tabButton = document.createElement('button');
         tabButton.className = 'tab-btn';
-        tabButton.setAttribute('data-terminal-id', terminalId);
         tabButton.setAttribute('data-port', port);
         tabButton.textContent = name || `Terminal ${port}`;
-        
-        // Add close button
-        const closeButton = document.createElement('span');
-        closeButton.className = 'tab-close';
-        closeButton.innerHTML = '&times;';
-        tabButton.appendChild(closeButton);
         
         // Insert before the add tab button
         const addTabBtn = document.querySelector('#addTabBtn');
@@ -368,31 +361,31 @@ class SyncManager {
             tabContainer.appendChild(tabButton);
         }
         
-        // Initialize a new terminal iframe container if it doesn't exist
-        let terminalContainer = document.querySelector(`.terminal-container[data-terminal-id="${terminalId}"]`);
-        if (!terminalContainer) {
-            // Find the parent container
-            const terminalsContainer = document.querySelector('.terminals-container');
-            if (!terminalsContainer) return;
-            
-            // Create new terminal container
-            terminalContainer = document.createElement('div');
-            terminalContainer.className = 'terminal-container';
-            terminalContainer.style.display = 'none';
-            terminalContainer.setAttribute('data-terminal-id', terminalId);
-            
+        // Create new iframe
+        const terminalContainer = document.querySelector('.terminal-container');
+        if (terminalContainer) {
             // Create iframe
             const iframe = document.createElement('iframe');
             iframe.className = 'terminal-iframe';
+            iframe.id = `terminal-${port}`;
             iframe.setAttribute('data-port', port);
-            iframe.setAttribute('data-terminal-id', terminalId);
             
             // Set iframe src based on hostname
-            const hostname = window.state.hostname || 'localhost';
+            const hostname = window.location.hostname || 'localhost';
             iframe.src = `http://${hostname}:${port}`;
             
             terminalContainer.appendChild(iframe);
-            terminalsContainer.appendChild(terminalContainer);
+            
+            // Add click event to the button to switch terminals
+            tabButton.addEventListener('click', () => {
+                // Deactivate other terminals
+                document.querySelectorAll('.tab-btn').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.terminal-iframe').forEach(iframe => iframe.classList.remove('active'));
+                
+                // Activate this terminal
+                tabButton.classList.add('active');
+                iframe.classList.add('active');
+            });
         }
     }
     
@@ -412,14 +405,9 @@ class SyncManager {
         }
         
         // Update the tab button
-        const tabButton = document.querySelector(`.tab-btn[data-terminal-id="${data.terminal_id}"]`);
+        const tabButton = document.querySelector(`.tab-btn[data-port="${data.port}"]`);
         if (tabButton) {
-            // Preserve the close button
-            const closeButton = tabButton.querySelector('.tab-close');
             tabButton.textContent = data.name;
-            if (closeButton) {
-                tabButton.appendChild(closeButton);
-            }
         }
         
         // Show notification if this is the active terminal
@@ -456,15 +444,18 @@ class SyncManager {
         }
         
         // Remove tab button
-        const tabButton = document.querySelector(`.tab-btn[data-terminal-id="${data.terminal_id}"]`);
+        const tabButton = document.querySelector(`.tab-btn[data-port="${data.port}"]`);
         if (tabButton) {
             tabButton.remove();
         }
         
         // Remove terminal container
-        const terminalContainer = document.querySelector(`.terminal-container[data-terminal-id="${data.terminal_id}"]`);
+        const terminalContainer = document.querySelector(`.terminal-container`);
         if (terminalContainer) {
-            terminalContainer.remove();
+            const iframe = terminalContainer.querySelector(`iframe[data-port="${data.port}"]`);
+            if (iframe) {
+                iframe.remove();
+            }
         }
         
         // Show notification
@@ -483,7 +474,7 @@ class SyncManager {
         
         // If this was the active terminal, activate the first available
         if (window.state.activeTerminal === data.terminal_id) {
-            const firstTabBtn = document.querySelector('.tab-btn[data-terminal-id]');
+            const firstTabBtn = document.querySelector('.tab-btn[data-port]');
             if (firstTabBtn) {
                 // Dispatch a click event to activate
                 firstTabBtn.click();
@@ -499,15 +490,22 @@ class SyncManager {
         // Skip if we're missing data
         if (!data.terminal_id || !data.name) return;
         
-        // Extract raw terminal ID if it has a prefix
-        const terminalId = data.terminal_id.startsWith('terminal-') 
-            ? data.terminal_id 
-            : `terminal-${data.terminal_id}`;
+        // Normalize terminal ID format - we need the port number
+        const terminalId = data.terminal_id;
+        const portMatch = terminalId.match(/\d+$/);
+        const port = portMatch ? portMatch[0] : terminalId;
         
-        console.log(`Remote variable ${data.action}: ${terminalId} - ${data.name}`);
+        console.log(`Remote variable ${data.action}: terminal=${terminalId}, port=${port}, name=${data.name}, value=${data.value}`);
         
-        // Skip if this terminal doesn't exist in our state
-        if (!window.state.terminals[terminalId]) return;
+        // Initialize state for this terminal if it doesn't exist
+        if (!window.state.terminals[terminalId]) {
+            window.state.terminals[terminalId] = {
+                port: port,
+                name: `Terminal ${port}`,
+                variables: {},
+                playbooks: {}
+            };
+        }
         
         // Update variable in state based on action
         switch (data.action) {
@@ -533,29 +531,44 @@ class SyncManager {
                 return;
         }
         
-        // Update UI if this is the active terminal
-        if (window.state.activeTerminal === terminalId) {
-            // Use the variable manager if available
-            if (this.variableManager && typeof this.variableManager.updateVariableUI === 'function') {
-                this.variableManager.updateVariableUI();
-            } else {
-                // Fallback: Update variable inputs manually
-                this.updateVariableInputs(terminalId);
+        // Try to directly update the variable manager
+        try {
+            if (this.variableManager) {
+                // Force update of the variable manager state for this terminal
+                if (!this.variableManager.variableSets[port]) {
+                    this.variableManager.variableSets[port] = {};
+                }
+                
+                // Update the variable in the variable manager's state
+                if (data.action === 'create' || data.action === 'update') {
+                    this.variableManager.variableSets[port][data.name] = { value: data.value };
+                } else if (data.action === 'delete') {
+                    delete this.variableManager.variableSets[port][data.name];
+                }
+                
+                // Only update UI if this is the active terminal
+                if (this.variableManager.activeTabId === port) {
+                    this.variableManager.updateVariableUI();
+                    
+                    // Show notification
+                    const actionText = data.action === 'create' ? 'created' : 
+                                      data.action === 'update' ? 'updated' : 'deleted';
+                    try {
+                        NotificationManager.show(
+                            `Variable ${actionText}`,
+                            `Variable "${data.name}" ${actionText} by another user`,
+                            'info',
+                            3000
+                        );
+                    } catch (error) {
+                        console.warn('Error showing variable update notification:', error);
+                    }
+                }
             }
-            
-            // Show notification
-            const actionText = data.action === 'create' ? 'created' : 
-                              data.action === 'update' ? 'updated' : 'deleted';
-            try {
-                NotificationManager.show(
-                    `Variable ${actionText}`,
-                    `Variable "${data.name}" ${actionText} by another user`,
-                    'info',
-                    3000
-                );
-            } catch (error) {
-                console.warn('Error showing variable update notification:', error);
-            }
+        } catch (error) {
+            console.error('Error updating variable manager:', error);
+            // Fallback: Update variable inputs manually
+            this.updateVariableInputs(terminalId);
         }
     }
     

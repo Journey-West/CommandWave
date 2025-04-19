@@ -285,17 +285,16 @@ class WebSocketHandler {
             return;
         }
         
-        // Handle both calling conventions:
-        // 1. (port, name) - where port is used as both terminal_id and port
-        // 2. (terminalId, name, port) - traditional parameter order
-        let terminalId = portOrTerminalId;
-        let terminalPort = port !== null ? port : portOrTerminalId;
+        // Ensure port is always set correctly
+        const terminalPort = port || portOrTerminalId;
         
-        console.log(`Notifying terminal created: id=${terminalId}, name="${name}", port=${terminalPort}`);
+        console.log(`Broadcasting terminal creation event: port=${terminalPort}, name=${name}`);
+        
         this.socket.emit('terminal_created', {
-            terminal_id: terminalId,
+            terminal_id: this.clientId + '_' + terminalPort, // Use clientId to make terminal_id unique
+            port: terminalPort,
             name: name,
-            port: terminalPort
+            sender_id: this.clientId
         });
     }
 
