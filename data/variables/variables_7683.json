@@ -33,5 +33,10 @@
     "display_name": "ControlSocket",
     "reference": "ControlSocket",
     "value": ""
+  },
+  "HOST": {
+    "display_name": "HOST",
+    "reference": "HOST",
+    "value": ""
   }
 }

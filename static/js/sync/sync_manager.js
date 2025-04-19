@@ -24,6 +24,15 @@ class SyncManager {
             playbooks: {},
             notes: {}
         };
+        
+        // Initialize global state object if it doesn't exist
+        if (!window.state) {
+            window.state = {
+                terminals: {},
+                activeTerminal: null,
+                editingLocks: {}
+            };
+        }
     }
     
     /**
