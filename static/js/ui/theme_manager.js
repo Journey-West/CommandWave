@@ -7,10 +7,40 @@ class ThemeManager {
     constructor() {
         this.storageKey = 'commandwave-theme';
         this.defaultTheme = 'dark';
-        this.availableThemes = ['dark', 'light'];
-        this.themeFileMap = { 'dark': 'cyberpunk-dark', 'light': 'neon-light' };
-        this.themeLabels = { 'dark': 'Cyberpunk Dark', 'light': 'Neon Light' };
-        this.themeIcons = { 'dark': 'fa-moon', 'light': 'fa-sun' };
+        this.availableThemes = ['dark', 'light', 'witchhazel', 'digital-rain', 'outrun-sunset', 'corporate-dystopia', 'holographic', 'tokyo-night', 'amber-interface'];
+        this.themeFileMap = {
+            'dark': 'cyberpunk-dark',
+            'light': 'neon-light',
+            'witchhazel': 'witch-hazel',
+            'digital-rain': 'digital-rain',
+            'outrun-sunset': 'outrun-sunset',
+            'corporate-dystopia': 'corporate-dystopia',
+            'holographic': 'holographic',
+            'tokyo-night': 'tokyo-night',
+            'amber-interface': 'amber-interface'
+        };
+        this.themeLabels = {
+            'dark': 'Cyberpunk Dark',
+            'light': 'Neon Light',
+            'witchhazel': 'Witch Hazel',
+            'digital-rain': 'Digital Rain',
+            'outrun-sunset': 'Outrun Sunset',
+            'corporate-dystopia': 'Corporate Dystopia',
+            'holographic': 'Holographic',
+            'tokyo-night': 'Tokyo Night',
+            'amber-interface': 'Amber Interface'
+        };
+        this.themeIcons = {
+            'dark': 'fa-moon',
+            'light': 'fa-sun',
+            'witchhazel': 'fa-spa',
+            'digital-rain': 'fa-code',
+            'outrun-sunset': 'fa-sun',
+            'corporate-dystopia': 'fa-building',
+            'holographic': 'fa-glass-cheers',
+            'tokyo-night': 'fa-city',
+            'amber-interface': 'fa-tv'
+        };
         
         this.init();
     }

@@ -2,4 +2,53 @@
    Witch Hazel theme styles for CommandWave.
 */
 
-/* (Theme-specific styles will be migrated here) */
+[data-theme="witchhazel"] {
+    /* Base colors */
+    --background-dark: #282634;
+    --background-medium: #332e41;
+    --text-primary: #f8f8f2;
+    --text-secondary: #c5b5e0;
+    --neon-blue: #81ffff;
+    --neon-purple: #b45bcf;
+    --neon-pink: #ff79c6;
+    --neon-yellow: #f4d554;
+    --neon-green: #8bff80;
+    --accent: #ff79c6;
+    --border-light: rgba(129, 255, 255, 0.2);
+    --shadow-blue: 0 0 10px rgba(129, 255, 255, 0.5);
+    --shadow-pink: 0 0 10px rgba(255, 121, 198, 0.5);
+    --shadow-purple: 0 0 10px rgba(180, 91, 207, 0.5);
+    --shadow-yellow: 0 0 10px rgba(244, 213, 84, 0.5);
+    --shadow-green: 0 0 10px rgba(139, 255, 128, 0.5);
+
+    /* Modal styling */
+    --modal-background: #282634;
+    --modal-border: rgba(180, 91, 207, 0.5);
+    --modal-header-bg: linear-gradient(90deg, #332e41, #282634);
+    --modal-footer-bg: linear-gradient(90deg, #282634, #332e41);
+
+    /* Code blocks */
+    --code-background: #282634;
+    --code-border: rgba(129, 255, 255, 0.3);
+    --code-text: #f8f8f2;
+
+    /* Input fields */
+    --input-bg: #1e1d2a;
+    --input-border: rgba(180, 91, 207, 0.3);
+    --input-text: var(--text-primary);
+
+    /* Notes panels */
+    --notes-panel-bg: var(--background-medium);
+    --notes-panel-border: rgba(180, 91, 207, 0.3);
+
+    /* Header */
+    --header-background: rgba(40, 38, 52, 0.8);
+    --header-border: rgba(180, 91, 207, 0.3);
+}
+
+[data-theme="witchhazel"] body {
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(129, 255, 255, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(180, 91, 207, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 50% 50%, rgba(255, 121, 198, 0.05) 0%, transparent 40%);
+}
