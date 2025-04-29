@@ -1033,7 +1033,7 @@ if __name__ == '__main__':
             host = '0.0.0.0' if args.remote else '127.0.0.1'
             
             # Use socketio.run instead of app.run
-            socketio.run(app, host=host, port=args.port, debug=False, allow_unsafe_werkzeug=True)
+            socketio.run(app, host=host, port=args.port, debug=False)
         else:
             logger.error("Failed to start initial terminal. Check if ttyd and tmux are installed.")
             sys.exit(1)
