@@ -21,6 +21,12 @@ export default class SettingsManager {
      * Initialize settings functionality
      */
     init() {
+        // Initialize theme on startup
+        const savedTheme = this.settings.theme || 'dark';
+        if (window.CommandWave && window.CommandWave.themeManager) {
+            window.CommandWave.themeManager.applyTheme(savedTheme);
+        }
+        // Continue with dropdown and menu setup
         try {
             this.setupSettingsDropdown();
             this.setupMenuItems();

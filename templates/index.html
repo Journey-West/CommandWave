@@ -28,14 +28,6 @@
     <!-- Code blocks styling with copy and execute buttons -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components/code-blocks.css') }}">
     
-    <!-- Theme CSS files -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/themes/digital-rain.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/themes/outrun-sunset.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/themes/corporate-dystopia.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/themes/holographic.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/themes/tokyo-night.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/themes/amber-interface.css') }}">
-    
     <!-- Custom dark theme for Prism instead of prism-tomorrow -->
     <style>
     /* Custom Dark Cyberpunk theme for Prism.js */
@@ -266,6 +258,9 @@
             <button class="header-notes-btn" id="tabNotesBtn">Tab Notes</button>
             <button class="settings-btn" id="settingsBtn" title="Settings">
                 <i class="fas fa-cog"></i> Settings
+            </button>
+            <button class="theme-toggle" id="themeToggleBtn" title="Toggle Theme">
+                <i class="fas fa-moon"></i>
             </button>
             <!-- Combined Presence/Notification Button -->
             <button class="presence-notification-btn" title="Connection & Notifications">

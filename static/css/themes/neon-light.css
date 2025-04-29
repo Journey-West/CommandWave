@@ -2,4 +2,46 @@
    Neon light theme styles for CommandWave.
 */
 
-/* (Theme-specific styles will be migrated here) */
+:root[data-theme="light"] {
+    --background-dark: #f0f4f8;
+    --background-medium: #dbe4f0;
+    --text-primary: #2a2a4a;
+    --text-secondary: #4a4a6a;
+    --neon-blue: #0083b0;
+    --neon-purple: #8245bf;
+    --neon-pink: #d12765;
+    --neon-yellow: #b08c00;
+    --neon-green: #00a86b;
+    --accent: #d12765;
+    --border-light: rgba(0, 131, 176, 0.3);
+    --shadow-blue: 0 0 10px rgba(0, 131, 176, 0.4);
+    --shadow-pink: 0 0 10px rgba(209, 39, 101, 0.4);
+    --shadow-purple: 0 0 10px rgba(130, 69, 191, 0.4);
+    --shadow-yellow: 0 0 10px rgba(176, 140, 0, 0.4);
+    --shadow-green: 0 0 10px rgba(0, 168, 107, 0.4);
+    --neon-red: rgb(205, 32, 40);
+
+    /* Modal styling */
+    --modal-background: #f0f4f8;
+    --modal-border: rgba(130, 69, 191, 0.3);
+    --modal-header-bg: linear-gradient(90deg, #dbe4f0, #c9d8e8);
+    --modal-footer-bg: linear-gradient(90deg, #c9d8e8, #dbe4f0);
+
+    /* Code blocks */
+    --code-background: #1a1a2e;
+    --code-border: rgba(0, 131, 176, 0.3);
+    --code-text: #e0e0fc;
+
+    /* Input fields */
+    --input-bg: #ffffff;
+    --input-border: rgba(0, 131, 176, 0.3);
+    --input-text: #2a2a4a;
+
+    /* Notes panels */
+    --notes-panel-bg: #edf2f7;
+    --notes-panel-border: rgba(0, 131, 176, 0.3);
+
+    /* Header */
+    --header-background: rgba(219, 228, 240, 0.8);
+    --header-border: rgba(0, 131, 176, 0.3);
+}

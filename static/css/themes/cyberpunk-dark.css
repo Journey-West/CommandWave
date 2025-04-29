@@ -2,4 +2,47 @@
    Cyberpunk dark theme styles for CommandWave.
 */
 
-/* (Theme-specific styles will be migrated here) */
+:root {
+    /* Cyberpunk color palette - Dark Theme (Default) */
+    --background-dark: #0b0b17;
+    --background-medium: #121225;
+    --text-primary: #e0e0fc;
+    --text-secondary: #8a8aa5;
+    --neon-blue: #60efff;
+    --neon-purple: #c264fe;
+    --neon-pink: #ff5a8c;
+    --neon-yellow: #fcee09;
+    --neon-green: #0fff50;
+    --accent: #ff5a8c;
+    --border-light: rgba(96, 239, 255, 0.2);
+    --shadow-blue: 0 0 10px rgba(96, 239, 255, 0.5);
+    --shadow-pink: 0 0 10px rgba(255, 90, 140, 0.5);
+    --shadow-purple: 0 0 10px rgba(194, 100, 254, 0.5);
+    --shadow-yellow: 0 0 10px rgba(252, 238, 9, 0.5);
+    --shadow-green: 0 0 10px rgba(15, 255, 80, 0.5);
+    --neon-red: rgb(255, 50, 50);
+
+    /* Modal styling */
+    --modal-background: #0a0a16;
+    --modal-border: #44009980;
+    --modal-header-bg: linear-gradient(90deg, #18161f 0%, #0f0d1a 100%);
+    --modal-footer-bg: linear-gradient(90deg, #0f0d1a 0%, #18161f 100%);
+
+    /* Code blocks */
+    --code-background: #090915;
+    --code-border: rgba(96, 239, 255, 0.3);
+    --code-text: #e0e0fc;
+
+    /* Input fields */
+    --input-bg: #0d0d1b;
+    --input-border: var(--border-light);
+    --input-text: var(--text-primary);
+
+    /* Notes panels */
+    --notes-panel-bg: var(--background-medium);
+    --notes-panel-border: var(--border-light);
+
+    /* Header */
+    --header-background: rgba(11, 11, 23, 0.8);
+    --header-border: var(--border-light);
+}

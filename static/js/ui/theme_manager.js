@@ -7,41 +7,10 @@ class ThemeManager {
     constructor() {
         this.storageKey = 'commandwave-theme';
         this.defaultTheme = 'dark';
-        this.availableThemes = [
-            'dark',          // Cyberpunk Dark
-            'light',         // Neon Light
-            'witchhazel',    // Witch Hazel
-            'digital-rain',  // Digital Rain
-            'outrun-sunset', // Outrun Sunset
-            'corporate-dystopia', // Corporate Dystopia
-            'holographic',   // Holographic
-            'tokyo-night',   // Tokyo Night
-            'amber-interface' // Amber Interface
-        ];
-        
-        this.themeLabels = {
-            'dark': 'Cyberpunk Dark',
-            'light': 'Neon Light',
-            'witchhazel': 'Witch Hazel',
-            'digital-rain': 'Digital Rain',
-            'outrun-sunset': 'Outrun Sunset',
-            'corporate-dystopia': 'Corporate Dystopia',
-            'holographic': 'Holographic',
-            'tokyo-night': 'Tokyo Night',
-            'amber-interface': 'Amber Interface'
-        };
-        
-        this.themeIcons = {
-            'dark': 'fa-moon',
-            'light': 'fa-sun',
-            'witchhazel': 'fa-hat-wizard',
-            'digital-rain': 'fa-code',
-            'outrun-sunset': 'fa-car',
-            'corporate-dystopia': 'fa-building',
-            'holographic': 'fa-vr-cardboard',
-            'tokyo-night': 'fa-torii-gate',
-            'amber-interface': 'fa-terminal'
-        };
+        this.availableThemes = ['dark', 'light'];
+        this.themeFileMap = { 'dark': 'cyberpunk-dark', 'light': 'neon-light' };
+        this.themeLabels = { 'dark': 'Cyberpunk Dark', 'light': 'Neon Light' };
+        this.themeIcons = { 'dark': 'fa-moon', 'light': 'fa-sun' };
         
         this.init();
     }
@@ -82,10 +51,22 @@ class ThemeManager {
             theme = this.defaultTheme;
         }
         
-        // Remove any existing theme attributes
+        // Dynamic theme CSS loader
+        const existingLink = document.getElementById('theme-css');
+        if (existingLink) existingLink.remove();
+        const fileName = this.themeFileMap[theme];
+        if (fileName) {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.id = 'theme-css';
+            link.href = `/static/css/themes/${fileName}.css`;
+            document.head.appendChild(link);
+        }
+        
+        // Remove existing theme attribute
         document.documentElement.removeAttribute('data-theme');
         
-        // Set the new theme attribute (dark is default, so we don't need to set it)
+        // Set theme attribute for non-default (none here, only dark)
         if (theme !== 'dark') {
             document.documentElement.setAttribute('data-theme', theme);
         }
