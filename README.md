@@ -35,7 +35,7 @@
 
 CommandWave provides a streamlined, web-based environment for managing multiple terminal sessions powered by `tmux` and `ttyd`. It features a distinct cyberpunk/neon aesthetic and allows users to work with Markdown-based "playbooks" containing executable code blocks. Define variables, search through local playbooks, and execute commands directly into your active terminal session, enhancing command-line workflows.
 
-![image](https://github.com/user-attachments/assets/9c6bee26-8887-470b-b5bb-6457f85b7e23)
+![Main-Interface](https://github.com/user-attachments/assets/9c6bee26-8887-470b-b5bb-6457f85b7e23)
 
 > **Why CommandWave?**
 >
