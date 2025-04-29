@@ -56,10 +56,11 @@
 /* Corporate Dystopia special effects */
 [data-theme="corporate-dystopia"] body {
     background-color: var(--background-dark);
-    background-image: 
+    background-image:
         linear-gradient(180deg, rgba(31, 40, 51, 0.95) 0%, rgba(44, 62, 80, 0.95) 100%),
-        url('/static/img/corporate-grid.png');
-    background-size: cover;
+        repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(102, 252, 241, 0.05) 20px, rgba(102, 252, 241, 0.05) 21px),
+        repeating-linear-gradient(90deg, transparent, transparent 20px, rgba(102, 252, 241, 0.05) 20px, rgba(102, 252, 241, 0.05) 21px);
+    background-size: cover, 20px 20px, 20px 20px;
     background-attachment: fixed;
     color: var(--text-primary);
     font-family: 'Roboto', sans-serif;

@@ -57,10 +57,11 @@
 /* Outrun Sunset special effects */
 [data-theme="outrun-sunset"] body {
     background-color: var(--background-dark);
-    background-image: 
+    background-image:
         linear-gradient(180deg, var(--background-dark) 0%, var(--background-medium) 100%),
-        url('/static/img/grid-bg.png');
-    background-size: cover;
+        repeating-linear-gradient(0deg, transparent, transparent 30px, rgba(255,27,141,0.05) 30px, rgba(255,27,141,0.05) 31px),
+        repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(255,27,141,0.05) 30px, rgba(255,27,141,0.05) 31px);
+    background-size: cover, 30px 30px, 30px 30px;
     background-attachment: fixed;
     color: var(--text-primary);
     position: relative;
