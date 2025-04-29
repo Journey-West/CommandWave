@@ -131,7 +131,7 @@ def list_playbooks():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
         
-@playbook_routes.route('/<playbook_id>', methods=['GET'])
+@playbook_routes.route('/<path:playbook_id>', methods=['GET'])
 def get_playbook(playbook_id):
     """Get a specific playbook by ID."""
     try:
@@ -145,7 +145,7 @@ def get_playbook(playbook_id):
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@playbook_routes.route('/<playbook_id>/delete', methods=['POST'])
+@playbook_routes.route('/<path:playbook_id>/delete', methods=['POST'])
 def delete_playbook(playbook_id):
     """Delete a specific playbook by ID."""
     try:
@@ -170,7 +170,7 @@ def delete_playbook(playbook_id):
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@playbook_routes.route('/<playbook_id>/update', methods=['POST'])
+@playbook_routes.route('/<path:playbook_id>/update', methods=['POST'])
 def update_playbook(playbook_id):
     """Update a specific playbook by ID."""
     try:
