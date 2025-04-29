@@ -35,11 +35,17 @@ class PlaybookAPI {
      */
     async getPlaybook(id) {
         try {
-            const response = await fetch(`${this.baseUrl}/${id}`);
+            // Preserve slash separators by encoding individual segments
+            const encodedPath = id.split('/').map(encodeURIComponent).join('/');
+            const response = await fetch(`${this.baseUrl}/${encodedPath}`);
             const data = await response.json();
             
             if (!data.success) {
                 throw new Error(data.error || 'Failed to get playbook');
+            }
+            
+            if (!data.playbook) {
+                throw new Error('No playbook returned');
             }
             
             return data.playbook;

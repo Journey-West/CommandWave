@@ -13,6 +13,7 @@ CommandWave allows you to create and manage multiple terminal sessions simultane
 # 1. Create terminals with the '+' button
 # 2. Switch between them by clicking on tabs
 # 3. Rename terminals by double-clicking on a tab name
+ls
 ```
 
 ### Terminal Synchronization

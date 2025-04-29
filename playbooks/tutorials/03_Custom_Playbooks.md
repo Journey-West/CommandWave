@@ -17,6 +17,7 @@ There are two ways to create playbooks:
 # 1. Click the "Upload Playbook" button
 # 2. Select a .md file from your computer
 # 3. The playbook will appear in the list
+ip - c a
 ```
 
 ### 2. Create a Playbook in the App
