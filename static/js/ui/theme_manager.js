@@ -7,43 +7,15 @@ class ThemeManager {
     constructor() {
         this.storageKey = 'commandwave-theme';
         this.defaultTheme = 'dark';
-        this.availableThemes = [];  // will be populated via API
-        this.themeFileMap = {
-            'dark': 'cyberpunk-dark',
-            'light': 'neon-light',
-            'witchhazel': 'witch-hazel',
-            'digital-rain': 'digital-rain',
-            'outrun-sunset': 'outrun-sunset',
-            'corporate-dystopia': 'corporate-dystopia',
-            'holographic': 'holographic',
-            'tokyo-night': 'tokyo-night',
-            'amber-interface': 'amber-interface'
-        };
-        this.themeLabels = {
-            'dark': 'Cyberpunk Dark',
-            'light': 'Neon Light',
-            'witchhazel': 'Witch Hazel',
-            'digital-rain': 'Digital Rain',
-            'outrun-sunset': 'Outrun Sunset',
-            'corporate-dystopia': 'Corporate Dystopia',
-            'holographic': 'Holographic',
-            'tokyo-night': 'Tokyo Night',
-            'amber-interface': 'Amber Interface'
-        };
-        this.themeIcons = {
-            'dark': 'fa-moon',
-            'light': 'fa-sun',
-            'witchhazel': 'fa-spa',
-            'digital-rain': 'fa-code',
-            'outrun-sunset': 'fa-sun',
-            'corporate-dystopia': 'fa-building',
-            'holographic': 'fa-glass-cheers',
-            'tokyo-night': 'fa-city',
-            'amber-interface': 'fa-tv'
-        };
+        this.availableThemes = [];
+        this.themeFileMap = {};
+        this.themeLabels = {};
+        this.themeIcons = {};
         
-        // Fetch available themes then initialize
-        this.fetchAvailableThemes().then(() => this.init());
+        // Load theme metadata, then discover CSS files, then initialize
+        this.fetchThemeMetadata()
+            .then(() => this.fetchAvailableThemes())
+            .then(() => this.init());
     }
     
     /**
@@ -281,6 +253,24 @@ class ThemeManager {
         } catch (e) {
             console.error('Error fetching themes:', e);
             this.availableThemes = Object.keys(this.themeFileMap);
+        }
+    }
+    
+    /**
+     * Fetch theme metadata (file map, labels, icons) from static JSON manifest
+     */
+    async fetchThemeMetadata() {
+        try {
+            const res = await fetch('/static/css/themes/themes.json');
+            const data = await res.json();
+            Object.keys(data).forEach(key => {
+                const item = data[key];
+                this.themeFileMap[key] = item.file;
+                this.themeLabels[key] = item.label;
+                this.themeIcons[key] = item.icon;
+            });
+        } catch (e) {
+            console.error('Error loading theme metadata:', e);
         }
     }
 }
