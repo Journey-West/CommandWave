@@ -14,6 +14,7 @@ class SyncManager {
         this.playbookManager = null;
         this.notesManager = null;
         this.presenceManager = null;
+        this.connectionNotified = false;
         
         // Default debounce time for synchronization events (ms)
         this.debounceTime = 250;
@@ -107,17 +108,20 @@ class SyncManager {
         // Connection events
         WebSocketHandler.addEventListener('connection_established', (data) => {
             console.log('Connected to sync server:', data);
-            
+
             // Notify UI
             try {
-                NotificationManager.show(
-                    'Connected to collaboration server',
-                    'Real-time synchronization enabled',
-                    'success',
-                    3000
-                );
+                if (!this.connectionNotified) {
+                    NotificationManager.show(
+                        'Connected to collaboration server',
+                        'Real-time synchronization enabled',
+                        'success',
+                        3000
+                    );
+                    this.connectionNotified = true;
+                }
             } catch (error) {
-                console.warn('Error showing connection notification:', error);
+                console.warn('Error showing notification:', error);
             }
         });
         
@@ -431,6 +435,8 @@ class SyncManager {
     handleTerminalCreated(data) {
         // Skip if missing data
         if (!data.terminal_id || !data.port) return;
+        // Skip initial server-sent terminal events (no sender_id)
+        if (!data.sender_id) return;
         // Ignore events originated from this client
         if (data.sender_id && data.sender_id === WebSocketHandler.getClientId()) {
             console.log(`Ignored own terminal_created for port ${data.port}`);
