@@ -58,7 +58,7 @@
     background-color: var(--background-dark);
     background-image: 
         linear-gradient(180deg, rgba(31, 40, 51, 0.95) 0%, rgba(44, 62, 80, 0.95) 100%),
-        url('../img/corporate-grid.png');
+        url('/static/img/corporate-grid.png');
     background-size: cover;
     background-attachment: fixed;
     color: var(--text-primary);

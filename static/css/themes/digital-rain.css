@@ -58,7 +58,7 @@
     background-color: var(--background-dark);
     background-image: 
         linear-gradient(0deg, rgba(12, 12, 12, 0.95) 0%, rgba(12, 12, 12, 0.85) 100%),
-        url('../img/matrix-code.png');
+        url('/static/img/matrix-code.png');
     background-size: cover;
     background-attachment: fixed;
     color: var(--text-primary);

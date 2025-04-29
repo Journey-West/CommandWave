@@ -53,6 +53,9 @@ class ThemeManager {
         const currentTheme = this.getSavedTheme();
         this.applyTheme(currentTheme);
         
+        // Dynamically render theme options
+        this.renderThemeOptions();
+        
         // Set up theme option click handlers
         this.setupThemeOptionHandlers();
         
@@ -165,6 +168,30 @@ class ThemeManager {
                     themeModal.classList.remove('active');
                 }
             });
+        });
+    }
+    
+    /**
+     * Render theme options dynamically based on availableThemes
+     */
+    renderThemeOptions() {
+        const container = document.querySelector('.theme-options');
+        if (!container) return;
+        container.innerHTML = '';
+        this.availableThemes.forEach(theme => {
+            const option = document.createElement('div');
+            option.classList.add('theme-option');
+            option.setAttribute('data-theme', theme);
+            // Preview box
+            const preview = document.createElement('div');
+            preview.classList.add('theme-preview', theme);
+            option.appendChild(preview);
+            // Theme label
+            const name = document.createElement('div');
+            name.classList.add('theme-name');
+            name.textContent = this.themeLabels[theme] || theme;
+            option.appendChild(name);
+            container.appendChild(option);
         });
     }
     
