@@ -1,0 +1,47 @@
+{
+    "dark": {
+        "file": "cyberpunk-dark",
+        "label": "Cyberpunk Dark",
+        "icon": "fa-moon"
+    },
+    "light": {
+        "file": "neon-light",
+        "label": "Neon Light",
+        "icon": "fa-sun"
+    },
+    "witchhazel": {
+        "file": "witch-hazel",
+        "label": "Witch Hazel",
+        "icon": "fa-spa"
+    },
+    "digital-rain": {
+        "file": "digital-rain",
+        "label": "Digital Rain",
+        "icon": "fa-code"
+    },
+    "outrun-sunset": {
+        "file": "outrun-sunset",
+        "label": "Outrun Sunset",
+        "icon": "fa-sun"
+    },
+    "corporate-dystopia": {
+        "file": "corporate-dystopia",
+        "label": "Corporate Dystopia",
+        "icon": "fa-building"
+    },
+    "holographic": {
+        "file": "holographic",
+        "label": "Holographic",
+        "icon": "fa-glass-cheers"
+    },
+    "tokyo-night": {
+        "file": "tokyo-night",
+        "label": "Tokyo Night",
+        "icon": "fa-city"
+    },
+    "amber-interface": {
+        "file": "amber-interface",
+        "label": "Amber Interface",
+        "icon": "fa-tv"
+    }
+}

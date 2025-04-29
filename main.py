@@ -52,6 +52,16 @@ app = Flask(__name__,
             static_folder=STATIC_DIR, 
             template_folder=TEMPLATES_DIR)
 
+# Route to dynamically list available theme files
+@app.route('/api/themes', methods=['GET'])
+def list_themes():
+    theme_dir = os.path.join(STATIC_DIR, 'css', 'themes')
+    try:
+        themes = [f[:-4] for f in os.listdir(theme_dir) if f.endswith('.css')]
+    except Exception:
+        themes = []
+    return jsonify({'themes': themes})
+
 # Store the terminals dictionary in the Flask app for access by blueprints
 app.terminals = {}
 app.process_lock = threading.Lock()

@@ -7,7 +7,7 @@ class ThemeManager {
     constructor() {
         this.storageKey = 'commandwave-theme';
         this.defaultTheme = 'dark';
-        this.availableThemes = ['dark', 'light', 'witchhazel', 'digital-rain', 'outrun-sunset', 'corporate-dystopia', 'holographic', 'tokyo-night', 'amber-interface'];
+        this.availableThemes = [];  // will be populated via API
         this.themeFileMap = {
             'dark': 'cyberpunk-dark',
             'light': 'neon-light',
@@ -42,7 +42,8 @@ class ThemeManager {
             'amber-interface': 'fa-tv'
         };
         
-        this.init();
+        // Fetch available themes then initialize
+        this.fetchAvailableThemes().then(() => this.init());
     }
     
     /**
@@ -265,6 +266,22 @@ class ThemeManager {
      */
     getThemeLabel(theme) {
         return this.themeLabels[theme] || 'Unknown Theme';
+    }
+    
+    /**
+     * Fetch available theme CSS files and filter mapping
+     */
+    async fetchAvailableThemes() {
+        try {
+            const res = await fetch('/api/themes');
+            const data = await res.json();
+            const files = data.themes;
+            this.availableThemes = Object.keys(this.themeFileMap)
+                .filter(key => files.includes(this.themeFileMap[key]));
+        } catch (e) {
+            console.error('Error fetching themes:', e);
+            this.availableThemes = Object.keys(this.themeFileMap);
+        }
     }
 }
 
